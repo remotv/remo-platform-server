@@ -3,7 +3,7 @@ const printLog = true;
 
 module.exports.logger = data => {
   // console.log(data);
-  const { logLevel } = require("../config/server/index");
+  const { logLevel } = require("../config/index");
   if (printLog && logLevel === "debug") {
     let level = data.level || "info";
     const source = data.source || "";

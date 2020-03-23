@@ -1,9 +1,9 @@
 //This is just a straight up link, will make it fancy later
 
 module.exports.emailResetKey = (user, { key_id }) => {
-  const { reRouteOutboundEmail } = require("../config/server/index");
+  const { reRouteOutboundEmail } = require("../config/index");
   let { sendMail } = require("../services/email");
-  const { urlPrefix } = require("../config/server");
+  const { urlPrefix } = require("../config");
   const text = `${urlPrefix}recovery/${key_id}`;
   const html = `<a href="${text}">${text}</a>`;
   sendMail({
@@ -15,9 +15,9 @@ module.exports.emailResetKey = (user, { key_id }) => {
 };
 
 module.exports.emailValidationKey = (user, { key_id }) => {
-  const { reRouteOutboundEmail } = require("../config/server/index");
+  const { reRouteOutboundEmail } = require("../config/index");
   let { sendMail } = require("../services/email");
-  const { urlPrefix } = require("../config/server");
+  const { urlPrefix } = require("../config");
   const text = `${urlPrefix}validate-email/${key_id}`;
   const html = `<a href="${text}">${text}</a>`;
   sendMail({
@@ -32,9 +32,9 @@ module.exports.emailLiveRobotAnnoucemnent = (
   user,
   { server_name, channel_id, robotAlert }
 ) => {
-  const { reRouteOutboundEmail } = require("../config/server/index");
+  const { reRouteOutboundEmail } = require("../config/index");
   let { sendMail } = require("../services/email");
-  const { urlPrefix } = require("../config/server");
+  const { urlPrefix } = require("../config");
   const text = `${urlPrefix}${server_name}/${channel_id}`;
   const html = `<a href="${text}">${text}</a>`;
   sendMail({

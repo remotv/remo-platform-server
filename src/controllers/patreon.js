@@ -138,7 +138,7 @@ module.exports.syncPatreonData = async () => {
 
 const checkInterval = async () => {
   const { createSimpleTimer } = require("../modules/utilities");
-  const { patreonSyncInterval } = require("../config/server");
+  const { patreonSyncInterval } = require("../config");
   await createSimpleTimer(patreonSyncInterval, this.syncPatreonData);
   return;
 };

@@ -1,5 +1,5 @@
 module.exports = async (ws, data) => {
-  const { logLevel } = require("../config/server/index");
+  const { logLevel } = require("../config/index");
   if (logLevel === "debug") console.log("GET LOCAL STATUS ", data, ws.user);
 
   const {

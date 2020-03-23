@@ -7,7 +7,7 @@ module.exports = async robot => {
     updateRobotServerStatus
   } = require("../../models/robotServer");
   const { notifyFollowers } = require("./");
-  const { emailNotificationInterval } = require("../../config/server");
+  const { emailNotificationInterval } = require("../../config");
 
   let { settings, status, server_name, owner_id } = await getRobotServer(
     robot.host_id

@@ -1,7 +1,7 @@
 const http = require("../http");
 require("../wss");
 
-const { serverPort } = require("../../config/server");
+const { serverPort } = require("../../config");
 
 const app = require("../express");
 const port = serverPort;

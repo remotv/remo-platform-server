@@ -1,5 +1,5 @@
 const mail = require("@sendgrid/mail");
-const { sendGrid, sendMail } = require("../../config/server/index");
+const { sendGrid, sendMail } = require("../../config/index");
 mail.setApiKey(sendGrid);
 
 module.exports.sendMail = async ({

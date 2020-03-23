@@ -1,6 +1,6 @@
 const patreon = require("patreon");
-const CLIENT_ID = require("../config/server/").patreonClientID;
-const CLIENT_SECRET = require("../config/server/").patreonClientSecret;
+const CLIENT_ID = require("../config/").patreonClientID;
+const CLIENT_SECRET = require("../config/").patreonClientSecret;
 const axios = require("axios");
 const { jsonError } = require("./logging");
 
@@ -56,7 +56,7 @@ module.exports.getInfoFromAccessToken = async token => {
 };
 
 module.exports.getRemoPledgeData = async () => {
-  const { creatorAccessToken, campaignId } = require("../config/server");
+  const { creatorAccessToken, campaignId } = require("../config");
   const client = patreon.patreon(creatorAccessToken);
 
   //stahp spamming my console!
@@ -70,7 +70,7 @@ module.exports.getRemoPledgeData = async () => {
 };
 
 module.exports.getPledgeData = async () => {
-  const { campaignId, creatorAccessToken } = require("../config/server");
+  const { campaignId, creatorAccessToken } = require("../config");
   const get = `https://www.patreon.com/api/oauth2/api/campaigns/${campaignId}/pledges?page%5Bcount%5D=10000`;
   return await axios
     .get(get, {

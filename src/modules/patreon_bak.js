@@ -19,8 +19,8 @@ var patreon_response = patreon_client('/current_user').then(function(result) {
 
 module.exports.patreonOAuthClient = async () => {
   const patreon = require("patreon");
-  const CLIENT_ID = require("../config/server/").patreonClientID;
-  const CLIENT_SECRET = require("../config/server/").patreonClientSecret;
+  const CLIENT_ID = require("../config/").patreonClientID;
+  const CLIENT_SECRET = require("../config/").patreonClientSecret;
   const patreonOAuth = patreon.oauth;
   const client = await patreonOAuth(CLIENT_ID, CLIENT_SECRET);
   console.log("Patreon Client: ", client);
@@ -32,7 +32,7 @@ module.exports.handleOAuthRedirectRequest = async (request, response) => {
   const patreon = require("patreon");
   const patreonAPI = patreon.patreon;
   const url = require("url");
-  const { urlPrefix } = require("../config/server/");
+  const { urlPrefix } = require("../config/");
   const patreonOAuthClient = await this.patreonOAuthClient();
 
   // This should be one of the fully qualified redirect_uri you used when setting up your oauth account

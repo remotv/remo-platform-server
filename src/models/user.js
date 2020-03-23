@@ -7,7 +7,7 @@ const {
   createTimeStamp,
   createTimer
 } = require("../modules/utilities");
-const config = require("../config/server");
+const config = require("../config");
 const tempSecret = config.secret;
 const { logger, jsonError } = require("../modules/logging");
 

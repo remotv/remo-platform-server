@@ -1,7 +1,7 @@
 const axios = require("axios");
 const router = require("express").Router();
 const user = require("../../models/user");
-const serverSettings = require("../../config/server");
+const serverSettings = require("../../config");
 const { jsonError } = require("../../modules/logging");
 const { supportEmail } = serverSettings;
 

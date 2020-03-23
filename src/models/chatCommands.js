@@ -173,7 +173,7 @@ module.exports.handleGlobalTimeout = async ({
     }
 
     //Set the maximum timeout
-    const { maxTimeout } = require("../config/server");
+    const { maxTimeout } = require("../config");
     if (time > maxTimeout) time = maxTimeout;
     console.log("TIMEOUT FOR TIME: ", time, maxTimeout);
     time *= 1000;

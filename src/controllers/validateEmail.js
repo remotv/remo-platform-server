@@ -34,7 +34,7 @@ module.exports.validateEmail = async (user, setExpire) => {
 
 const generateKey = (user, setExpire) => {
   const { makeId, createTimeStamp } = require("../modules/utilities");
-  const { emailValidationExpires } = require("../config/server");
+  const { emailValidationExpires } = require("../config");
   let expire = false;
   const handleExpire = () => {
     expire = setExpire || Date.now() + emailValidationExpires;
@@ -56,7 +56,7 @@ const generateKey = (user, setExpire) => {
 module.exports.useEmailValidationKey = async key => {
   const { updateStatus, getUserInfoFromId } = require("../models/user");
   const { updateKey } = require("../models/keys");
-  const { supportEmail } = require("../config/server");
+  const { supportEmail } = require("../config");
 
   //Match key to DB, return error if not valid
   let getKey = await this.validateKey({ key_id: key });

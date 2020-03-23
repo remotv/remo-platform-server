@@ -1,4 +1,4 @@
-const { globalBadWordsList, filterWhiteList } = require("../config/server");
+const { globalBadWordsList, filterWhiteList } = require("../config");
 
 /**
  * Scan the message for offending phonetic matches and replace them with a

@@ -1,6 +1,6 @@
 let usernames = [];
 let ips = [];
-const { authRequestTimeout } = require("../config/server");
+const { authRequestTimeout } = require("../config");
 
 //This script is meant to help throttle security related requests like requesting a password reset
 Array.prototype.remove = function() {

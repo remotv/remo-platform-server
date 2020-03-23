@@ -8,7 +8,7 @@ module.exports = async (
   const { getMemberAndUserSettings } = require("../../models/mixedQueries");
   const { emailLiveRobotAnnoucemnent } = require("../../controllers/mailers");
   const { robotAlerts } = require("./");
-  const { enableEmailAlerts } = require("../../config/server");
+  const { enableEmailAlerts } = require("../../config");
 
   if (!server_name || !robot_name || !channel_id) return;
 

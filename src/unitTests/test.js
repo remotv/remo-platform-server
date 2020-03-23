@@ -95,7 +95,7 @@ const test___validateEmail = async () => {
 
 const test___getPledgeData = async () => {
   const { getPledgeData } = require("../modules/patreon");
-  const { campaignId } = require("../config/server");
+  const { campaignId } = require("../config");
 
   try {
     let pledges = [];
@@ -134,7 +134,7 @@ const test___syncPatreonData = async () => {
 
 const test___getRemoPeldgeData = async () => {
   const { getRemoPledgeData } = require("../modules/patreon");
-  const { campaignId } = require("../config/server");
+  const { campaignId } = require("../config");
   const pledges = await getRemoPledgeData();
 
   try {

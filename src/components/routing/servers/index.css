@@ -1,5 +1,0 @@
-.server-container {
-  display: flex;
-  max-height: calc(100vh - 48px);
-  top: 48px;
-}

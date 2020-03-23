@@ -1,7 +1,0 @@
-@import "../../../styles/mixins/validationResponse.scss";
-
-.validateEmail {
-  &__response {
-    @include response;
-  }
-}

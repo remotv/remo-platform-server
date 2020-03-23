@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { urlPrefix } = require("../../config/server");
+const { urlPrefix } = require("../../config");
 const auth = require("../auth");
 
 //External service integration management for client
