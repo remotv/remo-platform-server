@@ -4,7 +4,3 @@ build
 
 */.DS_Store
 src/models/globalBadWordsList.json
-src/config/client/overides.js
-src/config/client/overrides.js
-src/config/overides.js
-src/config/overrides.js
