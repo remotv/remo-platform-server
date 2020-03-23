@@ -1,33 +1,39 @@
-If you want to run just the frontend, you can connect it to the live dev server. 
-In clientSettings.js you can: 
+# Remo Platform Server
+
+This is the main backend server for Remo.TV<br>
+Some backend services may be moved out of this repo at a later date.
+
+By default, the server runs as localhost on port 3000 <br>
+The webclient frontend can be found here:
+[https://github.com/remotv/remo-web-client](https://github.com/remotv/remo-web-client)<br>
+
+### Setup:
+
+Make sure you have npm installed, then run the following:<br>
 
 ```
-const localHost = "localhost"; //default
-const devServer = "35.185.203.47"; //default
-
-const host = localHost; //If you want to run just the frontend, change this to devServer, instead of localHost
-```
-Like so: 
-```
-const host = devServer;
+npm install
 ```
 
-Then in termal run: 
-```npm run react```
+IMPORTANT! Disable tracking for overrides.js, never ever commit any changes to the overrides.js file.<br>
+If your IDE is tracking changes to overrides.js, run this command:
 
+```
+git update-index --assume-unchanged src/config/overrides.js
+```
+
+TBD: Instructions for setting up postgres && PGAdmin ( PSQL is required for running the server ) <br>
+Database table builder can be found in `src/services/db/remote_contro.sql`
+
+Then in termal run:<br>
+
+```
+npm run server
+```
 
 ## Available Scripts
 
 In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-This command will also boot the websocket server, currently running on port: 3231
-
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
 
 ### `npm run server`
 
