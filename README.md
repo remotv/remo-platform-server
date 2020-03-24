@@ -19,7 +19,7 @@ IMPORTANT! Disable tracking for overrides.js, never ever commit any changes to t
 If your IDE is tracking changes to overrides.js, run this command:
 
 ```
-git update-index --assume-unchanged src/config/overrides.js
+git update-index --skip-worktree src/config/overrides.js
 ```
 
 TBD: Instructions for setting up postgres && PGAdmin ( PSQL is required for running the server ) <br>
