@@ -4,7 +4,7 @@ module.exports = async (ws, command) => {
   if (!ws.user) return;
   const channel = require("../models/channel");
   const { publicUser, getUserInfoFromId } = require("../models/user");
-  const { validateInput } = require("../models/controls");
+  const { validateInput } = require("../controllers/controls");
   command.user = publicUser(ws.user);
   // console.log("USER FROM WS", ws.user, "COMMAND: ", command);
 

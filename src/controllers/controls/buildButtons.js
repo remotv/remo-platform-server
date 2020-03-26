@@ -1,56 +1,10 @@
-const { logger, jsonError } = require("../modules/logging");
-const log = message => {
-  logger({
-    level: "debug",
-    source: "controllers/controls.js",
-    message: message
-  });
-};
-
-//default example for controls
-module.exports.exampleControls = () => {
-  return [
-    { break: "line", label: "movement", id: "1" },
-    { label: "forward", hot_key: "w", command: "f", id: "2" },
-    { label: "back", hot_key: "s", command: "b", id: "3" },
-    { label: "left", hot_key: "a", command: "l", id: "4" },
-    { label: "right", hot_key: "d", command: "r", id: "5" },
-    { break: "line", label: "", id: "6" },
-    {
-      label: "example admin command",
-      command: "example",
-      access: "owner",
-      id: "7"
-    }
-    // {
-    //   label: "example timer",
-    //   command: "timer-example",
-    //   id: "8",
-    //   cooldown: 100
-    // }
-  ];
-};
-
-module.exports.getButtonInputForChannel = async channel_id => {
-  const { getChannel } = require("../models/channel");
-  const { getControlsFromId } = require("../models/controls");
-
-  const channel = await getChannel(channel_id);
-  const controls = await getControlsFromId(channel.controls);
-  if (controls.buttons) return controls.buttons; //only send valid key / value pairs
-  return this.exampleControls;
-};
-
-module.exports.getButtonInputForUser = async (user, channel_id) => {
-  return await this.getControlsFromId(channel_id, user);
-};
-
 //input: { label: "<string>", hot_key: "<string>", command: "<string>"}
 //output: array of button objects w/ id generated per button
-module.exports.buildButtons = async (buttons, channel_id, controls_id) => {
-  const { updateControls } = require("../models/controls");
-  const { validateButtonsJSON, validateButton } = require("./validate");
-  const { makeId } = require("../modules/utilities");
+module.exports = async (buttons, channel_id, controls_id) => {
+  const { jsonError } = require("../../modules/logging");
+  const { updateControls } = require("../../models/controls");
+  const { validateButtonsJSON, validateButton } = require("./../validate");
+  const { makeId } = require("../../modules/utilities");
   let response = {};
   let newButtons = [];
   let buildControls = {};
@@ -176,45 +130,4 @@ module.exports.buildButtons = async (buttons, channel_id, controls_id) => {
   response.status = "error";
   response.error = "problem build buttons (controls.js/buildButtons)";
   return response;
-};
-
-module.exports.getControlsFromId = async (channel_id, user) => {
-  const { getServerIdFromChannelId } = require("../models/channel");
-  const { getRobotServer } = require("../models/robotServer");
-  const { getChannel } = require("../models/channel");
-  const { getControlsFromId } = require("../models/controls");
-
-  log(`Get Controls from ID: ${channel_id}, ${user.username}`);
-  let controls = await getChannel(channel_id);
-  controls = await getControlsFromId(controls.controls);
-
-  let sendButtons = [];
-  if (controls && controls.buttons) {
-    const { buttons } = controls;
-    const getServerId = await getServerIdFromChannelId(channel_id);
-    const getServer = await getRobotServer(getServerId.result);
-    const testy = async button => {
-      if (user && button.access && button.access === "owner") {
-        //A VERY TEMPORARY SOLUTION!!!!
-
-        if (getServer.owner_id === user.id) {
-          return button;
-        }
-      } else if (!button.access) return button;
-    };
-
-    sendButtons = await Promise.all(buttons.map(button => testy(button)));
-    sendButtons = sendButtons.filter(button => button != undefined);
-    //await Promise.all(testy);
-  }
-  if (controls.buttons && sendButtons) {
-    controls.buttons = sendButtons;
-  } else {
-    logger({
-      level: "error",
-      source: "controllers/controls.js",
-      message: "Unable to Fetch Controls"
-    });
-  }
-  return controls;
 };
