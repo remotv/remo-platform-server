@@ -24,6 +24,7 @@ const defaults = {
   emailValidationExpires: 3600 * 1000 * 24, //24 hours
   authRequestTimeout: 300 * 1000, //5 minutes
   emailNotificationInterval: 3600 * 1000 * 8, //8 Hours
+  cleanButtonTimers: 300 * 1000, //5 minutes
 
   //PATREON STUFF
   patreonClientID:
