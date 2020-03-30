@@ -9,7 +9,7 @@ module.exports = async input => {
   if (checkInput && checkInput.buttons) {
     checkInput.buttons.map(button => {
       if (button.label === input.button.label) validate = true;
-      if (button.cooldown) {
+      if (input.button.cooldown) {
         pushButtonTimer(button);
       }
     });
