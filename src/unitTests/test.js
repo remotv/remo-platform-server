@@ -33,7 +33,8 @@ const testStr = "shitty ass person you are phawk";
 
 const test = async () => {
   try {
-    await test___checkType();
+    await test___getButtonTimer();
+    //await test___checkType();
     // await test___misc();
     // await test___getMemberAndUserSettings();
     // await test___validateEmail();
@@ -65,6 +66,12 @@ const test = async () => {
 
 const test___misc = async () => {
   return null;
+};
+
+const test___getButtonTimer = async () => {
+  const { getButtonTimer } = require("../controllers/controls/buttonTimers");
+  const result = await getButtonTimer("8");
+  console.log("Get Button Timer Check: ", result);
 };
 
 const test___checkType = async () => {

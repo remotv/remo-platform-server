@@ -1,7 +1,13 @@
 let buttonStore = [];
 
+//Doing all this in memmory for a first pass. Will use DB on v2
 module.exports.getButtonTimers = () => {
   return buttonStore;
+};
+
+module.exports.getButtonTimer = async button_id => {
+  console.log(buttonStore, button_id);
+  return (await buttonStore.find(({ id }) => id === button_id)) || null;
 };
 
 module.exports.pushButtonTimer = button => {
@@ -29,10 +35,6 @@ module.exports.pushButtonTimer = button => {
 
 module.exports.cleanupButtonTimers = () => {
   let updateButtons = [];
-  console.log(
-    "Cleaning up buttonstore, starting entries: ",
-    buttonStore.length
-  );
   buttonStore.forEach(button => {
     console.log("Active Button Timer: ", button);
     const expire = button.cooldown * 1000 + button.timeStamp;
@@ -40,7 +42,6 @@ module.exports.cleanupButtonTimers = () => {
     if (dif < 0) updateButtons.push(button);
   });
   buttonStore = updateButtons;
-  console.log("Cleanup buttonstore complete, result: ", buttonStore.length);
   this.cleanupInterval();
 };
 
