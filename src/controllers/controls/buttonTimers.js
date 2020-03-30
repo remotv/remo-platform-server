@@ -34,19 +34,24 @@ module.exports.cleanupButtonTimers = () => {
     buttonStore.length
   );
   buttonStore.forEach(button => {
-    console.log(button);
-    if (button.timeStamp <= button.cooldown * 1000 + Date.now()) {
-      updateButtons.push(button);
-    }
+    console.log("Active Button Timer: ", button);
+    const expire = button.cooldown * 1000 + button.timeStamp;
+    const dif = (Date.now() - expire) / 1000;
+    if (dif < 0) updateButtons.push(button);
   });
   buttonStore = updateButtons;
-  console.log("Cleanup buttonCtore complete, result: ", buttonStore.length);
+  console.log("Cleanup buttonstore complete, result: ", buttonStore.length);
   this.cleanupInterval();
 };
 
 module.exports.cleanupInterval = () => {
-  const { createSimpleTimer } = require("../../../modules/utilities");
-  const { leanupButtonTimersInterval } = require("../../../config");
-  createSimpleTimer(leanupButtonTimersInterval, this.cleanupButtonTimers);
+  const { createSimpleTimer } = require("../../modules/utilities");
+  const { cleanupButtonTimersInterval } = require("../../config");
+  console.log("Cleanup Interval : ", cleanupButtonTimersInterval);
+  createSimpleTimer(cleanupButtonTimersInterval, this.cleanupButtonTimers);
   return;
+};
+
+module.exports.initButtonTimerCleanup = () => {
+  this.cleanupInterval();
 };

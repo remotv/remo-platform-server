@@ -1,7 +1,7 @@
 module.exports = async input => {
   const { getControls } = require("../../models/controls");
   const { testControls } = require("./");
-  const { pushButton } = require("./buttonTimers");
+  const { pushButtonTimer } = require("./buttonTimers");
   //console.log("VALIDATE INPUT: ", input);
   let response = {};
   let validate = false;
@@ -10,7 +10,7 @@ module.exports = async input => {
     checkInput.buttons.map(button => {
       if (button.label === input.button.label) validate = true;
       if (button.cooldown) {
-        pushButton(button);
+        pushButtonTimer(button);
       }
     });
   } else {
