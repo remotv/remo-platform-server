@@ -123,33 +123,6 @@ module.exports.getControls = async (id, channel_id) => {
   return null;
 };
 
-//TODO: Check against user & user roles
-//is user timed out?
-//Does user have privelage to use this command?
-// module.exports.validateInput = async input => {
-//   //console.log("VALIDATE INPUT: ", input);
-//   let response = {};
-//   let validate = false;
-//   const checkInput = await this.getControls(input.controls_id, input.channel);
-//   if (checkInput && checkInput.buttons) {
-//     checkInput.buttons.map(button => {
-//       if (button.label === input.button.label) validate = true;
-//     });
-//   } else {
-//     console.log(
-//       "No buttons found, validating against default controls instead"
-//     );
-//     testControls.map(button => {
-//       if (button.label === input.button.label) validate = true;
-//     });
-//   }
-
-//   if (validate) response.validated = true;
-//   if (!validate) response.validated = false;
-//   console.log("Validation Result: ", response.validated);
-//   return response;
-// };
-
 module.exports.sendUpdatedControls = async (controls_id, channel_id) => {
   //send current controls for current channel to the client
   //channel stores an ID reference for it's current controls
