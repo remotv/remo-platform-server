@@ -5,14 +5,17 @@ module.exports = () => {
 };
 
 module.exports.pushButton = button => {
+  console.log("cooldown button: ", button);
   if (buttonStore.some(stored => stored.id === button.id)) {
     console.log("Found Button Entry to update: ", button.label);
+    //  let upateButtons = [];
     buttonStore.forEach(store => {
       if (
         button.id === store.id &&
         store.timeStamp <= store.cooldown * 1000 + Date.now()
       ) {
         store.timeStamp = Date.now();
+        //send timer event?
       }
     });
   } else {
@@ -20,6 +23,7 @@ module.exports.pushButton = button => {
     console.log("No entry found, updating button");
     button.timeStamp = Date.now();
     buttonStore.push(button);
+    //send timer event?
   }
 };
 
@@ -30,6 +34,7 @@ module.exports.cleanupButtonStore = () => {
     buttonStore.length
   );
   buttonStore.forEach(button => {
+    console.log(button);
     if (button.timeStamp <= button.cooldown * 1000 + Date.now()) {
       updateButtons.push(button);
     }
