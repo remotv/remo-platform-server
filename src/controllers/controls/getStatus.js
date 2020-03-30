@@ -1,3 +1,5 @@
+//status manager for controls
+
 module.exports.getStatusForControls = async buttons => {
   let appendStatus = [];
   if (buttons) {
@@ -13,6 +15,8 @@ module.exports.getStatusForControls = async buttons => {
 };
 
 module.exports.getButtonStatus = async button => {
+  const { getButtonTimer } = require("./buttonTimers");
+  console.log("Check Button Status: ", button);
   let check = null;
   if (button.cooldown) check = await getButtonTimer(button.id);
   if (check) return check;

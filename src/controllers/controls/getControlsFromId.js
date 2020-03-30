@@ -5,6 +5,7 @@ module.exports = async (channel_id, user) => {
   const { getControlsFromId } = require("../../models/controls");
   const { logger } = require("../../modules/logging");
   const { log } = require("./");
+  const { getButtonStatus } = require("./getStatus");
 
   log(`Get Controls from ID: ${channel_id}, ${user.username}`);
   let controls = await getChannel(channel_id);
@@ -16,6 +17,7 @@ module.exports = async (channel_id, user) => {
     const getServerId = await getServerIdFromChannelId(channel_id);
     const getServer = await getRobotServer(getServerId.result);
     const testy = async button => {
+      button = await getButtonStatus(button);
       if (user && button.access && button.access === "owner") {
         //A VERY TEMPORARY SOLUTION!!!!
 

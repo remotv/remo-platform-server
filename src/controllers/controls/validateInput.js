@@ -8,9 +8,9 @@ module.exports = async input => {
   const checkInput = await getControls(input.controls_id, input.channel);
   if (checkInput && checkInput.buttons) {
     checkInput.buttons.map(button => {
-      if (button.label === input.button.label) validate = true;
-      if (input.button.cooldown) {
-        pushButtonTimer(button);
+      if (button.id === input.button.id) {
+        validate = true;
+        if (button.cooldown) pushButtonTimer(button);
       }
     });
   } else {
