@@ -1,10 +1,10 @@
 let buttonStore = [];
 
-module.exports = () => {
+module.exports.getButtonTimers = () => {
   return buttonStore;
 };
 
-module.exports.pushButton = button => {
+module.exports.pushButtonTimer = button => {
   console.log("cooldown button: ", button);
   if (buttonStore.some(stored => stored.id === button.id)) {
     console.log("Found Button Entry to update: ", button.label);
@@ -27,7 +27,7 @@ module.exports.pushButton = button => {
   }
 };
 
-module.exports.cleanupButtonStore = () => {
+module.exports.cleanupButtonTimers = () => {
   let updateButtons = [];
   console.log(
     "Cleaning up buttonstore, starting entries: ",
@@ -46,7 +46,7 @@ module.exports.cleanupButtonStore = () => {
 
 module.exports.cleanupInterval = () => {
   const { createSimpleTimer } = require("../../../modules/utilities");
-  const { cleanButtonTimers } = require("../../../config");
-  createSimpleTimer(cleanButtonTimers, this.cleanButtonTimers);
+  const { leanupButtonTimersInterval } = require("../../../config");
+  createSimpleTimer(leanupButtonTimersInterval, this.cleanupButtonTimers);
   return;
 };

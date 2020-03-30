@@ -1,7 +1,7 @@
 module.exports = async input => {
   const { getControls } = require("../../models/controls");
   const { testControls } = require("./");
-  const { pushButton } = require("./buttonTimers/buttonStore");
+  const { pushButton } = require("./buttonTimers");
   //console.log("VALIDATE INPUT: ", input);
   let response = {};
   let validate = false;
