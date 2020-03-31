@@ -24,6 +24,6 @@ module.exports = async input => {
 
   if (validate) response.validated = true;
   if (!validate) response.validated = false;
-  console.log("Validation Result: ", response.validated);
+  // console.log("Validation Result: ", response.validated);
   return response;
 };
