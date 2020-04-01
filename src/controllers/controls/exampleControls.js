@@ -11,12 +11,12 @@ module.exports = () => {
       label: "example admin command",
       command: "example",
       access: "owner"
-    },
-    {
-      label: "example timer",
-      command: "timer-example",
-      cooldown: 100
     }
+    // {
+    //   label: "example timer",
+    //   command: "timer-example",
+    //   cooldown: 100
+    // }
   ];
 
   let exportExample = [];
