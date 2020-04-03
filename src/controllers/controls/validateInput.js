@@ -22,7 +22,7 @@ module.exports = async input => {
         (button.id === input.button.id && button.access && authAccess)
       ) {
         validate = true;
-        if (validate && button.cooldown) pushButtonTimer(button);
+        if (button.cooldown) pushButtonTimer(button);
       }
     });
   } else {
