@@ -66,7 +66,7 @@ module.exports.updateSettings = async (server, user_id) => {
   const { authLocal } = require("./roles");
 
   let getServer = await getRobotServer(server.server_id);
-  const authUpdate = await authLocal(getServer, { id: user_id });
+  const authUpdate = await authLocal({ id: user_id }, getServer);
 
   if (authUpdate.authorized) {
     if (server.settings.hasOwnProperty("private"))

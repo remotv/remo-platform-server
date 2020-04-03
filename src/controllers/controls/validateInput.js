@@ -2,15 +2,27 @@ module.exports = async input => {
   const { getControls } = require("../../models/controls");
   const { testControls } = require("./");
   const { pushButtonTimer } = require("./buttonTimers");
-  //console.log("VALIDATE INPUT: ", input);
-  let response = {};
-  let validate = false;
+  const { authLocal } = require("../roles");
+  // console.log("VALIDATE INPUT: ", input);
+  let response = {}; //response object
+  let validate = false; //direct input validation
+  let authAccess = false; //validate input with restricted access
+
+  if (input.button.access) {
+    const auth = await authLocal(input.user, { server_id: input.server });
+    if (auth.authorized) authAccess = true;
+  }
+
   const checkInput = await getControls(input.controls_id, input.channel);
+
   if (checkInput && checkInput.buttons) {
     checkInput.buttons.map(button => {
-      if (button.id === input.button.id) {
+      if (
+        (button.id === input.button.id && !button.access) ||
+        (button.id === input.button.id && button.access && authAccess)
+      ) {
         validate = true;
-        if (button.cooldown) pushButtonTimer(button);
+        if (validate && button.cooldown) pushButtonTimer(button);
       }
     });
   } else {
