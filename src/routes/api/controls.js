@@ -60,10 +60,7 @@ router.post("/make", auth({ robot: true, user: true }), async (req, res) => {
 });
 
 //get JSON for editing channel buttons
-router.post(
-  "/button-input",
-  auth({ robot: true, user: true }),
-  async (req, res) => {
+router.post("/button-input",auth({ robot: true, user: true }), async (req, res) => {
     if (req.body.channel_id) {
       const {
         getButtonInputForChannel
@@ -77,10 +74,7 @@ router.post(
 );
 
 //Get channel's buttons based on user
-router.post(
-  "/get-controls",
-  auth({ robot: true, user: true }),
-  async (req, res) => {
+router.post("/get-controls",auth({ robot: true, user: true }), async (req, res) => {
     if (req.body.channel_id) {
       const { getButtonInputForUser } = require("../../controllers/controls");
       const sendButtons = await getButtonInputForUser(
