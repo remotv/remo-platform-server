@@ -33,7 +33,7 @@ module.exports.createMessage = async message => {
   makeMess.badges = await this.getBadges(
     message.user.type,
     message.server_id,
-    message.userId
+    message.user.id
   );
 
   //message.type is a flag that indicates what purpose the message is meant to serve,
