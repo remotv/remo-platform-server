@@ -1,260 +1,330 @@
-CREATE DATABASE remote_control
-    WITH 
-    OWNER = "postgres"
-    ENCODING = 'UTF8'
-    LC_COLLATE = 'en_US.UTF-8'
-    LC_CTYPE = 'en_US.UTF-8'
-    TABLESPACE = pg_default
-    CONNECTION LIMIT = -1;
-
-SET default_tablespace
-= '';
-
-SET default_with_oids
-= false;
-
-CREATE SCHEMA public
-    AUTHORIZATION postgres;
-
-COMMENT ON SCHEMA public
-    IS 'standard public schema';
-
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT ALL ON SCHEMA public TO PUBLIC;
 --
--- TOC entry 200 (class 1259 OID 16426)
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 10.12 (Ubuntu 10.12-0ubuntu0.18.04.1)
+-- Dumped by pg_dump version 10.12 (Ubuntu 10.12-0ubuntu0.18.04.1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
 -- Name: channels; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.users
-(
-
-    username character varying(25) COLLATE pg_catalog."default",
-    password character varying COLLATE pg_catalog."default",
-    email character varying COLLATE pg_catalog."default",
-    id character varying COLLATE pg_catalog."default" NOT NULL,
-    created bigint,
-    type character varying[] COLLATE pg_catalog."default",
-    session character varying COLLATE pg_catalog."default",
+CREATE TABLE public.channels (
+    host_id character varying,
+    id character varying NOT NULL,
+    name character varying,
+    chat character varying,
+    controls character varying,
+    display character varying,
+    created character varying,
     status jsonb,
     settings jsonb,
-    CONSTRAINT users_pkey PRIMARY KEY (id)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE public.users
-    OWNER to postgres;
-
-CREATE TABLE public.chat_rooms
-(
-    name character varying COLLATE pg_catalog."default",
-    id character varying COLLATE pg_catalog."default" NOT NULL,
-    host_id character varying COLLATE pg_catalog."default",
-    messages character varying[] COLLATE pg_catalog."default",
-    created character varying COLLATE pg_catalog."default",
-    CONSTRAINT chat_rooms_pkey PRIMARY KEY (id)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE public.chat_rooms
-    OWNER to postgres;
-
-CREATE TABLE public.channels
-(
-    host_id character varying COLLATE pg_catalog."default",
-    id character varying COLLATE pg_catalog."default" NOT NULL,
-    name character varying COLLATE pg_catalog."default",
-    chat character varying COLLATE pg_catalog."default",
-    display character varying COLLATE pg_catalog."default",
-    created character varying COLLATE pg_catalog."default",
-    status jsonb,
-    settings jsonb,
-    robot character varying COLLATE pg_catalog."default",
-    controls character varying COLLATE pg_catalog."default",
-    CONSTRAINT channels_pkey PRIMARY KEY (id)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE public.channels
-    OWNER to postgres;
-
-CREATE TABLE public.robots
-(
-    name character varying COLLATE pg_catalog."default",
-    id character varying COLLATE pg_catalog."default" NOT NULL,
-    owner_id character varying COLLATE pg_catalog."default",
-    interfaces character varying[] COLLATE pg_catalog."default",
-    session character varying COLLATE pg_catalog."default",
-    created bigint,
-    status jsonb,
-    settings jsonb,
-    host_id character varying COLLATE pg_catalog."default",
-    CONSTRAINT robots_pkey PRIMARY KEY (id)
-)
-
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE public.robots
-    OWNER to postgres;
-
-CREATE TABLE public.controls
-(
-     id character varying COLLATE pg_catalog."default" NOT NULL,
-    channel_id character varying COLLATE pg_catalog."default",
-    buttons jsonb[],
-    created character varying COLLATE pg_catalog."default",
-    settings jsonb,
-    status jsonb,
-    CONSTRAINT controls_pkey PRIMARY KEY (id)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE public.controls
-    OWNER to postgres;
+    robot character varying
+);
 
 
-CREATE TABLE public.robot_servers
-(
-    owner_id character varying COLLATE pg_catalog."default",
-    server_id character varying COLLATE pg_catalog."default" NOT NULL,
-    server_name character varying COLLATE pg_catalog."default",
-    created character varying COLLATE pg_catalog."default",
-    settings jsonb,
-    status jsonb,
-    channels jsonb[],
-    CONSTRAINT "robotServers_pkey" PRIMARY KEY (server_id)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
+ALTER TABLE public.channels OWNER TO postgres;
 
-ALTER TABLE public.robot_servers
-    OWNER to postgres;
+--
+-- Name: chat_messages; Type: TABLE; Schema: public; Owner: postgres
+--
 
-
-
-CREATE TABLE public.invites
-(
-    id character varying COLLATE pg_catalog."default" NOT NULL,
-    created_by character varying COLLATE pg_catalog."default",
-    server_id character varying COLLATE pg_catalog."default",
-    created character varying COLLATE pg_catalog."default",
-    expires character varying COLLATE pg_catalog."default" NOT NULL,
-    status character varying COLLATE pg_catalog."default",
-    alias character varying COLLATE pg_catalog."default",
-    is_default boolean,
-    CONSTRAINT invites_pkey PRIMARY KEY (id)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE public.invites
-    OWNER to postgres;
-
-
-CREATE TABLE public.members
-(
-    server_id character varying COLLATE pg_catalog."default" NOT NULL,
-    user_id character varying COLLATE pg_catalog."default" NOT NULL,
-    roles character varying[] COLLATE pg_catalog."default",
-    status jsonb,
-    settings jsonb[],
-    joined character varying COLLATE pg_catalog."default",
-    invites character varying[] COLLATE pg_catalog."default",
-    username character varying COLLATE pg_catalog."default",
-    CONSTRAINT member_pkey PRIMARY KEY (user_id, server_id),
-    CONSTRAINT server_pkey FOREIGN KEY (server_id)
-        REFERENCES public.robot_servers (server_id) MATCH SIMPLE
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    CONSTRAINT user_pkey FOREIGN KEY (server_id)
-        REFERENCES public.robot_servers (server_id) MATCH SIMPLE
-        ON UPDATE CASCADE
-        ON DELETE CASCADE
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE public.members
-    OWNER to postgres;
-
-
-CREATE TABLE public.chat_messages
-(
-    message character varying COLLATE pg_catalog."default",
-    sender character varying COLLATE pg_catalog."default",
-    sender_id character varying COLLATE pg_catalog."default",
-    chat_id character varying COLLATE pg_catalog."default",
-    server_id character varying COLLATE pg_catalog."default",
-    id character varying COLLATE pg_catalog."default" NOT NULL,
-    time_stamp character varying COLLATE pg_catalog."default",
-    broadcast character varying COLLATE pg_catalog."default",
+CREATE TABLE public.chat_messages (
+    message character varying,
+    sender character varying,
+    sender_id character varying,
+    chat_id character varying,
+    server_id character varying,
+    id character varying NOT NULL,
+    time_stamp character varying,
+    broadcast character varying,
     display_message boolean,
-    badges character varying[] COLLATE pg_catalog."default",
-    type character varying COLLATE pg_catalog."default",
-    channel_id character varying COLLATE pg_catalog."default",
-    CONSTRAINT chat_messages_pkey PRIMARY KEY (id)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
+    badges character varying[],
+    type character varying,
+    channel_id character varying
+);
 
-ALTER TABLE public.chat_messages
-    OWNER to postgres;
 
-    CREATE TABLE public.generated_keys
-(
-    key_id character varying COLLATE pg_catalog."default" NOT NULL,
-    created character varying COLLATE pg_catalog."default",
-    expires character varying COLLATE pg_catalog."default",
-    ref character varying COLLATE pg_catalog."default",
-    expired character varying COLLATE pg_catalog."default",
-    CONSTRAINT generated_keys_pkey PRIMARY KEY (key_id)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
+ALTER TABLE public.chat_messages OWNER TO postgres;
 
-ALTER TABLE public.generated_keys
-    OWNER to postgres;
+--
+-- Name: chat_rooms; Type: TABLE; Schema: public; Owner: postgres
+--
 
-CREATE TABLE public.patreon
-(
-    user_id character varying COLLATE pg_catalog."default",
-    username character varying COLLATE pg_catalog."default",
-    patreon_id character varying COLLATE pg_catalog."default",
-    active_rewards jsonb,
-    CONSTRAINT user_id FOREIGN KEY (user_id)
-        REFERENCES public.users (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
+CREATE TABLE public.chat_rooms (
+    name character varying,
+    id character varying,
+    host_id character varying,
+    messages character varying[],
+    created character varying
+);
 
-ALTER TABLE public.patreon
-    OWNER to postgres;
+
+ALTER TABLE public.chat_rooms OWNER TO postgres;
+
+--
+-- Name: controls; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.controls (
+    id character varying NOT NULL,
+    channel_id character varying,
+    buttons jsonb[],
+    created character varying,
+    settings jsonb,
+    status jsonb
+);
+
+
+ALTER TABLE public.controls OWNER TO postgres;
+
+--
+-- Name: generated_keys; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.generated_keys (
+    key_id character varying NOT NULL,
+    created character varying,
+    expires character varying,
+    ref character varying,
+    expired character varying
+);
+
+
+ALTER TABLE public.generated_keys OWNER TO postgres;
+
+--
+-- Name: invites; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.invites (
+    id character varying NOT NULL,
+    created_by character varying,
+    server_id character varying,
+    created character varying,
+    expires character varying NOT NULL,
+    status character varying,
+    alias character varying,
+    is_default boolean
+);
+
+
+ALTER TABLE public.invites OWNER TO postgres;
+
+--
+-- Name: members; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.members (
+    server_id character varying NOT NULL,
+    user_id character varying NOT NULL,
+    roles character varying[],
+    status jsonb,
+    joined character varying,
+    invites character varying[],
+    username character varying,
+    settings jsonb DEFAULT '{}'::jsonb NOT NULL
+);
+
+
+ALTER TABLE public.members OWNER TO postgres;
+
+--
+-- Name: patreon; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.patreon (
+    user_id character varying,
+    username character varying,
+    patreon_id character varying,
+    active_rewards jsonb
+);
+
+
+ALTER TABLE public.patreon OWNER TO postgres;
+
+--
+-- Name: robot_servers; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.robot_servers (
+    owner_id character varying,
+    server_id character varying NOT NULL,
+    server_name character varying,
+    users character varying[],
+    created character varying,
+    settings jsonb,
+    status jsonb,
+    channels jsonb[]
+);
+
+
+ALTER TABLE public.robot_servers OWNER TO postgres;
+
+--
+-- Name: robots; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.robots (
+    name character varying,
+    id character varying NOT NULL,
+    owner_id character varying,
+    interfaces character varying[],
+    session character varying,
+    created bigint,
+    status jsonb,
+    settings jsonb,
+    host_id character varying
+);
+
+
+ALTER TABLE public.robots OWNER TO postgres;
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.users (
+    username character varying(25),
+    password character varying,
+    email character varying,
+    id character varying NOT NULL,
+    created bigint,
+    type character varying[],
+    check_username character varying,
+    session character varying,
+    status jsonb,
+    settings jsonb
+);
+
+
+ALTER TABLE public.users OWNER TO postgres;
+
+--
+-- Name: channels channels_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.channels
+    ADD CONSTRAINT channels_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: chat_messages chat_messages_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.chat_messages
+    ADD CONSTRAINT chat_messages_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: controls controls_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.controls
+    ADD CONSTRAINT controls_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: generated_keys generated_keys_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.generated_keys
+    ADD CONSTRAINT generated_keys_pkey PRIMARY KEY (key_id);
+
+
+--
+-- Name: invites invites_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.invites
+    ADD CONSTRAINT invites_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: members member_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.members
+    ADD CONSTRAINT member_pkey PRIMARY KEY (user_id, server_id);
+
+
+--
+-- Name: robot_servers robotServers_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.robot_servers
+    ADD CONSTRAINT "robotServers_pkey" PRIMARY KEY (server_id);
+
+
+--
+-- Name: robots robots_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.robots
+    ADD CONSTRAINT robots_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: members server_pkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.members
+    ADD CONSTRAINT server_pkey FOREIGN KEY (server_id) REFERENCES public.robot_servers(server_id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: patreon user_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.patreon
+    ADD CONSTRAINT user_id FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: members user_pkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.members
+    ADD CONSTRAINT user_pkey FOREIGN KEY (server_id) REFERENCES public.robot_servers(server_id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- PostgreSQL database dump complete
+--
