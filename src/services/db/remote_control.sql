@@ -239,3 +239,22 @@ TABLESPACE pg_default;
 
 ALTER TABLE public.generated_keys
     OWNER to postgres;
+
+CREATE TABLE public.patreon
+(
+    user_id character varying COLLATE pg_catalog."default",
+    username character varying COLLATE pg_catalog."default",
+    patreon_id character varying COLLATE pg_catalog."default",
+    active_rewards jsonb,
+    CONSTRAINT user_id FOREIGN KEY (user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.patreon
+    OWNER to postgres;
