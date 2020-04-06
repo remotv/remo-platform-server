@@ -2,7 +2,7 @@ module.exports.messageHandler = async (ws, message) => {
   if (!ws.user) return;
 
   const { serverChatMessageRatelimit } = require("../config");
-  console.log(`ws.lastMessageTime: ${ws.lastMessageTime}    serverChatMessageRatelimit: ${serverChatMessageRatelimit}`);
+  //console.log(`ws.lastMessageTime: ${ws.lastMessageTime}    serverChatMessageRatelimit: ${serverChatMessageRatelimit}`);
   if (ws.lastMessageTime && Date.now() - ws.lastMessageTime < serverChatMessageRatelimit){
     console.log(`Chat message ratelimit hit by ${ws.user.username} @ ${ws.ip}!`);
   }
