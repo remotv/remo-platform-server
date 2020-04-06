@@ -69,4 +69,5 @@ registerEvent("GET_SERVER_STATUS", require("./getServerStatus"));
 registerEvent("INTERNAL_LISTENER_AUTHENTICATE", require("./internalListenerAuth"));
 registerEvent("INTERNAL_LISTENER_BAN", require("./internalListenerBan"));
 registerEvent("INTERNAL_LISTENER_UNBAN", require("./internalListenerUnban"));
+registerEvent("INTERNAL_SEND_BANNED", require("./internalSendBanned"));
 //have to register them all with there definitions here
