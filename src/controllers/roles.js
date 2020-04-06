@@ -27,4 +27,15 @@ module.exports.authLocal = async (user, server, role) => {
   return jsonError("Not authorized");
 };
 
-//GLOBAL ROLES
+//Better method, just returns true or false
+module.exports.authRole = async (user, server, role) => {
+  try {
+    if (server && !server.owner_id && server.server_id) {
+      server = await getRobotServer(server.server_id);
+    }
+    if ((!role || role === "owner") && user.id === server.owner_id) return true;
+  } catch (err) {
+    console.log("Auth Failure");
+  }
+  return false;
+};
