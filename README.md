@@ -30,8 +30,8 @@ Then in termal run:<br>
 ```
 npm run server
 ```
-
-If desired, Rather than get captcha working or bypass it by ripping code apart, You can set `bypassreCaptcha` to `true` in `/src/config/index.js`
+### HELP I CAN'T SIGN UP FOR AN ACCOUNT!
+Captcha only works for the offical builds. If you would like to bypass captcha, Go to `/src/config/index.js` and change `bypassreCaptcha: false,` to `bypassreCaptcha: true,` 
 
 ## Available Scripts
 
