@@ -108,7 +108,7 @@ module.exports.saveServer = async server => {
 
   const dbPut = `INSERT INTO robot_servers (server_id, server_name, owner_id, channels, created, settings, status ) VALUES($1, $2, $3, $4, $5, $6, $7 ) RETURNING *`;
   try {
-    await db.query(dbPut, [
+    const result = await db.query(dbPut, [
       server_id,
       server_name,
       owner_id,
