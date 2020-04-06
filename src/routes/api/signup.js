@@ -16,7 +16,7 @@ router.post("/", async (req, res) => {
       `https://www.google.com/recaptcha/api/siteverify?secret=${serverSettings.reCaptchaSecretKey}&response=${req.body.response}`
     );
     delete req.body.response;
-    if (captcha.data.success === true || serverSettings.bypassreCaptcha === true) {
+    if (captcha.data.success === true || serverSettings.bypassreCaptcha === true) { //Looks for the capture to succeed or for bypassreCaptcha to be true.
       //Validate
       let data = req.body;
       data.username = validateUserName(data.username);

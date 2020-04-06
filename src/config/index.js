@@ -5,7 +5,7 @@ const defaults = {
   serverPort: 3231,
   secret: "temp_secret",
   reCaptchaSecretKey: overides.reCaptchaSecretKey,
-  bypassreCaptcha: false,
+  bypassreCaptcha: false, //Bypass the reCaptcha system on sandbox/development instances
   maxTimeout: 15768000, //Seconds, not milliseconds
   loadMessages: 25, //number of messages chatroom will get on load
   currentAPIVersion: "/dev",
