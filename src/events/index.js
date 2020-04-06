@@ -9,7 +9,7 @@ module.exports.handleConnection = (ws, req) => {
   });
   
   ws.on("error", e => {
-    console.error(`WS error from ${ws.ip}\n${e}');
+    console.error(`WS error from ${ws.ip}\n${e}`);
   });
 
   ws.on("message", message => {
