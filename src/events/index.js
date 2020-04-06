@@ -7,6 +7,10 @@ module.exports.handleConnection = (ws, req) => {
   ws.on("pong", () => {
     ws.isAlive = true;
   });
+  
+  ws.on("error", e => {
+    console.error(`WS error from ${ws.ip}\n${e}');
+  });
 
   ws.on("message", message => {
     let messageData;
