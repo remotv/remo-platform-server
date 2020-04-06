@@ -6,7 +6,7 @@ module.exports = async (channel_id, user) => {
   const { logger } = require("../../modules/logging");
   const { log } = require("./");
   const { getButtonStatus } = require("./getStatus");
-  const { authRole } = require("../../controllers/roles");
+  const { authMemberRole } = require("../../controllers/roles");
 
   log(`Get Controls from ID: ${channel_id}, ${user.username}`);
   let controls = await getChannel(channel_id);
@@ -20,7 +20,7 @@ module.exports = async (channel_id, user) => {
     const testy = async button => {
       button = await getButtonStatus(button);
       if (user && button.access) {
-        const auth = await authRole(user, getServer, button.access);
+        const auth = await authMemberRole(user, getServer, button.access);
         if (auth) return button;
       } else return button;
     };

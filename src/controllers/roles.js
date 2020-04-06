@@ -28,7 +28,7 @@ module.exports.authLocal = async (user, server, role) => {
 };
 
 //Better method, just returns true or false
-module.exports.authRole = async (user, server, role) => {
+module.exports.authMemberRole = async (user, server, role) => {
   try {
     if (server && !server.owner_id && server.server_id) {
       server = await getRobotServer(server.server_id);
