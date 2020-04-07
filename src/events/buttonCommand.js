@@ -18,14 +18,15 @@ module.exports = async (ws, command) => {
       checkMembership,
       createMember
     } = require("../models/serverMembers");
+
     let getLocalStatus = await checkMembership({
       server_id: command.server,
       user_id: ws.user.id
     });
     if (!getLocalStatus) {
       getLocalStatus = await createMember({
-        user_id: user_id,
-        server_id: server_id
+        user_id: ws.user.id,
+        server_id: command.server
       });
     }
     ws.user.localStatus = getLocalStatus.status;
