@@ -2,15 +2,15 @@ module.exports = async input => {
   const { getControls } = require("../../models/controls");
   const { testControls } = require("./");
   const { pushButtonTimer } = require("./buttonTimers");
-  const { authLocal } = require("../roles");
+  const { authMemberRole } = require("../roles");
   // console.log("VALIDATE INPUT: ", input);
   let response = {}; //response object
   let validate = false; //direct input validation
   let authAccess = false; //validate input with restricted access
 
   if (input.button.access) {
-    const auth = await authLocal(input.user, { server_id: input.server });
-    if (auth.authorized) authAccess = true;
+    const auth = await authMemberRole(input.user, { server_id: input.server });
+    if (auth) authAccess = true;
   }
 
   const checkInput = await getControls(input.controls_id, input.channel);

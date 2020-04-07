@@ -63,12 +63,12 @@ module.exports.updateSettings = async (server, user_id) => {
     getRobotServer,
     updateRobotServerSettings
   } = require("../models/robotServer");
-  const { authLocal } = require("./roles");
+  const { authMemberRole } = require("./roles");
 
   let getServer = await getRobotServer(server.server_id);
-  const authUpdate = await authLocal({ id: user_id }, getServer);
+  const authUpdate = await authMemberRole({ id: user_id }, getServer);
 
-  if (authUpdate.authorized) {
+  if (authUpdate) {
     if (server.settings.hasOwnProperty("private"))
       getServer.settings.private = server.settings.private;
     if (server.settings.hasOwnProperty("unlist"))

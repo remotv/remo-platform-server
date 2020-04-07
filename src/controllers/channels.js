@@ -21,7 +21,7 @@ module.exports.tempEnsureDefaultChannel = async (server_id, channel_id) => {
 };
 
 module.exports.setDefaultChannel = async (user, channel_id, server_id) => {
-  const { authLocal } = require("./roles");
+  const { authMemberRole } = require("./roles");
   const { getChannel } = require("../models/channel");
   const {
     getRobotServer,
@@ -35,8 +35,8 @@ module.exports.setDefaultChannel = async (user, channel_id, server_id) => {
   let { settings } = server;
 
   //Auth User
-  const auth = await authLocal(user, server);
-  if (auth.error) return auth;
+  const auth = await authMemberRole(user, server);
+  if (!auth) return jsonError("Not Authorized");
 
   //verify channel exists:
   const checkChannel = await getChannel(channel_id);
@@ -60,7 +60,7 @@ module.exports.setDefaultChannel = async (user, channel_id, server_id) => {
 module.exports.renameChannel = async (user, channel_id, channel_name) => {
   const { updateChannelName, getChannel } = require("../models/channel");
   const { getRobotServer } = require("../models/robotServer");
-  const { authLocal } = require("./roles");
+  const { authMemberRole } = require("./roles");
   const { validateChannelName } = require("./validate");
 
   const genericError =
@@ -78,8 +78,8 @@ module.exports.renameChannel = async (user, channel_id, channel_name) => {
   if (channel) server = await getRobotServer(channel.host_id);
   else return jsonError(genericError);
   if (!server) return jsonError(genericError);
-  const validate = await authLocal(user, server, null);
-  if (validate.error) return validate;
+  const validate = await authMemberRole(user, server);
+  if (!validate) return jsonError("Not Authorized");
 
   //rename the channel:
   const update = await updateChannelName({

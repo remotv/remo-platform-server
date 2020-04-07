@@ -1,34 +1,12 @@
-const { jsonError } = require("../modules/logging");
 const { getRobotServer } = require("../models/robotServer");
+//Manage & Verify member roles for a server.
+//default member role check is for owner
 
-//Manage & Verify member roles for server.
-
-//local roles, global roles
-//default owner
-//can add moderator
-
-//LOCAL ROLES
-module.exports.authLocal = async (user, server, role) => {
-  try {
-    // console.log(
-    //   "Auth Local: ",
-    //   user.username || user.id || user,
-    //   server.server_name || server.server_id || server
-    // );
-    if (server && !server.owner_id && server.server_id) {
-      server = await getRobotServer(server.server_id);
-    }
-    // console.log("Checking Roles: ");
-    if (user.id === server.owner_id) return { authorized: true };
-  } catch (err) {
-    console.log("Auth Failure");
-    return jsonError("Authorization Failure");
-  }
-  return jsonError("Not authorized");
-};
-
-//Better method, just returns true or false
 module.exports.authMemberRole = async (user, server, role) => {
+  //TODO:
+  //If the incoming props only contain IDs, pull info from the DB
+  //otherwise assume that incoming props as objects already contain info from the server
+
   try {
     if (server && !server.owner_id && server.server_id) {
       server = await getRobotServer(server.server_id);
