@@ -14,10 +14,9 @@ module.exports.updateSelectedServer = server_id => {
 module.exports.checkForLiveRobots = async () => {
   const { getRobotServers } = require("../models/robotServer");
   const servers = await getRobotServers();
-  const updatedServers = await servers.forEach(async server => {
+  await servers.forEach(async server => {
     await this.getActiveRobotsOnServer(server);
   });
-  //return updatedServers;
 };
 
 module.exports.getActiveRobotsOnServer = async server => {
@@ -27,7 +26,6 @@ module.exports.getActiveRobotsOnServer = async server => {
   const { updateRobotServerStatus } = require("../models/robotServer");
   const robots = await getRobotsFromServerId(server.server_id);
   let liveDevices = [];
-  //console.log("///////////CHECK ROBOT DATA///////////", robots);
   if (robots.error) return;
   robots.map(robot => {
     if (
@@ -43,17 +41,8 @@ module.exports.getActiveRobotsOnServer = async server => {
   return;
 };
 
-module.exports.deleteRobotServer = async (server_id, user_id) => {
-  const {
-    deleteRobotServer,
-    getRobotServer,
-    updateRobotServer
-  } = require("../models/robotServer");
-  // const getServer = await getRobotServer(server_id); //validate server:
-  // if (user_id === getServer.owner_id) {
-  //   //delete!
-  // }
-
+module.exports.deleteRobotServer = async server_id => {
+  const { deleteRobotServer } = require("../models/robotServer");
   const remove = await deleteRobotServer(server_id);
   console.log("DELTING SERVER: ", remove);
 };
@@ -95,11 +84,6 @@ module.exports.getPublicServers = async () => {
   let list = [];
   getServers.forEach(server => {
     if (server.settings.unlist === true || server.settings.private === true) {
-      // console.log(
-      //   "THIS SERVER IS UNLISTED AND OR PRIVATE! ",
-      //   server.server_name,
-      //   server.settings
-      // );
       //do nothing
     } else {
       list.push(server);
