@@ -1,50 +1,67 @@
 let buttonStore = [];
 
 //Doing all this in memmory for a first pass. Will use DB on v2
+
+//get all the recent button timer entries
 module.exports.getButtonTimers = () => {
   return buttonStore;
 };
 
+//get specific button timer entry by button_id
 module.exports.getButtonTimer = async button_id => {
   console.log(buttonStore, button_id);
   return (await buttonStore.find(({ id }) => id === button_id)) || null;
 };
 
-module.exports.pushButtonTimer = button => {
-  console.log("cooldown button: ", button);
+//add or update a button timer entry
+module.exports.pushButtonTimer = (button, channel_id) => {
+  const { sendUpdateControls } = require("./");
+  //check list for existing entry first
   if (buttonStore.some(stored => stored.id === button.id)) {
-    console.log("Found Button Entry to update: ", button.label);
-    //  let upateButtons = [];
     buttonStore.forEach(store => {
       if (
         button.id === store.id &&
         store.timeStamp <= store.cooldown * 1000 + Date.now()
       ) {
-        store.timeStamp = Date.now();
-        //send timer event?
+        store = appendStatus(store, channel_id);
+        sendUpdateControls(channel_id);
       }
     });
   } else {
-    //push entry
-    console.log("No entry found, updating button");
-    button.timeStamp = Date.now();
+    //create entry if non exists yet
+    button = appendStatus(button, channel_id);
     buttonStore.push(button);
-    //send timer event?
+    sendUpdateControls(channel_id);
   }
 };
 
+//add info to buttons w/ timers
+const appendStatus = (button, channel_id) => {
+  button.timeStamp = Date.now();
+  button.disabled = true;
+  button.channel_id = channel_id;
+  return button;
+};
+
+//periodically look for expired button timer entries to remove
 module.exports.cleanupButtonTimers = () => {
+  const { sendUpdateControls } = require("./");
   let updateButtons = [];
   buttonStore.forEach(button => {
     console.log("Active Button Timer: ", button);
-    const expire = button.cooldown * 1000 + button.timeStamp;
-    const dif = (Date.now() - expire) / 1000;
-    if (dif < 0) updateButtons.push(button);
+    const expire = button.timeStamp + button.cooldown * 1000;
+    const dif = (expire - Date.now()) / 1000;
+    console.log("dif: ", dif);
+    if (dif > 0) {
+      updateButtons.push(button);
+      //send timer event
+    }
   });
   buttonStore = updateButtons;
   this.cleanupInterval();
 };
 
+//cleanup interval callback
 module.exports.cleanupInterval = () => {
   const { createSimpleTimer } = require("../../modules/utilities");
   const { cleanupButtonTimersInterval } = require("../../config");
@@ -53,6 +70,7 @@ module.exports.cleanupInterval = () => {
   return;
 };
 
+//initialize callback
 module.exports.initButtonTimerCleanup = () => {
   this.cleanupInterval();
 };

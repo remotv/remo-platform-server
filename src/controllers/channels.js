@@ -110,3 +110,12 @@ module.exports.updateChannelsOnServer = async server_id => {
   const channels = await getChannels(server_id);
   emitEvent(server_id, CHANNELS_UPDATED, channels);
 };
+
+module.exports.emitEvent = (channel_id, event, data) => {
+  const wss = require("../services/wss");
+  wss.clients.forEach(ws => {
+    if (ws.channel_id === channel_id) {
+      ws.emitEvent(event, data);
+    }
+  });
+};

@@ -51,7 +51,7 @@ module.exports.updateControls = async controls => {
     // console.log(result.rows[0]);
     if (result.rows[0]) {
       const details = result.rows[0];
-      this.sendUpdatedControls(details.id, details.channel_id);
+      this.sendUpdatedControls(details.channel_id);
       return result.rows[0];
     }
   } catch (err) {
@@ -123,11 +123,9 @@ module.exports.getControls = async (id, channel_id) => {
   return null;
 };
 
-module.exports.sendUpdatedControls = async (controls_id, channel_id) => {
-  //send current controls for current channel to the client
-  //channel stores an ID reference for it's current controls
+module.exports.sendUpdatedControls = async channel_id => {
+  //flag web client to pull updated controls
   const channel = require("./channel");
-  // sendData = await this.getControls(controls_id, channel_id);
   channel.emitEvent(channel_id, "CONTROLS_UPDATED");
 };
 

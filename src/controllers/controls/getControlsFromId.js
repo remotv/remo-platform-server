@@ -18,7 +18,7 @@ module.exports = async (channel_id, user) => {
     const getServerId = await getServerIdFromChannelId(channel_id);
     const getServer = await getRobotServer(getServerId.result);
     const testy = async button => {
-      button = await getButtonStatus(button);
+      if (button.cooldown) button = await getButtonStatus(button); //attach button status
       if (user && button.access) {
         const auth = await authMemberRole(user, getServer, button.access);
         if (auth) return button;
