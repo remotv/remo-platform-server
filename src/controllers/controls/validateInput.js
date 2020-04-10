@@ -14,8 +14,6 @@ module.exports = async input => {
   }
 
   const checkInput = await getControls(input.controls_id, input.channel);
-  console.log("CHECK INPUT CHECK: ", checkInput);
-
   if (checkInput && checkInput.buttons) {
     checkInput.buttons.map(button => {
       if (
