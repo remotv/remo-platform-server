@@ -8,6 +8,8 @@ module.exports = async input => {
   let validate = false; //direct input validation
   let authAccess = false; //validate input with restricted access
 
+  if (input.button.disabled) return (response.validated = false);
+
   if (input.button.access) {
     const auth = await authMemberRole(input.user, { server_id: input.server });
     if (auth) authAccess = true;
@@ -15,13 +17,20 @@ module.exports = async input => {
 
   const checkInput = await getControls(input.controls_id, input.channel);
   if (checkInput && checkInput.buttons) {
-    checkInput.buttons.map(button => {
+    checkInput.buttons.map(async button => {
       if (
         (button.id === input.button.id && !button.access) ||
         (button.id === input.button.id && button.access && authAccess)
       ) {
-        validate = true;
-        if (button.cooldown) pushButtonTimer(button, checkInput.channel_id);
+        if (button.cooldown) {
+          const checkState = await pushButtonTimer(
+            button,
+            checkInput.channel_id
+          );
+          if (!checkState.disabled) validate = true;
+        } else {
+          validate = true;
+        }
       }
     });
   } else {

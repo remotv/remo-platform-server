@@ -1,12 +1,11 @@
 const { BUTTON_COMMAND } = require("./definitions");
 
 module.exports = async (ws, command) => {
-  if (!ws.user) return;
+  if (!ws.user || (command.button && command.button.disabled)) return;
   const channel = require("../models/channel");
   const { publicUser, getUserInfoFromId } = require("../models/user");
   const { validateInput } = require("../controllers/controls");
   command.user = publicUser(ws.user);
-  // console.log("USER FROM WS", ws.user, "COMMAND: ", command);
 
   //TODO: Consider storing local status per user session & doing checks at the auth level
 

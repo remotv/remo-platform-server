@@ -14,7 +14,7 @@ module.exports.getButtonTimer = async button_id => {
 };
 
 //add or update a button timer entry
-module.exports.pushButtonTimer = (button, channel_id) => {
+module.exports.pushButtonTimer = async (button, channel_id) => {
   //check list for existing entry first
   if (buttonStore.some(stored => stored.id === button.id)) {
     buttonStore.forEach(store => {
@@ -23,12 +23,14 @@ module.exports.pushButtonTimer = (button, channel_id) => {
         store.timeStamp <= store.cooldown * 1000 + Date.now()
       ) {
         store = appendStatus(store, channel_id);
+        return store;
       }
     });
   } else {
     //create entry if non exists yet
     button = appendStatus(button, channel_id);
     buttonStore.push(button);
+    return button;
   }
 };
 
