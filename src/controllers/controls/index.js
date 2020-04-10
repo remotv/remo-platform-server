@@ -8,5 +8,5 @@ module.exports = {
   buildButtons: require("./buildButtons"),
   getControlsFromId: require("./getControlsFromId"),
   buttonTimers: require("./buttonTimers"),
-  sendUpdateControls: require("./sendUpdateControls")
+  controlStateUpdated: require("./controlStateUpdated")
 };

@@ -15,7 +15,6 @@ module.exports.getButtonTimer = async button_id => {
 
 //add or update a button timer entry
 module.exports.pushButtonTimer = (button, channel_id) => {
-  const { sendUpdateControls } = require("./");
   //check list for existing entry first
   if (buttonStore.some(stored => stored.id === button.id)) {
     buttonStore.forEach(store => {
@@ -24,41 +23,52 @@ module.exports.pushButtonTimer = (button, channel_id) => {
         store.timeStamp <= store.cooldown * 1000 + Date.now()
       ) {
         store = appendStatus(store, channel_id);
-        sendUpdateControls(channel_id);
       }
     });
   } else {
     //create entry if non exists yet
     button = appendStatus(button, channel_id);
     buttonStore.push(button);
-    sendUpdateControls(channel_id);
   }
 };
 
 //add info to buttons w/ timers
 const appendStatus = (button, channel_id) => {
+  const { controlStateUpdated } = require("./");
   button.timeStamp = Date.now();
   button.disabled = true;
   button.channel_id = channel_id;
+  controlStateUpdated(channel_id, button);
   return button;
 };
 
 //periodically look for expired button timer entries to remove
 module.exports.cleanupButtonTimers = () => {
-  const { sendUpdateControls } = require("./");
+  const { controlStateUpdated } = require("./");
   let updateButtons = [];
   buttonStore.forEach(button => {
     console.log("Active Button Timer: ", button);
+    const prevCount = button.count || button.cooldown;
     const expire = button.timeStamp + button.cooldown * 1000;
-    const dif = (expire - Date.now()) / 1000;
-    console.log("dif: ", dif);
-    if (dif > 0) {
+    const count = Math.round(button.cooldown - (expire - Date.now()) / 1000);
+    if (count < button.cooldown) {
+      button.count = count;
       updateButtons.push(button);
-      //send timer event
+      if (count !== prevCount) controlStateUpdated(button.channel_id, button);
+    } else {
+      //timer complete!
+      clearButton(button);
     }
   });
   buttonStore = updateButtons;
   this.cleanupInterval();
+};
+
+const clearButton = button => {
+  const { controlStateUpdated } = require("./");
+  button.disabled = false;
+  button.count = button.cooldown;
+  controlStateUpdated(button.channel_id, button);
 };
 
 //cleanup interval callback
