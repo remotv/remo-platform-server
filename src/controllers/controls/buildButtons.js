@@ -109,6 +109,10 @@ module.exports = async (buttons, channel_id, controls_id) => {
           }
         }
 
+        if (!foundError && button.disabled) {
+          newButton.disabled = true;
+        }
+
         newButtons.push(newButton);
       });
     } else {
