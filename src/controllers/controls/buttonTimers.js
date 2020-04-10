@@ -76,9 +76,9 @@ const clearButton = button => {
 //cleanup interval callback
 module.exports.cleanupInterval = () => {
   const { createSimpleTimer } = require("../../modules/utilities");
-  const { cleanupButtonTimersInterval } = require("../../config");
+  const { controlStateUpdateInterval } = require("../../config");
   // console.log("Cleanup Interval : ", cleanupButtonTimersInterval);
-  createSimpleTimer(cleanupButtonTimersInterval, this.cleanupButtonTimers);
+  createSimpleTimer(controlStateUpdateInterval, this.cleanupButtonTimers);
   return;
 };
 
