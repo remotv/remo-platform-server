@@ -38,7 +38,7 @@ const appendStatus = (button, channel_id) => {
   button.timeStamp = Date.now();
   button.disabled = true;
   button.channel_id = channel_id;
-  controlStateUpdated(channel_id, button);
+  controlStateUpdated(channel_id, [button]);
   return button;
 };
 
@@ -47,14 +47,14 @@ module.exports.cleanupButtonTimers = () => {
   const { controlStateUpdated } = require("./");
   let updateButtons = [];
   buttonStore.forEach(button => {
-    console.log("Active Button Timer: ", button);
+    // console.log("Active Button Timer: ", button);
     const prevCount = button.count || button.cooldown;
     const expire = button.timeStamp + button.cooldown * 1000;
     const count = Math.round(button.cooldown - (expire - Date.now()) / 1000);
     if (count < button.cooldown) {
       button.count = count;
       updateButtons.push(button);
-      if (count !== prevCount) controlStateUpdated(button.channel_id, button);
+      if (count !== prevCount) controlStateUpdated(button.channel_id, [button]);
     } else {
       //timer complete!
       clearButton(button);
@@ -68,14 +68,14 @@ const clearButton = button => {
   const { controlStateUpdated } = require("./");
   button.disabled = false;
   button.count = button.cooldown;
-  controlStateUpdated(button.channel_id, button);
+  controlStateUpdated(button.channel_id, [button]);
 };
 
 //cleanup interval callback
 module.exports.cleanupInterval = () => {
   const { createSimpleTimer } = require("../../modules/utilities");
   const { cleanupButtonTimersInterval } = require("../../config");
-  console.log("Cleanup Interval : ", cleanupButtonTimersInterval);
+  // console.log("Cleanup Interval : ", cleanupButtonTimersInterval);
   createSimpleTimer(cleanupButtonTimersInterval, this.cleanupButtonTimers);
   return;
 };
