@@ -27,7 +27,7 @@ module.exports = async input => {
             button,
             checkInput.channel_id
           );
-          if (!checkState.disabled) validate = true;
+          if (checkState && !checkState.disabled) validate = true;
         } else {
           validate = true;
         }
