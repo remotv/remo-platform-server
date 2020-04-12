@@ -17,22 +17,20 @@ module.exports = async input => {
 
   const checkInput = await getControls(input.controls_id, input.channel);
   if (checkInput && checkInput.buttons) {
-    checkInput.buttons.map(async button => {
-      if (
-        (button.id === input.button.id && !button.access) ||
-        (button.id === input.button.id && button.access && authAccess)
-      ) {
-        if (button.cooldown) {
-          const checkState = await pushButtonTimer(
-            button,
-            checkInput.channel_id
-          );
-          if (checkState && !checkState.disabled) validate = true;
-        } else {
+    const button = checkInput.buttons.find(
+      checkButton => checkButton.id === input.button.id
+    );
+    if (button && (!button.access || (button.access && authAccess))) {
+      if (button.cooldown) {
+        const checkState = await pushButtonTimer(button, checkInput.channel_id);
+        //console.log("checkState for cooldown", checkState);
+        if (checkState && !checkState.disabled) {
           validate = true;
         }
+      } else {
+        validate = true;
       }
-    });
+    }
   } else {
     console.log(
       "No buttons found, validating against default controls instead"
@@ -44,6 +42,6 @@ module.exports = async input => {
 
   if (validate) response.validated = true;
   if (!validate) response.validated = false;
-  // console.log("Validation Result: ", response.validated);
+
   return response;
 };

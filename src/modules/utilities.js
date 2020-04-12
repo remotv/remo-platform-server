@@ -45,7 +45,7 @@ module.exports.createTimer = (interval, callback, object) => {
   }, interval);
   // console.log(interval, callback, object);
 };
-
+/*
 module.exports.createSimpleTimer = (interval, callback) => {
   // console.log("DING");
   const timer = new setInterval(() => {
@@ -54,6 +54,7 @@ module.exports.createSimpleTimer = (interval, callback) => {
   }, interval);
   // console.log(interval, callback);
 };
+*/
 
 module.exports.isEqual = (value, other) => {
   const type = Object.prototype.toString.call(value);

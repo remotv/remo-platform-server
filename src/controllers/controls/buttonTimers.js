@@ -10,27 +10,22 @@ module.exports.getButtonTimers = () => {
 //get specific button timer entry by button_id
 module.exports.getButtonTimer = async button_id => {
   console.log(buttonStore, button_id);
-  return (await buttonStore.find(({ id }) => id === button_id)) || null;
+  return buttonStore.find(({ id }) => id === button_id) || null;
 };
 
 //add or update a button timer entry
 module.exports.pushButtonTimer = async (button, channel_id) => {
   //check list for existing entry first
-  if (buttonStore.some(stored => stored.id === button.id)) {
-    buttonStore.forEach(store => {
-      if (
-        button.id === store.id &&
-        store.timeStamp <= store.cooldown * 1000 + Date.now()
-      ) {
-        store = appendStatus(store, channel_id);
-        return store;
-      }
-    });
+  let store = buttonStore.find(stored => stored.id === button.id);
+  //console.log("store: ", store);
+  if (store) {
+    return store;
   } else {
     //create entry if non exists yet
     button = appendStatus(button, channel_id);
     buttonStore.push(button);
-    return button;
+    const ignoreDisabled = { ...button, disabled: false };
+    return ignoreDisabled;
   }
 };
 
@@ -38,7 +33,7 @@ module.exports.pushButtonTimer = async (button, channel_id) => {
 const appendStatus = (button, channel_id) => {
   const { controlStateUpdated } = require("./");
   button.timeStamp = Date.now();
-  button.disabled = true;
+  button.disabled = true; // here
   button.channel_id = channel_id;
   controlStateUpdated(channel_id, [button]);
   return button;
@@ -75,10 +70,10 @@ const clearButton = button => {
 
 //cleanup interval callback
 module.exports.cleanupInterval = () => {
-  const { createSimpleTimer } = require("../../modules/utilities");
   const { controlStateUpdateInterval } = require("../../config");
   // console.log("Cleanup Interval : ", cleanupButtonTimersInterval);
-  createSimpleTimer(controlStateUpdateInterval, this.cleanupButtonTimers);
+  //createSimpleTimer(controlStateUpdateInterval, this.cleanupButtonTimers);
+  setTimeout(this.cleanupButtonTimers, controlStateUpdateInterval);
   return;
 };
 

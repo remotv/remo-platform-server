@@ -113,7 +113,7 @@ module.exports.saveMember = async member => {
 
 //Is this user already a member?
 module.exports.checkMembership = async member => {
-  console.log("Checking Membership");
+  //console.log("Checking Membership");
   const db = require("../services/db");
   const { server_id, user_id } = member;
   const check = `SELECT * FROM members WHERE ( server_id, user_id ) = ( $1, $2 )`;

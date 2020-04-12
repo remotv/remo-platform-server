@@ -38,12 +38,15 @@ module.exports = async (ws, command) => {
 
   if (globalExpire > Date.now() || localExpire > Date.now()) return;
 
-  if (await validateInput(command)) {
-    console.log(
+  const check = await validateInput(command);
+  if (check.validated) {
+    /*console.log(
       "CHECK WS VALIDATE COMMAND INPUT",
       command.user.username,
       command.button.label
-    );
+    );*/
     channel.emitEvent(command.channel, BUTTON_COMMAND, command);
+  } else {
+    //console.log("Command failed validation", check);
   }
 };
