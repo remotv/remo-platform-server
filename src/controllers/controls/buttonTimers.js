@@ -9,7 +9,7 @@ module.exports.getButtonTimers = () => {
 
 //get specific button timer entry by button_id
 module.exports.getButtonTimer = async button_id => {
-  console.log(buttonStore, button_id);
+  //console.log(buttonStore, button_id);
   return buttonStore.find(({ id }) => id === button_id) || null;
 };
 

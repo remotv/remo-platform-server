@@ -35,7 +35,7 @@ module.exports.createControls = async controls => {
   const save = await this.saveControls(makeInterface);
   console.log(save);
   if (save) {
-    console.log("CONTROL INTERFACE CREATED: ", makeInterface);
+    // console.log("CONTROL INTERFACE CREATED: ", makeInterface);
     return makeInterface;
   }
   return null;
@@ -66,7 +66,7 @@ module.exports.updateControls = async controls => {
 };
 
 module.exports.saveControls = async controls => {
-  console.log("SAVING CONTROLS TO DB: ", controls);
+  console.log("SAVING CONTROLS TO DB: ");
   const db = require("../services/db");
   const { id, channel_id, created, buttons, settings, status } = controls;
   const dbPut = `INSERT INTO controls (id, channel_id, created, buttons, settings, status) VALUES($1, $2, $3, $4, $5, $6) RETURNING *`;
