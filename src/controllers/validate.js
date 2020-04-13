@@ -27,7 +27,7 @@ module.exports.validateButton = ({
   notRequired,
   type
 }) => {
-  console.log("VALIDATE BUTTON VALUE: ", label, input, "type: ", type);
+  // console.log("VALIDATE BUTTON VALUE: ", label, input, "type: ", type);
   if (notRequired && input === "") return "";
   return this.validator({
     input: input,
