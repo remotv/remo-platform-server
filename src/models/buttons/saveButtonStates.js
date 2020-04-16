@@ -1,4 +1,5 @@
-module.exports = async button => {
+//Currently unused.
+module.exports = async (button) => {
   const db = require("../../services/db");
   const { id, cooldown, enabled, updated } = button;
   const query = `INSERT INTO buttons ( id, timestamp  )`;

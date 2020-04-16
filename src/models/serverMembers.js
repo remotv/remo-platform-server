@@ -6,7 +6,7 @@ const memberPt = {
   status: { timeout: false, expireTimeout: null, member: false },
   settings: { enable_email_notifications: true },
   joined: "timestamp",
-  invites: []
+  invites: [],
 };
 
 /*
@@ -23,7 +23,7 @@ Member status is sent to the user via the API / WS as "localStatus", same with "
 The client will ask for local status on whichever server they actively enter on load.
 */
 
-module.exports.createMember = async data => {
+module.exports.createMember = async (data) => {
   console.log("Let Memeber Join Server: ", data);
   const { createTimeStamp } = require("../modules/utilities");
   const { getUserInfoFromId } = require("../models/user");
@@ -41,7 +41,7 @@ module.exports.createMember = async data => {
   makeMember.server_id = data.server_id;
   makeMember.roles = []; //default role
   makeMember.settings = {
-    enable_notifications: true
+    enable_notifications: true,
   };
 
   if (data.username) {
@@ -73,7 +73,7 @@ module.exports.createMember = async data => {
   //does this user exist already?
 };
 
-module.exports.saveMember = async member => {
+module.exports.saveMember = async (member) => {
   console.log("Saving new member to DB... ");
   const db = require("../services/db");
   const {
@@ -84,7 +84,7 @@ module.exports.saveMember = async member => {
     status,
     settings,
     invites,
-    username
+    username,
   } = member;
   const save = `INSERT INTO members ( server_id, user_id, roles, joined, status, settings, invites, username) VALUES ( $1, $2, $3, $4, $5, $6, $7, $8 ) RETURNING *`;
   try {
@@ -96,7 +96,7 @@ module.exports.saveMember = async member => {
       status,
       settings,
       invites,
-      username
+      username,
     ]);
     if (result.rows[0]) {
       console.log(result.rows[0]);
@@ -107,12 +107,12 @@ module.exports.saveMember = async member => {
   }
   return {
     status: "Error!",
-    error: "There was a problem saving this member to the DB."
+    error: "There was a problem saving this member to the DB.",
   };
 };
 
 //Is this user already a member?
-module.exports.checkMembership = async member => {
+module.exports.checkMembership = async (member) => {
   //console.log("Checking Membership");
   const db = require("../services/db");
   const { server_id, user_id } = member;
@@ -127,7 +127,7 @@ module.exports.checkMembership = async member => {
 };
 
 //TODO: Find more effecient query string for getting servers where status.member = true
-module.exports.getFollowedServers = async user_id => {
+module.exports.getFollowedServers = async (user_id) => {
   const db = require("../services/db");
   const query = `SELECT * FROM members WHERE user_id = $1`;
   try {
@@ -139,7 +139,7 @@ module.exports.getFollowedServers = async user_id => {
   return null;
 };
 
-module.exports.getMember = async member => {
+module.exports.getMember = async (member) => {
   const db = require("../services/db");
   console.log("get member...");
   const { server_id, user_id } = member;
@@ -153,7 +153,7 @@ module.exports.getMember = async member => {
   return null;
 };
 
-module.exports.deleteMember = async member => {
+module.exports.deleteMember = async (member) => {
   const db = require("../services/db");
   console.log("removing member...");
   const { server_id, user_id } = member;
@@ -168,7 +168,9 @@ module.exports.deleteMember = async member => {
   return false;
 };
 
-module.exports.getMembers = async server_id => {
+//Everyone who ever enters a server is added to the member register even if they haven't joined
+//If you want only members that joined a server, use getJoinedMembers
+module.exports.getMembers = async (server_id) => {
   const db = require("../services/db");
   console.log("Get Members for Server...");
   const query = `SELECT * FROM members WHERE server_id = $1`;
@@ -181,7 +183,24 @@ module.exports.getMembers = async server_id => {
   return { status: "Error!", error: "Unable to get members for server" };
 };
 
-module.exports.updateMemberStatus = async member => {
+module.exports.getJoinedMembers = async (server_id) => {
+  //this is just a placeholder since members.status has the "member" key in it's json
+  try {
+    const getJoined = await this.getMembers(server_id);
+    let joinedList = [];
+    if (getJoined && !getJoined.error) {
+      getJoined.map((member) => {
+        if (member.status.member === true) joinedList.push(member);
+      });
+      return joinedList;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+  return getJoined;
+};
+
+module.exports.updateMemberStatus = async (member) => {
   const db = require("../services/db");
   const { status, server_id, user_id } = member;
   console.log("Updating Membership Status..");
@@ -195,7 +214,7 @@ module.exports.updateMemberStatus = async member => {
   return null;
 };
 
-module.exports.updateMemberSettings = async member => {
+module.exports.updateMemberSettings = async (member) => {
   const db = require("../services/db");
   const { settings, server_id, user_id } = member;
   console.log("Updating Membership Status..");
@@ -209,7 +228,7 @@ module.exports.updateMemberSettings = async member => {
   return null;
 };
 
-module.exports.updateMemberInvites = async member => {
+module.exports.updateMemberInvites = async (member) => {
   const db = require("../services/db");
   const { invites, server_id, user_id } = member;
   console.log("Updating Membership Invites..", invites);
@@ -224,7 +243,7 @@ module.exports.updateMemberInvites = async member => {
   return null;
 };
 
-module.exports.updateMemberRoles = async member => {
+module.exports.updateMemberRoles = async (member) => {
   const db = require("../services/db");
   const { roles, server_id, user_id } = member;
   const update = `UPDATE members SET roles = ( $1 ) WHERE ( server_id, user_id ) = ( $2, $3 ) RETURNING *`;
@@ -237,7 +256,7 @@ module.exports.updateMemberRoles = async member => {
   return null;
 };
 
-module.exports.updateUsername = async member => {
+module.exports.updateUsername = async (member) => {
   const db = require("../services/db");
   const { username, server_id, user_id } = member;
   const query = `UPDATE members SET username = ( $1 ) WHERE ( server_id, user_id ) = ( $2, $3 ) RETURNING *`;
@@ -250,7 +269,7 @@ module.exports.updateUsername = async member => {
   return jsonError("Unable to update username for member");
 };
 
-module.exports.updateJoined = async member => {
+module.exports.updateJoined = async (member) => {
   const db = require("../services/db");
   const { joined, server_id, user_id } = member;
   console.log(joined);
@@ -264,7 +283,7 @@ module.exports.updateJoined = async member => {
   return jsonError("Unable to update timestamp.");
 };
 
-//FOR INTERNAL USE ONLY
+//GET ALL MEMBER ENTRIES FOR EVERY SERVER, THIS IS FOR INTERNAL USE ONLY!
 module.exports.getAllMembers = async () => {
   const db = require("../services/db");
   const query = `SELECT * FROM members`;
