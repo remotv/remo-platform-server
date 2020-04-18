@@ -5,17 +5,16 @@ const {
   hash,
   checkHash,
   createTimeStamp,
-  createTimer
 } = require("../modules/utilities");
 const config = require("../config");
 const tempSecret = config.secret;
 const { logger, jsonError } = require("../modules/logging");
 
-const log = message => {
+const log = (message) => {
   logger({
     level: "debug",
     source: "models/user.js",
-    message: message
+    message: message,
   });
 };
 
@@ -25,13 +24,13 @@ const { ACTIVE_USERS_UPDATED } = require("../events/definitions");
 const statusPt = {
   //server_id: global refers to global status
   timeout: false,
-  displayWelcome: true
+  displayWelcome: true,
   //types: [] //Global Only
 };
 //server_id: Status, individual server status per user will mirror the global status as much as possible
 
 const settingsPt = {
-  test_value: null
+  test_value: null,
 }; //Global Settings
 //server_id: {} ...Settings for individual servers will be listed here, scheme will mirror global as much as possible
 //roles will be a more robust way to manage user types
@@ -39,7 +38,7 @@ const rolesPt = [{ server_id: "global", roles: [] }];
 
 module.exports.emitEvent = (user_id, event, data) => {
   const wss = require("../services/wss");
-  wss.clients.forEach(ws => {
+  wss.clients.forEach((ws) => {
     if (ws.user && ws.user.id === user_id) {
       log("USER EVENT: ", event, data);
       ws.emitEvent(event, data);
@@ -47,7 +46,7 @@ module.exports.emitEvent = (user_id, event, data) => {
   });
 };
 
-module.exports.createUser = async user => {
+module.exports.createUser = async (user) => {
   const { validateEmail } = require("../controllers/validateEmail");
   let response = {};
   //ALWAYS SAVE EMAIL AS LOWERCASE!!!!!
@@ -97,7 +96,7 @@ module.exports.createUser = async user => {
       created,
       status,
       settings,
-      session
+      session,
     ]);
 
     const token = await this.createAuthToken(user);
@@ -111,14 +110,14 @@ module.exports.createUser = async user => {
       level: "error",
       message: err.stack,
       color: "red",
-      source: "models/user.js"
+      source: "models/user.js",
     });
   }
   log("New User Generated: ", this.publicUser(user));
 };
 
 //Is this an actual user that currently exists?
-module.exports.validateUser = async input => {
+module.exports.validateUser = async (input) => {
   if (input && input.username) {
     const check = await this.checkUsername(input.username);
     return check;
@@ -131,7 +130,7 @@ module.exports.validateUser = async input => {
   return null;
 };
 
-module.exports.checkUserId = async user => {
+module.exports.checkUserId = async (user) => {
   const { id } = user;
   const query = `SELECT COUNT(*) FROM users WHERE id = $1 LIMIT 1`;
   try {
@@ -146,13 +145,13 @@ module.exports.checkUserId = async user => {
       level: "error",
       message: err,
       color: "red",
-      source: "models/user.js"
+      source: "models/user.js",
     });
     return true;
   }
 };
 
-module.exports.getIdFromUsername = async username => {
+module.exports.getIdFromUsername = async (username) => {
   if (username) {
     const query = `SELECT * FROM users WHERE LOWER (username) = LOWER ( $1 );`;
     try {
@@ -164,14 +163,14 @@ module.exports.getIdFromUsername = async username => {
         level: "error",
         message: err,
         color: "red",
-        source: "models/user.js"
+        source: "models/user.js",
       });
     }
   }
   return null;
 };
 
-module.exports.getInfoFromUsername = async username => {
+module.exports.getInfoFromUsername = async (username) => {
   if (username) {
     const query = `SELECT * FROM users WHERE LOWER (username) = LOWER ( $1 );`;
     try {
@@ -183,14 +182,14 @@ module.exports.getInfoFromUsername = async username => {
         level: "error",
         message: err,
         color: "red",
-        source: "models/user.js"
+        source: "models/user.js",
       });
     }
   }
   return null;
 };
 
-module.exports.getPrivateInfoFromId = async user_id => {
+module.exports.getPrivateInfoFromId = async (user_id) => {
   const query = `SELECT * FROM users WHERE id = $1 LIMIT 1;`;
   log(`Getting private infos for ${user_id}`);
   try {
@@ -201,13 +200,13 @@ module.exports.getPrivateInfoFromId = async user_id => {
       level: "error",
       message: err,
       color: "red",
-      source: "models/user.js"
+      source: "models/user.js",
     });
   }
   return jsonError("Could not fetch user information");
 };
 
-module.exports.getUserInfoFromId = async userId => {
+module.exports.getUserInfoFromId = async (userId) => {
   if (userId) {
     try {
       // log("Get username from Id: ", userId);
@@ -221,7 +220,7 @@ module.exports.getUserInfoFromId = async userId => {
         level: "error",
         message: err,
         color: "red",
-        source: "models/user.js"
+        source: "models/user.js",
       });
     }
   }
@@ -236,7 +235,7 @@ Gedyy: in pgadmin query tool
 */
 
 //Check for duplicate usernames
-module.exports.checkUsername = async user => {
+module.exports.checkUsername = async (user) => {
   log(user);
   let check_username = "";
   if (user) {
@@ -257,7 +256,7 @@ module.exports.checkUsername = async user => {
 };
 
 //Check for duplicate emails
-module.exports.checkEmail = async user => {
+module.exports.checkEmail = async (user) => {
   const { email } = user;
   const checkName = `SELECT COUNT(*) FROM users WHERE email = $1 LIMIT 1`;
   const checkRes = await db.query(checkName, [email]);
@@ -269,7 +268,7 @@ module.exports.checkEmail = async user => {
   }
 };
 
-module.exports.checkPassword = async user => {
+module.exports.checkPassword = async (user) => {
   log("Password Check: ", user.username);
 
   try {
@@ -286,7 +285,7 @@ module.exports.checkPassword = async user => {
     let verify = {
       password: checkPassword,
       token: await this.createAuthToken(queryResult.rows[0]),
-      username: username
+      username: username,
     };
     return verify;
   } catch (err) {
@@ -294,23 +293,23 @@ module.exports.checkPassword = async user => {
       level: "error",
       message: `Password Error: ${err}`,
       color: "red",
-      source: "models/user.js"
+      source: "models/user.js",
     });
   }
 };
 
-module.exports.createAuthToken = user => {
+module.exports.createAuthToken = (user) => {
   log("Create Auth Token: ", user.username);
   const { id } = user;
   return jwt.sign({ id: id }, tempSecret, {
     subject: "",
-    algorithm: "HS256"
+    algorithm: "HS256",
   });
 };
 
 //TOKEN MANAGEMENT
 //used by WS for auth
-module.exports.authUser = async token => {
+module.exports.authUser = async (token) => {
   let auth = await this.extractToken(token);
   log("Extracted Token: ", auth);
   auth = await this.verifyAuthToken(auth);
@@ -318,13 +317,13 @@ module.exports.authUser = async token => {
 };
 
 //used by API for auth
-module.exports.authUserData = async tokenData => {
+module.exports.authUserData = async (tokenData) => {
   let auth = await this.verifyAuthToken(tokenData);
   return auth;
 };
 
 // Moving to /src/modules/jwt
-module.exports.extractToken = async token => {
+module.exports.extractToken = async (token) => {
   //   log("Verifying Auth Token is this file savedwait what the ", token);
   let checkToken = null;
   try {
@@ -337,7 +336,7 @@ module.exports.extractToken = async token => {
     }));
   } catch (err) {
     let reason = {
-      error: "problem creating token from user"
+      error: "problem creating token from user",
     };
     Promise.reject(reason);
     log(reason);
@@ -345,7 +344,7 @@ module.exports.extractToken = async token => {
   }
 };
 
-module.exports.verifyAuthToken = async token => {
+module.exports.verifyAuthToken = async (token) => {
   try {
     // log("Check Token: ", token);
     if (token && token.id) {
@@ -359,35 +358,35 @@ module.exports.verifyAuthToken = async token => {
       level: "error",
       message: err,
       color: "red",
-      source: "models/user.js"
+      source: "models/user.js",
     });
   }
   let reason = {
-    error: "cannot resolve user data from token"
+    error: "cannot resolve user data from token",
   };
   log(reason);
   Promise.reject(reason);
   return null;
 };
 
-module.exports.publicUser = user => {
+module.exports.publicUser = (user) => {
   if (user)
     return {
       username: user.username,
       id: user.id,
       created: user.created,
       type: user.type,
-      status: user.status
+      status: user.status,
       // settings: user.settings
     };
 };
 
-module.exports.sendActiveUsers = async robot_server => {
+module.exports.sendActiveUsers = async (robot_server) => {
   const robotServer = require("./robotServer");
   let users = [];
   return await new Promise((resolve, reject) => {
     const wss = require("../services/wss");
-    wss.clients.forEach(ws => {
+    wss.clients.forEach((ws) => {
       if (ws.server_id === robot_server) {
         if (ws.user) {
           users.push(this.publicUser(ws.user));
@@ -414,7 +413,7 @@ module.exports.userTypes = [
   "owner",
   "robot",
   "global_moderator",
-  "local_moderator"
+  "local_moderator",
 ];
 
 module.exports.addUserTypes = async (userId, types) => {
@@ -428,13 +427,13 @@ module.exports.addUserTypes = async (userId, types) => {
       level: "error",
       message: err,
       color: "red",
-      source: "models/user.js"
+      source: "models/user.js",
     });
   }
 };
 
 //UDPATE USER STATUS
-module.exports.updateStatus = async user => {
+module.exports.updateStatus = async (user) => {
   const { status } = user;
   log(`Updating global status for ${user.username}`);
   try {
@@ -449,7 +448,7 @@ module.exports.updateStatus = async user => {
       level: "error",
       message: err,
       color: "red",
-      source: "models/user.js"
+      source: "models/user.js",
     });
   }
 };
@@ -483,7 +482,7 @@ module.exports.timeoutUser = async (user, time, server_id) => {
   return null;
 };
 
-module.exports.unTimeoutUser = async user => {
+module.exports.unTimeoutUser = async (user) => {
   log("END TIMEOUT FOR USER: ", user);
   if (user) {
     let { status } = user;
@@ -497,7 +496,7 @@ module.exports.unTimeoutUser = async user => {
   return null;
 };
 
-module.exports.clearGlobalTimeout = async user => {
+module.exports.clearGlobalTimeout = async (user) => {
   if (user) {
     user.status.expireTimeout = 0;
     user.status.timeout = false;
@@ -509,7 +508,7 @@ module.exports.clearGlobalTimeout = async user => {
 };
 
 //Update client when their status has changed
-module.exports.sendUpdateStatus = user => {
+module.exports.sendUpdateStatus = (user) => {
   const { USER_STATUS_UPDATED } = require("../events/definitions");
   this.emitEvent(user.id, USER_STATUS_UPDATED, user.status);
 };
@@ -528,7 +527,7 @@ module.exports.checkTypes = async (user, typesToCheck) => {
   let checkUser = await this.getUserInfoFromId(user.id);
   if (checkUser && checkUser.type) {
     log("CHECKING USER TYPES: ", checkUser, typesToCheck);
-    const check = checkUser.type.map(type => {
+    const check = checkUser.type.map((type) => {
       return typesToCheck.includes(type);
     });
     if (check.includes(true) || check === true) validate = true;
@@ -537,7 +536,7 @@ module.exports.checkTypes = async (user, typesToCheck) => {
 };
 
 //This probably shouldn't even need to be called ever
-module.exports.getGlobalTypes = async user_id => {
+module.exports.getGlobalTypes = async (user_id) => {
   const sendTypes = await this.getUserInfoFromId(user_id);
   log(sendTypes);
   return sendTypes.type;
@@ -555,14 +554,14 @@ module.exports.getTotalUserCount = async () => {
       level: "error",
       message: err,
       color: "red",
-      source: "models/user.js"
+      source: "models/user.js",
     });
   }
   return "...";
 };
 
 //UDPATE USER STATUS
-module.exports.updatePassword = async user => {
+module.exports.updatePassword = async (user) => {
   const { id, password } = user;
   log(`Updating Password`);
   try {
@@ -574,7 +573,7 @@ module.exports.updatePassword = async user => {
       level: "error",
       message: err,
       color: "red",
-      source: "models/user.js"
+      source: "models/user.js",
     });
   }
   return null;
@@ -590,13 +589,13 @@ module.exports.updateEmail = async ({ email, id }) => {
       level: "error",
       message: err,
       color: "red",
-      source: "models/user.js"
+      source: "models/user.js",
     });
   }
   return null;
 };
 
-module.exports.updateSettings = async user => {
+module.exports.updateSettings = async (user) => {
   const query = `UPDATE users SET settings = $1 WHERE id = $2 RETURNING *`;
   try {
     const result = await db.query(query, [user.settings, user.id]);
