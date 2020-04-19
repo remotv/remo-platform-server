@@ -2,7 +2,7 @@ const config = require("../config");
 const jwt = require("jsonwebtoken");
 const tempSecret = config.secret;
 
-module.exports.extractToken = async token => {
+module.exports.extractToken = async (token) => {
   //   console.log("Verifying Auth Token is this file savedwait what the ", token);
   let checkToken = null;
   try {
@@ -15,7 +15,7 @@ module.exports.extractToken = async token => {
     }));
   } catch (err) {
     let reason = {
-      error: "problem creating token from user"
+      error: "problem creating token from user",
     };
     Promise.reject(reason);
     console.log(reason);
@@ -23,12 +23,12 @@ module.exports.extractToken = async token => {
   }
 };
 
-module.exports.createAuthToken = user => {
+module.exports.createAuthToken = (user) => {
   //   console.log("Create Auth Token: ", user);
   const { id } = user;
   return jwt.sign({ id: id }, tempSecret, {
     subject: "",
     expiresIn: "30d",
-    algorithm: "HS256"
+    algorithm: "HS256",
   });
 };

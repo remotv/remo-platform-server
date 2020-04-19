@@ -4,7 +4,7 @@ const {
   getRobotServer,
   deleteRobotServer,
   validateOwner,
-  checkServerName
+  checkServerName,
 } = robotServer;
 const user = require("../models/user");
 const { getUserInfoFromId } = user;
@@ -26,15 +26,16 @@ const testInvite = {
   server_id: "serv-cf6dea8c-3b97-4145-adce-c43ae53ecca8",
   created: "1572911931458",
   expires: "",
-  status: "inactive"
+  status: "inactive",
 };
 
 const testStr = "shitty ass person you are phawk";
 
 const test = async () => {
   try {
-    await test___getButtonTimer();
-    //await test___checkType();
+    await test___getChatRooms();
+    // await test___getButtonTimer();
+    // await test___checkType();
     // await test___misc();
     // await test___getMemberAndUserSettings();
     // await test___validateEmail();
@@ -68,6 +69,14 @@ const test___misc = async () => {
   return null;
 };
 
+const test___getChatRooms = async () => {
+  const { getChatRooms } = require("../models/chatRoom");
+  const result = await getChatRooms(
+    "serv-019e22f5-88ec-4c7a-ac23-305713cbc60d"
+  );
+  console.log("Result: ", result);
+};
+
 const test___getButtonTimer = async () => {
   const { getButtonTimer } = require("../controllers/controls/buttonTimers");
   const result = await getButtonTimer("8");
@@ -85,7 +94,7 @@ const test___getMemberAndUserSettings = async () => {
   const members = await getMemberAndUserSettings(
     "serv-cf6dea8c-3b97-4145-adce-c43ae53ecca8"
   );
-  members.forEach(member => {
+  members.forEach((member) => {
     console.log(member);
   });
   console.log("Done");
@@ -108,15 +117,15 @@ const test___getPledgeData = async () => {
     let pledges = [];
     const { data, included } = await getPledgeData();
     // console.log("pledges: ", data.length, "included: ", included.length);
-    data.map(item => {
+    data.map((item) => {
       const { relationships } = item;
       if (relationships.reward.data && relationships.reward.data.id) {
         let pledge = {
           patreon_id: relationships.patron.data.id,
-          reward_id: relationships.reward.data.id
+          reward_id: relationships.reward.data.id,
         };
 
-        included.map(item => {
+        included.map((item) => {
           if (item.type === "reward" && item.id === pledge.reward_id) {
             pledge.reward_title = item.attributes.title;
             pledge.reward_amount = item.attributes.amount;
@@ -146,7 +155,7 @@ const test___getRemoPeldgeData = async () => {
 
   try {
     console.log("Pledges: ", pledges.length);
-    pledges.map(pledge => {
+    pledges.map((pledge) => {
       if (pledge.creator && pledge.patron && pledge.reward) {
         console.log("Patron Id", pledge.patron.id);
         console.log("Reward Title", pledge.reward.title);
@@ -260,3 +269,22 @@ const test__getUserInfoFromId = async () => {
 };
 
 test();
+
+const list = [1, 2, 3, 4, 5]; //...an array filled with values
+
+const functionWithPromise = (item) => {
+  //a function that returns a promise
+  return Promise.resolve("ok");
+};
+
+const anAsyncFunction = async (item) => {
+  return functionWithPromise(item);
+};
+
+const getData = async () => {
+  return Promise.all(list.map((item) => anAsyncFunction(item)));
+};
+
+getData().then((data) => {
+  console.log(data);
+});
