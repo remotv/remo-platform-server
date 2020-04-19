@@ -124,9 +124,9 @@ buildRobotChannels = async (linkedRobots, unlinkedRobots, unlinkedChannels) => {
         id: robot.id,
         server_id: robot.host_id,
         owner_id: robot.owner_id,
-        chat_id: robot.channel_info.chat, //Find chat in DB
+        chat_id: getChatId[0].id,
         created: robot.created,
-        controls: robot.channel_info.controls, //Generate Default Controls
+        controls: "", //Generate Default Controls
         heartbeat: robot.heartbeat,
       });
       robotChannels.push(convert);
@@ -136,14 +136,14 @@ buildRobotChannels = async (linkedRobots, unlinkedRobots, unlinkedChannels) => {
 
   getChannelsFromLinkedRobots = async () => {
     return await Promise.all(
-      linkedRobots.map((robot) => combineLinkedRobot(robot))
+      linkedRobots.map(async (robot) => await combineLinkedRobot(robot))
     );
   };
 
   getChannelsFromConvertedRobots = async () => {
     return await Promise.all(
-      unlinkedRobots.map((robot) => {
-        convertUnlinkedRobot(robot);
+      unlinkedRobots.map(async (robot) => {
+        await convertUnlinkedRobot(robot);
       })
     );
   };
@@ -193,4 +193,6 @@ makeRobotChannel = ({
   };
 };
 
-run();
+run().then(() => {
+  console.log("t");
+});
