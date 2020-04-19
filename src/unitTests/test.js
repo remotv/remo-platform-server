@@ -269,22 +269,3 @@ const test__getUserInfoFromId = async () => {
 };
 
 test();
-
-const list = [1, 2, 3, 4, 5]; //...an array filled with values
-
-const functionWithPromise = (item) => {
-  //a function that returns a promise
-  return Promise.resolve("ok");
-};
-
-const anAsyncFunction = async (item) => {
-  return functionWithPromise(item);
-};
-
-const getData = async () => {
-  return Promise.all(list.map((item) => anAsyncFunction(item)));
-};
-
-getData().then((data) => {
-  console.log(data);
-});
