@@ -7,7 +7,7 @@
  * All remaining channels also become robots
  * GUI no longer distinguishes between channels and robots
  */
-
+const dontSave = true;
 const run = async () => {
   const { getAllChannels } = require("../models/channel");
   try {
@@ -55,25 +55,36 @@ const run = async () => {
       );
     };
 
-    robotChannels().then((robot_channels) => {
-      console.log(
-        "Robots With Linked Channels: ",
-        robotsWithLinkedChannels.length,
-        "\n",
-        "Robots without a Linked Channels: ",
-        robotsWithNoChannels.length,
-        "\n",
-        "Channels without Linked Robots: ",
-        channelsWithNoRobot.length,
-        "\n",
-        "Robot Channels Generated: ",
-        robot_channels.length
-      );
-      process.exit();
-    });
+    await robotChannels()
+      .then((robot_channels) => {
+        console.log(
+          "Robots With Linked Channels: ",
+          robotsWithLinkedChannels.length,
+          "\n",
+          "Robots without a Linked Channels: ",
+          robotsWithNoChannels.length,
+          "\n",
+          "Channels without Linked Robots: ",
+          channelsWithNoRobot.length,
+          "\n",
+          "Robot Channels Generated: ",
+          robot_channels.length
+        );
+
+        return robot_channels;
+      })
+      .then(async (robot_channels) => {
+        await saveChannels(robot_channels);
+      })
+      .then(() => end());
   } catch (err) {
     console.log(err);
   }
+};
+
+const end = () => {
+  console.log("/////// PROCESSING COMPLETE //////////");
+  process.exit();
 };
 
 const getAllRobots = async () => {
@@ -86,6 +97,14 @@ const getAllRobots = async () => {
     console.log(err);
   }
   return [];
+};
+
+const saveChannels = async (saveChannels) => {
+  const { saveRobotChannel } = require("../models/robotChannels");
+  console.log("Saving Channels...");
+  return await Promise.all(
+    saveChannels.map(async (channel) => saveRobotChannel(channel))
+  );
 };
 
 buildRobotChannels = async (linkedRobots, unlinkedRobots, unlinkedChannels) => {
@@ -130,6 +149,7 @@ buildRobotChannels = async (linkedRobots, unlinkedRobots, unlinkedChannels) => {
       console.log("Generating Controls...");
       const controls = await createControls({
         channel_id: robot.id,
+        dont_save: dontSave,
       });
       const convert = makeRobotChannel({
         name: robot.name,
@@ -227,5 +247,5 @@ makeRobotChannel = ({
 };
 
 run().then(() => {
-  console.log("/////// DONE //////////");
+  console.log("The end?");
 });

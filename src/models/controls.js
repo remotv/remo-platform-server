@@ -32,11 +32,16 @@ module.exports.createControls = async (controls) => {
 
   //save controls
   console.log("SAVING CONTROLS: ", makeInterface.id);
-  const save = await this.saveControls(makeInterface);
-  // console.log(save);
-  if (save) {
-    // console.log("CONTROL INTERFACE CREATED: ", makeInterface);
-    return makeInterface;
+  if (!controls.dont_save) {
+    const save = await this.saveControls(makeInterface);
+    // console.log(save);
+    if (save) {
+      // console.log("CONTROL INTERFACE CREATED: ", makeInterface);
+      return makeInterface;
+    }
+  } else {
+    console.log("Saving disabled for controls");
+    return true;
   }
   return null;
 };
