@@ -11,16 +11,16 @@ testControls = exampleControls();
 
 const defaultStatus = () => {
   return {
-    placeholder: "test"
+    placeholder: "test",
   };
 };
 const defaultSettings = () => {
   return {
-    enabled: true
+    enabled: true,
   };
 };
 
-module.exports.createControls = async controls => {
+module.exports.createControls = async (controls) => {
   let makeInterface = {};
   makeInterface.id = controls.id || `cont-${makeId()}`;
   makeInterface.created = createTimeStamp();
@@ -31,9 +31,9 @@ module.exports.createControls = async controls => {
   // makeInterface.button_input = controls
 
   //save controls
-  console.log("SAVING CONTROLS: ", makeInterface);
+  console.log("SAVING CONTROLS: ", makeInterface.id);
   const save = await this.saveControls(makeInterface);
-  console.log(save);
+  // console.log(save);
   if (save) {
     // console.log("CONTROL INTERFACE CREATED: ", makeInterface);
     return makeInterface;
@@ -41,7 +41,7 @@ module.exports.createControls = async controls => {
   return null;
 };
 
-module.exports.updateControls = async controls => {
+module.exports.updateControls = async (controls) => {
   console.log("UPDATING EXISTING CONTROLS: ", controls);
   const db = require("../services/db");
   const { buttons, id } = controls;
@@ -65,8 +65,7 @@ module.exports.updateControls = async controls => {
   return { status: "error!", error: "Problem updating controls" };
 };
 
-module.exports.saveControls = async controls => {
-  console.log("SAVING CONTROLS TO DB: ");
+module.exports.saveControls = async (controls) => {
   const db = require("../services/db");
   const { id, channel_id, created, buttons, settings, status } = controls;
   const dbPut = `INSERT INTO controls (id, channel_id, created, buttons, settings, status) VALUES($1, $2, $3, $4, $5, $6) RETURNING *`;
@@ -77,10 +76,13 @@ module.exports.saveControls = async controls => {
       created,
       buttons,
       settings,
-      status
+      status,
     ]);
-    console.log(save.rows);
-    return true;
+    //console.log(save.rows);
+    if (save.rows) {
+      console.log("Successfully saved controls for: ", controls.id);
+      return true;
+    }
   } catch (err) {
     console.log(err);
     return false;
@@ -110,11 +112,11 @@ module.exports.getControls = async (id, channel_id) => {
     if (channel_id) {
       const { setControls } = require("./channel");
       const makeControls = await this.createControls({
-        channel_id: channel_id
+        channel_id: channel_id,
       });
       setControls({
         id: makeControls.id,
-        channel_id: channel_id
+        channel_id: channel_id,
       });
       if (makeControls) return makeControls;
     }
@@ -123,13 +125,13 @@ module.exports.getControls = async (id, channel_id) => {
   return null;
 };
 
-module.exports.sendUpdatedControls = async channel_id => {
+module.exports.sendUpdatedControls = async (channel_id) => {
   //flag web client to pull updated controls
   const channel = require("./channel");
   channel.emitEvent(channel_id, "CONTROLS_UPDATED");
 };
 
-module.exports.getControlsFromId = async id => {
+module.exports.getControlsFromId = async (id) => {
   console.log("GET CONTROLS FROM ID: ", id);
   const db = require("../services/db");
   const query = `SELECT * FROM controls WHERE id = $1`;
@@ -142,7 +144,7 @@ module.exports.getControlsFromId = async id => {
   return null;
 };
 
-module.exports.getControlsForChannel = async channel_id => {
+module.exports.getControlsForChannel = async (channel_id) => {
   const db = require("../services/db");
   const query = `SELECT * FROM controls WHERE channel_id = $1`;
   try {
@@ -154,7 +156,7 @@ module.exports.getControlsForChannel = async channel_id => {
   return null;
 };
 
-module.exports.removeControls = async controls => {
+module.exports.removeControls = async (controls) => {
   const db = require("../services/db");
   const { id } = controls;
   // console.log("Removing Controls Test 0: ", id);
