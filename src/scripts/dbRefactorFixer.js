@@ -7,7 +7,7 @@
  * All remaining channels also become robots
  * GUI no longer distinguishes between channels and robots
  */
-const dontSave = true;
+let dontSave = true;
 const run = async () => {
   const { getAllChannels } = require("../models/channel");
   try {
@@ -79,6 +79,7 @@ const run = async () => {
       .then(() => end());
   } catch (err) {
     console.log(err);
+    dontSave = true;
   }
 };
 
@@ -95,6 +96,7 @@ const getAllRobots = async () => {
     if (check.rows[0]) return check.rows;
   } catch (err) {
     console.log(err);
+    dontSave = true;
   }
   return [];
 };
@@ -197,6 +199,7 @@ buildRobotChannels = async (linkedRobots, unlinkedRobots, unlinkedChannels) => {
       }
     } catch (err) {
       console.log(err);
+      dontSave = true;
     }
   };
 
