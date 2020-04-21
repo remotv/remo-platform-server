@@ -50,7 +50,6 @@ const run = async () => {
     const robotChannels = async () => {
       return await buildRobotChannels(
         robotsWithLinkedChannels,
-        robotsWithNoChannels,
         channelsWithNoRobot
       );
     };
@@ -61,7 +60,7 @@ const run = async () => {
           "Robots With Linked Channels: ",
           robotsWithLinkedChannels.length,
           "\n",
-          "Robots without a Linked Channels: ",
+          "Robots without a Linked Channels ( These will be deleted forever ): ",
           robotsWithNoChannels.length,
           "\n",
           "Channels without Linked Robots: ",
@@ -109,9 +108,9 @@ const saveChannels = async (saveChannels) => {
   );
 };
 
-buildRobotChannels = async (linkedRobots, unlinkedRobots, unlinkedChannels) => {
-  const { getChatRooms } = require("../models/chatRoom");
-  const { createControls } = require("../models/controls");
+buildRobotChannels = async (linkedRobots, unlinkedChannels) => {
+  // const { getChatRooms } = require("../models/chatRoom");
+  // const { createControls } = require("../models/controls");
   let robotChannels = [];
   let ignoreMe = 0;
   let ignoredChannels = 0;
@@ -140,42 +139,43 @@ buildRobotChannels = async (linkedRobots, unlinkedRobots, unlinkedChannels) => {
     );
   };
 
-  convertUnlinkedRobot = async (robot) => {
-    if (!robot.host_id) {
-      console.log("Ignoring Robot ...");
-      ignoreMe += 1;
-    } else {
-      console.log("Robot Host ID Check: \n", robot.host_id);
-      const getChatId = await getChatRooms(robot.host_id);
-      console.log("Get Chat for Channel: ", getChatId);
-      console.log("Generating Controls...");
-      const controls = await createControls({
-        channel_id: robot.id,
-        dont_save: dontSave,
-      });
-      const convert = makeRobotChannel({
-        name: robot.name,
-        id: robot.id,
-        server_id: robot.host_id,
-        owner_id: robot.owner_id,
-        chat_id: getChatId[0].id,
-        created: robot.created,
-        controls: controls.id,
-        heartbeat: robot.heartbeat,
-      });
-      robotChannels.push(convert);
-      return convert;
-    }
-  };
+  // convertUnlinkedRobot = async (robot) => {
+  //   if (!robot.host_id) {
+  //     console.log("Ignoring Robot ...");
+  //     ignoreMe += 1;
+  //   } else {
+  //     console.log("Robot Host ID Check: \n", robot.host_id);
+  //     const getChatId = await getChatRooms(robot.host_id);
+  //     console.log("Get Chat for Channel: ", getChatId);
+  //     console.log("Generating Controls...");
+  //     const controls = await createControls({
+  //       channel_id: robot.id,
+  //       dont_save: dontSave,
+  //     });
+  //     const convert = makeRobotChannel({
+  //       name: robot.name,
+  //       id: robot.id,
+  //       server_id: robot.host_id,
+  //       owner_id: robot.owner_id,
+  //       chat_id: getChatId[0].id,
+  //       created: robot.created,
+  //       controls: controls.id,
+  //       heartbeat: robot.heartbeat,
+  //     });
+  //     robotChannels.push(convert);
+  //     return convert;
+  //   }
+  // };
 
-  getChannelsFromConvertedRobots = async () => {
-    return await Promise.all(
-      unlinkedRobots.map(async (robot) => {
-        await convertUnlinkedRobot(robot);
-      })
-    );
-  };
+  // getChannelsFromConvertedRobots = async () => {
+  //   return await Promise.all(
+  //     unlinkedRobots.map(async (robot) => {
+  //       await convertUnlinkedRobot(robot);
+  //     })
+  //   );
+  // };
 
+  console.log("Converting unlinked channels into robot channels...");
   const convertUnlinkedChannel = async (channel) => {
     const { getRobotServer } = require("../models/robotServer");
     try {
@@ -213,8 +213,8 @@ buildRobotChannels = async (linkedRobots, unlinkedRobots, unlinkedChannels) => {
 
   console.log("Convert Linked Robots ...");
   await getChannelsFromLinkedRobots();
-  console.log("Convert Unlinked Robots ...");
-  await getChannelsFromConvertedRobots();
+  // console.log("Convert Unlinked Robots ...");
+  // await getChannelsFromConvertedRobots();
   console.log("Convert Unlinked Channels ...");
   await getConvertedUnlinkedChannels();
 
