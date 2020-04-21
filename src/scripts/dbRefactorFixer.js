@@ -5,11 +5,10 @@
  * Done: - Replace those channels with the robot
  * Done: - All robots without a linked channel will be removed
  * Done: - All remaining channels also become robots
+ * Done: - Ensure there is still a default channel
  *
  * Todo:
- * - Ensure there is still a default channel
- *    - Store channel_id temporarily to map against servers & replace default channel with new id
- *
+ * - Handle servers w/ no channels to update
  * - GUI no longer distinguishes between channels and robots
  */
 
@@ -39,8 +38,14 @@ const run = async () => {
     const checkRobots = await robots.map(async (robot) => {
       if (robot.status && robot.status.current_channel) {
         robot.temp_store_channel_id = robot.status.current_channel;
+        const getChannel = await channels.find(
+          (channel) => channel.id === robot.status.current_channel
+        );
+        console.log("Get current Channel for linked robot: ", getChannel.name);
+        robot.channel_name = getChannel.name;
         robotsWithLinkedChannels.push(robot);
       } else robotsWithNoChannels.push(robot);
+      return null;
     });
 
     const checkChannels = await channels.map(async (channel) => {
@@ -136,7 +141,7 @@ buildRobotChannels = async (linkedRobots, unlinkedChannels) => {
   const combineLinkedRobot = async (robot) => {
     console.log("Linked Robot Check: ", robot.name);
     const update = await makeRobotChannel({
-      name: robot.name,
+      name: robot.channel_name, //This should be channel name
       id: robot.id,
       server_id: robot.host_id,
       owner_id: robot.owner_id,
@@ -163,7 +168,7 @@ buildRobotChannels = async (linkedRobots, unlinkedChannels) => {
       const info = await getRobotServer(channel.host_id);
       if (info && info.owner_id) {
         const owner = info.owner_id;
-        console.log("Finding Owner: ", owner);
+        // console.log("Finding Owner: ", owner);
         //find server owner:
 
         const convert = makeRobotChannel({
@@ -176,8 +181,8 @@ buildRobotChannels = async (linkedRobots, unlinkedChannels) => {
         robotChannels.push(convert);
       } else {
         ignoredChannels += 1;
-        console.log("unable to get owner for server, skipping");
-        console.log(info);
+        // console.log("unable to get owner for server, skipping");
+        // console.log(info);
       }
     } catch (err) {
       console.log(err);
@@ -199,7 +204,8 @@ buildRobotChannels = async (linkedRobots, unlinkedChannels) => {
   await getConvertedUnlinkedChannels();
 
   console.log(
-    `Done building robot channels, ${ignoreMe} robots and ${ignoredChannels} channels were ignored...`
+    `Done building robot channels, 
+    Channels Ignored ( no host_id ) : ${ignoredChannels}`
   );
   return robotChannels;
 };
@@ -238,7 +244,7 @@ run().then(() => {
 //Simply update the old channel id with the new id
 const replaceDefault = async (server, robot_channels) => {
   const { updateRobotServerSettings } = require("../models/robotServer");
-  console.log("Server Default: ", server.settings.default_channel);
+  // console.log("Server Default: ", server.settings.default_channel);
   let getDefault = await robot_channels.find(
     (channel) =>
       channel.temp_store_channel_id === server.settings.default_channel
