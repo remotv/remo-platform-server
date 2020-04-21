@@ -1,15 +1,24 @@
 /**
- * Get All Robots
- * Get All Channels
- * Map robots that are paired with channels
- * Replace those channels with the robot
- * All other robots become their own channels
- * All remaining channels also become robots
- * GUI no longer distinguishes between channels and robots
+ * Done: - Get All Robots
+ * Done: - Get All Channels
+ * Done: - Map robots that are paired with channels
+ * Done: - Replace those channels with the robot
+ * Done: - All robots without a linked channel will be removed
+ * Done: - All remaining channels also become robots
+ *
+ * Todo:
+ * - Ensure there is still a default channel
+ *    - Store channel_id temporarily to map against servers & replace default channel with new id
+ *
+ * - GUI no longer distinguishes between channels and robots
  */
+
 let dontSave = true;
+let serversWithNoDefaultChannels = 0;
 const run = async () => {
   const { getAllChannels } = require("../models/channel");
+  const { getRobotServers } = require("../models/robotServer");
+
   try {
     let robotsWithLinkedChannels = [];
     let robotsWithNoChannels = [];
@@ -17,6 +26,7 @@ const run = async () => {
 
     const robots = await getAllRobots();
     const channels = await getAllChannels();
+    const servers = await getRobotServers();
 
     console.log(
       "Total Robots: ",
@@ -28,6 +38,7 @@ const run = async () => {
 
     const checkRobots = await robots.map(async (robot) => {
       if (robot.status && robot.status.current_channel) {
+        robot.temp_store_channel_id = robot.status.current_channel;
         robotsWithLinkedChannels.push(robot);
       } else robotsWithNoChannels.push(robot);
     });
@@ -36,7 +47,6 @@ const run = async () => {
       let robotFound = false;
       robotsWithLinkedChannels.map((robot) => {
         if (robot.status.current_channel === channel.id) {
-          //  console.log("Combine", `${robot.name} + ${channel.name}`);
           robot.channel_info = channel;
           robotFound = true;
           return;
@@ -67,13 +77,17 @@ const run = async () => {
           channelsWithNoRobot.length,
           "\n",
           "Robot Channels Generated: ",
-          robot_channels.length
+          robot_channels.length,
+          "\n",
+          "Robot Servers to Update: ",
+          servers.length
         );
 
         return robot_channels;
       })
       .then(async (robot_channels) => {
         await saveChannels(robot_channels);
+        await setDefaultChannels(robot_channels, servers);
       })
       .then(() => end());
   } catch (err) {
@@ -83,6 +97,10 @@ const run = async () => {
 };
 
 const end = () => {
+  console.log(
+    "Servers which may have no channels: ",
+    serversWithNoDefaultChannels
+  );
   console.log("/////// PROCESSING COMPLETE //////////");
   process.exit();
 };
@@ -109,8 +127,6 @@ const saveChannels = async (saveChannels) => {
 };
 
 buildRobotChannels = async (linkedRobots, unlinkedChannels) => {
-  // const { getChatRooms } = require("../models/chatRoom");
-  // const { createControls } = require("../models/controls");
   let robotChannels = [];
   let ignoreMe = 0;
   let ignoredChannels = 0;
@@ -128,6 +144,7 @@ buildRobotChannels = async (linkedRobots, unlinkedChannels) => {
       created: robot.created,
       controls: robot.channel_info.controls,
       heartbeat: robot.heartbeat,
+      temp_store_channel_id: robot.temp_store_channel_id,
     });
     robotChannels.push(update);
     return update;
@@ -138,42 +155,6 @@ buildRobotChannels = async (linkedRobots, unlinkedChannels) => {
       linkedRobots.map(async (robot) => await combineLinkedRobot(robot))
     );
   };
-
-  // convertUnlinkedRobot = async (robot) => {
-  //   if (!robot.host_id) {
-  //     console.log("Ignoring Robot ...");
-  //     ignoreMe += 1;
-  //   } else {
-  //     console.log("Robot Host ID Check: \n", robot.host_id);
-  //     const getChatId = await getChatRooms(robot.host_id);
-  //     console.log("Get Chat for Channel: ", getChatId);
-  //     console.log("Generating Controls...");
-  //     const controls = await createControls({
-  //       channel_id: robot.id,
-  //       dont_save: dontSave,
-  //     });
-  //     const convert = makeRobotChannel({
-  //       name: robot.name,
-  //       id: robot.id,
-  //       server_id: robot.host_id,
-  //       owner_id: robot.owner_id,
-  //       chat_id: getChatId[0].id,
-  //       created: robot.created,
-  //       controls: controls.id,
-  //       heartbeat: robot.heartbeat,
-  //     });
-  //     robotChannels.push(convert);
-  //     return convert;
-  //   }
-  // };
-
-  // getChannelsFromConvertedRobots = async () => {
-  //   return await Promise.all(
-  //     unlinkedRobots.map(async (robot) => {
-  //       await convertUnlinkedRobot(robot);
-  //     })
-  //   );
-  // };
 
   console.log("Converting unlinked channels into robot channels...");
   const convertUnlinkedChannel = async (channel) => {
@@ -190,6 +171,7 @@ buildRobotChannels = async (linkedRobots, unlinkedChannels) => {
           server_id: channel.host_id,
           owner_id: owner,
           chat_id: channel.chat,
+          temp_store_channel_id: channel.id,
         });
         robotChannels.push(convert);
       } else {
@@ -213,8 +195,6 @@ buildRobotChannels = async (linkedRobots, unlinkedChannels) => {
 
   console.log("Convert Linked Robots ...");
   await getChannelsFromLinkedRobots();
-  // console.log("Convert Unlinked Robots ...");
-  // await getChannelsFromConvertedRobots();
   console.log("Convert Unlinked Channels ...");
   await getConvertedUnlinkedChannels();
 
@@ -233,6 +213,7 @@ makeRobotChannel = ({
   created,
   controls,
   heartbeat,
+  temp_store_channel_id,
 }) => {
   const { makeId } = require("../modules/utilities");
   return {
@@ -246,9 +227,59 @@ makeRobotChannel = ({
     controls: controls || "",
     heartbeat: heartbeat || 0,
     secret_key: null,
+    temp_store_channel_id: temp_store_channel_id || null,
   };
 };
 
 run().then(() => {
   console.log("The end?");
 });
+
+//Simply update the old channel id with the new id
+const replaceDefault = async (server, robot_channels) => {
+  const { updateRobotServerSettings } = require("../models/robotServer");
+  console.log("Server Default: ", server.settings.default_channel);
+  let getDefault = await robot_channels.find(
+    (channel) =>
+      channel.temp_store_channel_id === server.settings.default_channel
+  );
+  if (!getDefault)
+    getDefault = await ensureDefaultChannel(server, robot_channels);
+  if (!getDefault)
+    console.log(`Error: No channel for ${server.server_name} to default to.`);
+  if (getDefault) {
+    server.settings.default_channel = getDefault.id;
+    console.log(`Updating Default Channel for server: 
+    ${server.server_name}, 
+    ${server.settings.default_channel} \n`);
+    // if (dontSave === false)
+    //   return await updateRobotServerSettings(server.server_id, server.settings);
+    // else console.log("Saving Disabled for server update...");
+    return server;
+  }
+  console.log(
+    "This server likely has 0 channels, or has some other problem: ",
+    server.server_name
+  );
+  serversWithNoDefaultChannels += 1;
+  return null;
+};
+
+const ensureDefaultChannel = async (server, robot_channels) => {
+  console.log(
+    "No default found from existing channels, picking a random one instead..."
+  );
+  const server_channels = robot_channels.filter(
+    (channel) => channel.id === server.server_id
+  );
+  if (!Array.isArray(server_channels)) return server_channels;
+  return server_channels[0]; //Just pick the first one
+};
+
+const setDefaultChannels = async (robot_channels, robot_servers) => {
+  return await Promise.all(
+    await robot_servers.map(async (server) => {
+      await replaceDefault(server, robot_channels);
+    })
+  );
+};

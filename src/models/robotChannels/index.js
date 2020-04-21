@@ -14,6 +14,8 @@
  *  @param {string} chat_id : chat displayed for channel
  *  @param {string} controls_id : controls displayed on channel
  *
+ *  TBD: Not added yet
+ *  @param {string} secret_key unique user defined string, basically a password
  */
 
 module.exports = {
