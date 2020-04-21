@@ -2,7 +2,7 @@
  * Robot Channels:
  *  Formerly used to be channels, and robots, but now they are a single object
  *  unique parameters:
- *  @param {string} name name of channel
+ *  @param {string} name : name of channel
  *  @param {string} id : unique id
  *  @param {string} type : "robot_channel"
  *  @param {int} created : timestamp when channel was created, in millis
