@@ -1,5 +1,5 @@
-let buttonStore = [];
-let buttonsToRemove = [];
+let buttonStore = []; //storing buttons in memmory to track timers
+let buttonsToRemove = []; //buttons slated for removal for next update loop
 
 /**
  * Notes:
@@ -25,7 +25,6 @@ module.exports.clearControlsForChannel = (channel_id) => {
 
 //get specific button timer entry by button_id
 module.exports.getButtonTimer = (button_id) => {
-  //console.log(buttonStore, button_id);
   return buttonStore.find(({ id }) => id === button_id) || null;
 };
 
@@ -33,7 +32,6 @@ module.exports.getButtonTimer = (button_id) => {
 module.exports.pushButtonTimer = async (button, channel_id) => {
   //check list for existing entry first
   let store = buttonStore.find((stored) => stored.id === button.id);
-  //console.log("store: ", store);
   if (store) {
     return store;
   } else {
@@ -45,7 +43,7 @@ module.exports.pushButtonTimer = async (button, channel_id) => {
   }
 };
 
-//add info to buttons w/ timers
+//append channel_id to button timers so they can be tracked easier
 const appendStatus = (button, channel_id) => {
   const { controlStateUpdated } = require("./");
   button.timeStamp = Date.now();
@@ -55,12 +53,12 @@ const appendStatus = (button, channel_id) => {
   return button;
 };
 
-//periodically look for expired button timer entries to remove
-module.exports.cleanupButtonTimers = () => {
+//Check for state changes to buttons & broadcast them when appropriate
+module.exports.updateButtonStates = () => {
   const { controlStateUpdated } = require("./");
   let updateButtons = [];
   buttonStore.forEach((button) => {
-    //If the button is set for removal, return.
+    //If the button is set for removal, do not push to updateButtons array.
     if (checkButtonForRemoval(button)) return;
     const prevCount = button.count || button.cooldown;
     const expire = button.timeStamp + button.cooldown * 1000;
@@ -74,7 +72,7 @@ module.exports.cleanupButtonTimers = () => {
       clearButton(button);
     }
   });
-  buttonStore = updateButtons;
+  buttonStore = updateButtons; //update store with new array
   buttonsToRemove = []; //clear the array
   this.cleanupInterval();
 };
@@ -97,7 +95,7 @@ const clearButton = (button) => {
 //cleanup interval callback
 module.exports.cleanupInterval = () => {
   const { controlStateUpdateInterval } = require("../../config");
-  setTimeout(this.cleanupButtonTimers, controlStateUpdateInterval);
+  setTimeout(this.updateButtonStates, controlStateUpdateInterval);
   return;
 };
 
