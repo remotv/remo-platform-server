@@ -1,6 +1,6 @@
 let buttonStore = []; //storing buttons in memmory to track timers
 let buttonsToRemove = []; //buttons slated for removal for next update loop
-
+let buttonsToUpdate = []; //state changes to be applied in next update loop
 /**
  * Notes:
  * - Doing all this in memmory for first pass,
@@ -32,10 +32,11 @@ module.exports.getButtonTimer = (button_id) => {
 };
 
 //add or update a button timer entry
-module.exports.pushButtonTimer = async (button, channel_id) => {
+module.exports.pushButtonTimer = async (button, channel_id, authOverride) => {
   //check list for existing entry first
   let store = buttonStore.find((stored) => stored.id === button.id);
   if (store) {
+    if (authOverride) store = overrideButtonState(button, channel_id);
     return store;
   } else {
     //create entry if non exists yet
@@ -44,6 +45,13 @@ module.exports.pushButtonTimer = async (button, channel_id) => {
     const ignoreDisabled = { ...button, disabled: false };
     return ignoreDisabled;
   }
+};
+
+//Override disabled state and appened a timestamp to the button
+const overrideButtonState = (button, channel_id) => {
+  console.log("Override Button State: ", button.label);
+  button = appendStatus(button, channel_id);
+  buttonsToUpdate.push(button);
 };
 
 //append channel_id & other info to button to track its state
@@ -63,6 +71,11 @@ module.exports.updateButtonStates = () => {
   buttonStore.forEach((button) => {
     //If the button is set for removal, do not push to updateButtons array.
     if (checkButtonForRemoval(button)) return;
+
+    //check for state changes in buttonsToUpdate array
+    const checkUpdated = checkButtonForUpdatedState(button);
+    if (checkUpdated) button = checkUpdated;
+
     const prevCount = button.count || button.cooldown;
     const expire = button.timeStamp + button.cooldown * 1000;
     const count = Math.round(button.cooldown - (expire - Date.now()) / 1000);
@@ -75,8 +88,10 @@ module.exports.updateButtonStates = () => {
       clearButton(button);
     }
   });
+
   buttonStore = updateButtons; //update store with new array
-  buttonsToRemove = []; //clear buttonsToRemove array after buttons have been removed
+  buttonsToRemove = []; //clear array after removing buttons
+  buttonsToUpdate = []; //clear array after updating buttons
   this.cleanupInterval(); //wait till next update loop
 };
 
@@ -87,6 +102,14 @@ const checkButtonForRemoval = (button) => {
     if (check) return true;
   }
   return false;
+};
+
+//returns true if the button's state has been overridden outside of the normal update loop
+const checkButtonForUpdatedState = (button) => {
+  if (buttonsToUpdate !== []) {
+    return buttonsToUpdate.find((check) => check.id === button.id);
+  }
+  return null;
 };
 
 //clears button state & sends a websocket event to the client
