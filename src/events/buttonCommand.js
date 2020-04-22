@@ -1,7 +1,7 @@
 const { BUTTON_COMMAND } = require("./definitions");
 
 module.exports = async (ws, command) => {
-  if (!ws.user || (command.button && command.button.disabled)) return;
+  if (!ws.user || !command) return;
   const channel = require("../models/channel");
   const { publicUser, getUserInfoFromId } = require("../models/user");
   const { validateInput } = require("../controllers/controls");
@@ -15,17 +15,17 @@ module.exports = async (ws, command) => {
   ) {
     const {
       checkMembership,
-      createMember
+      createMember,
     } = require("../models/serverMembers");
 
     let getLocalStatus = await checkMembership({
       server_id: command.server,
-      user_id: ws.user.id
+      user_id: ws.user.id,
     });
     if (!getLocalStatus) {
       getLocalStatus = await createMember({
         user_id: ws.user.id,
-        server_id: command.server
+        server_id: command.server,
       });
     }
     ws.user.localStatus = getLocalStatus.status;

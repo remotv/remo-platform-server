@@ -49,9 +49,15 @@ module.exports.pushButtonTimer = async (button, channel_id, authOverride) => {
 
 //Override disabled state and appened a timestamp to the button
 const overrideButtonState = (button, channel_id) => {
+  const { controlStateUpdated } = require("./");
   console.log("Override Button State: ", button.label);
-  button = appendStatus(button, channel_id);
+  button.timeStamp = Date.now();
+  if (button.cooldown) button.count = 0; //reset count to 0
+  button.disabled = true; // here
+  button.channel_id = channel_id;
   buttonsToUpdate.push(button);
+  controlStateUpdated(channel_id, [button]);
+  return button;
 };
 
 //append channel_id & other info to button to track its state

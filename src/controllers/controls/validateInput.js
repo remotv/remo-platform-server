@@ -8,6 +8,7 @@ module.exports = async (input) => {
   let validate = false; //direct input validation
   let authAccess = false;
 
+  console.log("INPUT DETECTED...");
   const isOwner = await authMemberRole(input.user, { server_id: input.server });
 
   //pretty much validate any input from server owners
