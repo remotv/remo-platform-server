@@ -6,24 +6,27 @@ let buttonsToRemove = []; //buttons slated for removal for next update loop
  * - Doing all this in memmory for first pass,
  * - v2 will make use of the database
  *
+ * Todo:
+ * - refactor naming to reflect state tracking, not just timers
+ *
  * Button removal vs button clear:
  * - Button Removal does not send a state update to the client
  * - It assumes the source button has been deleted entirely from the controls stored in db
  */
 
-//get all the recent button timer entries
+//get all buttons w/ tacked state
 module.exports.getButtonTimers = () => {
   return buttonStore;
 };
 
-//called when new controls are generated
+//remove old buttons from state tracking when new ones have been generated for a channel
 module.exports.clearControlsForChannel = (channel_id) => {
   buttonStore.map((store) => {
     if (store.channel_id === channel_id) buttonsToRemove.push(store);
   });
 };
 
-//get specific button timer entry by button_id
+//get state of specific button
 module.exports.getButtonTimer = (button_id) => {
   return buttonStore.find(({ id }) => id === button_id) || null;
 };
@@ -43,7 +46,7 @@ module.exports.pushButtonTimer = async (button, channel_id) => {
   }
 };
 
-//append channel_id to button timers so they can be tracked easier
+//append channel_id & other info to button to track its state
 const appendStatus = (button, channel_id) => {
   const { controlStateUpdated } = require("./");
   button.timeStamp = Date.now();
@@ -73,10 +76,11 @@ module.exports.updateButtonStates = () => {
     }
   });
   buttonStore = updateButtons; //update store with new array
-  buttonsToRemove = []; //clear the array
-  this.cleanupInterval();
+  buttonsToRemove = []; //clear buttonsToRemove array after buttons have been removed
+  this.cleanupInterval(); //wait till next update loop
 };
 
+//returns true if button should be removed
 const checkButtonForRemoval = (button) => {
   if (buttonsToRemove !== []) {
     const check = buttonsToRemove.find((check) => check.id === button.id);
@@ -85,6 +89,7 @@ const checkButtonForRemoval = (button) => {
   return false;
 };
 
+//clears button state & sends a websocket event to the client
 const clearButton = (button) => {
   const { controlStateUpdated } = require("./");
   button.disabled = false;
