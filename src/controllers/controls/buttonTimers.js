@@ -82,7 +82,7 @@ const checkButtonForRemoval = (button) => {
     const check = buttonsToRemove.find((check) => check.id === button.id);
     if (check) return true;
   }
-  false;
+  return false;
 };
 
 const clearButton = (button) => {
