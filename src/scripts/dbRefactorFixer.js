@@ -266,6 +266,7 @@ const replaceDefault = async (server, robot_channels) => {
   console.log(
     "This server likely has 0 channels, or has some other problem: ",
     server.server_name
+    //KILL IT!
   );
   serversWithNoDefaultChannels += 1;
   return null;

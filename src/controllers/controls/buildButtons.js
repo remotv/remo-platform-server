@@ -5,6 +5,7 @@ module.exports = async (buttons, channel_id, controls_id) => {
   const { updateControls } = require("../../models/controls");
   const { validateButtonsJSON, validateButton } = require("./../validate");
   const { makeId } = require("../../modules/utilities");
+  const { clearControlsForChannel } = require("./buttonTimers");
   let response = {};
   let newButtons = [];
   let buildControls = {};
@@ -18,7 +19,7 @@ module.exports = async (buttons, channel_id, controls_id) => {
     if (buttons) {
       const checkButtonsArray = validateButtonsJSON(buttons);
       if (checkButtonsArray.error) return checkButtonsArray;
-      buttons.forEach(button => {
+      buttons.forEach((button) => {
         let newButton = {};
         newButton.id = `bttn-${makeId()}`;
 
@@ -30,7 +31,7 @@ module.exports = async (buttons, channel_id, controls_id) => {
             input: button.label,
             max: 256,
             label: "Button Label",
-            notRequired: true
+            notRequired: true,
           });
           if (newButton.label.error) {
             foundError = true;
@@ -51,7 +52,7 @@ module.exports = async (buttons, channel_id, controls_id) => {
         if (!foundError && button.command) {
           newButton.command = validateButton({
             input: button.command,
-            label: "Button Command"
+            label: "Button Command",
           });
           if (newButton.command.error) {
             foundError = true;
@@ -68,7 +69,7 @@ module.exports = async (buttons, channel_id, controls_id) => {
           newButton.hot_key = validateButton({
             input: button.hot_key,
             label: "hot-key",
-            max: 16
+            max: 16,
           });
           if (newButton.hot_key.error) {
             foundError = true;
@@ -100,7 +101,7 @@ module.exports = async (buttons, channel_id, controls_id) => {
         if (!foundError && button.access) {
           newButton.access = validateButton({
             input: button.access,
-            label: "Access Level"
+            label: "Access Level",
           });
           if (newButton.access.error) {
             foundError = true;
@@ -127,6 +128,7 @@ module.exports = async (buttons, channel_id, controls_id) => {
   buildControls.buttons = newButtons;
   generateControls = await updateControls(buildControls);
   if (generateControls) {
+    clearControlsForChannel(channel_id);
     response.status = "success";
     response.result = generateControls;
     return response;
