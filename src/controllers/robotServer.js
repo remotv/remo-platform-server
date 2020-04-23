@@ -2,9 +2,9 @@ const { err } = require("../modules/utilities");
 const { jsonError } = require("../modules/logging");
 
 //Triggers API call from client to update the currently selected robot server
-module.exports.updateSelectedServer = server_id => {
+module.exports.updateSelectedServer = (server_id) => {
   const wss = require("../services/wss");
-  wss.clients.forEach(ws => {
+  wss.clients.forEach((ws) => {
     if (ws.server_id === server_id) {
       ws.emitEvent("SELECTED_SERVER_UPDATED");
     }
@@ -14,20 +14,20 @@ module.exports.updateSelectedServer = server_id => {
 module.exports.checkForLiveRobots = async () => {
   const { getRobotServers } = require("../models/robotServer");
   const servers = await getRobotServers();
-  await servers.forEach(async server => {
+  await servers.forEach(async (server) => {
     await this.getActiveRobotsOnServer(server);
   });
 };
 
-module.exports.getActiveRobotsOnServer = async server => {
+module.exports.getActiveRobotsOnServer = async (server) => {
   const { getRobotsFromServerId } = require("../models/robot");
   const { createTimeStamp } = require("../modules/utilities");
   const { liveStatusInterval } = require("../config");
   const { updateRobotServerStatus } = require("../models/robotServer");
   const robots = await getRobotsFromServerId(server.server_id);
   let liveDevices = [];
-  if (robots.error) return;
-  robots.map(robot => {
+  if (!robots || (robots && robots.error)) return;
+  robots.map((robot) => {
     if (
       robot.status.heartBeat &&
       robot.status.heartBeat >= createTimeStamp() - liveStatusInterval * 1.25
@@ -41,7 +41,7 @@ module.exports.getActiveRobotsOnServer = async server => {
   return;
 };
 
-module.exports.deleteRobotServer = async server_id => {
+module.exports.deleteRobotServer = async (server_id) => {
   const { deleteRobotServer } = require("../models/robotServer");
   const remove = await deleteRobotServer(server_id);
   console.log("DELTING SERVER: ", remove);
@@ -50,7 +50,7 @@ module.exports.deleteRobotServer = async server_id => {
 module.exports.updateSettings = async (server, user_id) => {
   const {
     getRobotServer,
-    updateRobotServerSettings
+    updateRobotServerSettings,
   } = require("../models/robotServer");
   const { authMemberRole } = require("./roles");
 
@@ -82,7 +82,7 @@ module.exports.getPublicServers = async () => {
   const { getRobotServers } = require("../models/robotServer");
   let getServers = await getRobotServers();
   let list = [];
-  getServers.forEach(server => {
+  getServers.forEach((server) => {
     if (server.settings.unlist === true || server.settings.private === true) {
       //do nothing
     } else {
@@ -101,7 +101,7 @@ module.exports.getServerByName = async (name, user) => {
   if (!getServer) return err("This server doesn't exist");
   const membership = await getMember({
     user_id: user.id,
-    server_id: getServer.server_id
+    server_id: getServer.server_id,
   });
   getServer.membership = membership || null;
   // console.log("GET SERVER CHECK: ", getServer);
@@ -109,7 +109,7 @@ module.exports.getServerByName = async (name, user) => {
   return getServer;
 };
 
-const checkMembership = async server => {
+const checkMembership = async (server) => {
   const { status } = server.membership;
   // console.log(check);
   if (status.member === true) {
@@ -119,7 +119,7 @@ const checkMembership = async server => {
 };
 
 //For displaying public server information relating to a server.
-module.exports.getPublicServerInfo = async server => {
+module.exports.getPublicServerInfo = async (server) => {
   const { getPublicUserFromId } = require("../controllers/user");
   const user = await getPublicUserFromId(server.owner_id);
   const publicInfo = {
@@ -132,12 +132,12 @@ module.exports.getPublicServerInfo = async server => {
     members: server.status.count,
     public: server.status.public,
     live_devices: server.status.liveDevices,
-    default_channel: server.settings.default_channel
+    default_channel: server.settings.default_channel,
   };
   return publicInfo;
 };
 
-module.exports.getServerById = async server_id => {
+module.exports.getServerById = async (server_id) => {
   const { getRobotServer } = require("../models/robotServer");
   const server = await getRobotServer(server_id);
   if (server) {

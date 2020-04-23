@@ -12,17 +12,21 @@
  * - GUI no longer distinguishes between channels and robots
  */
 
-let dontSave = true;
+let execute = false; //ONLY SET THIS TO FALSE WHEN READY TO GO!
 let serversWithNoDefaultChannels = 0;
+let robotsWithLinkedChannels = [];
+let robotsWithNoChannels = [];
+let channelsWithNoRobot = [];
+
+const sleep = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
 const run = async () => {
   const { getAllChannels } = require("../models/channel");
   const { getRobotServers } = require("../models/robotServer");
 
   try {
-    let robotsWithLinkedChannels = [];
-    let robotsWithNoChannels = [];
-    let channelsWithNoRobot = [];
-
     const robots = await getAllRobots();
     const channels = await getAllChannels();
     const servers = await getRobotServers();
@@ -97,7 +101,6 @@ const run = async () => {
       .then(() => end());
   } catch (err) {
     console.log(err);
-    dontSave = true;
   }
 };
 
@@ -118,7 +121,6 @@ const getAllRobots = async () => {
     if (check.rows[0]) return check.rows;
   } catch (err) {
     console.log(err);
-    dontSave = true;
   }
   return [];
 };
@@ -133,7 +135,6 @@ const saveChannels = async (saveChannels) => {
 
 buildRobotChannels = async (linkedRobots, unlinkedChannels) => {
   let robotChannels = [];
-  let ignoreMe = 0;
   let ignoredChannels = 0;
 
   console.log("Combine Linked Robots ...");
@@ -165,12 +166,16 @@ buildRobotChannels = async (linkedRobots, unlinkedChannels) => {
   const convertUnlinkedChannel = async (channel) => {
     const { getRobotServer } = require("../models/robotServer");
     try {
-      const info = await getRobotServer(channel.host_id);
+      console.log("Get Server....");
+      let info = await getRobotServer(channel.host_id);
+      if (!info || (info && info.error)) {
+        console.log("Database Fetch Error..., wait and try again...");
+        await sleep(100);
+        info = await getRobotServer(channel.host_id);
+      }
+      console.log("Server Got...");
       if (info && info.owner_id) {
         const owner = info.owner_id;
-        // console.log("Finding Owner: ", owner);
-        //find server owner:
-
         const convert = makeRobotChannel({
           name: channel.name,
           server_id: channel.host_id,
@@ -181,12 +186,9 @@ buildRobotChannels = async (linkedRobots, unlinkedChannels) => {
         robotChannels.push(convert);
       } else {
         ignoredChannels += 1;
-        // console.log("unable to get owner for server, skipping");
-        // console.log(info);
       }
     } catch (err) {
-      console.log(err);
-      dontSave = true;
+      console.log("Conversion Error", err);
     }
   };
 
@@ -244,30 +246,29 @@ run().then(() => {
 //Simply update the old channel id with the new id
 const replaceDefault = async (server, robot_channels) => {
   const { updateRobotServerSettings } = require("../models/robotServer");
-  // console.log("Server Default: ", server.settings.default_channel);
   let getDefault = await robot_channels.find(
     (channel) =>
       channel.temp_store_channel_id === server.settings.default_channel
   );
+
   if (!getDefault)
     getDefault = await ensureDefaultChannel(server, robot_channels);
-  if (!getDefault)
-    console.log(`Error: No channel for ${server.server_name} to default to.`);
+
   if (getDefault) {
-    server.settings.default_channel = getDefault.id;
     console.log(`Updating Default Channel for server: 
     ${server.server_name}, 
     ${server.settings.default_channel} \n`);
-    // if (dontSave === false)
-    //   return await updateRobotServerSettings(server.server_id, server.settings);
-    // else console.log("Saving Disabled for server update...");
-    return server;
+    server.settings.default_channel = getDefault.id;
+    if (execute)
+      return await updateRobotServerSettings(server.server_id, server.settings);
+    else return server;
   }
   console.log(
     "This server likely has 0 channels, or has some other problem: ",
     server.server_name
     //KILL IT!
   );
+
   serversWithNoDefaultChannels += 1;
   return null;
 };
@@ -276,10 +277,25 @@ const ensureDefaultChannel = async (server, robot_channels) => {
   console.log(
     "No default found from existing channels, picking a random one instead..."
   );
-  const server_channels = robot_channels.filter(
+  let server_channels = robot_channels.filter(
     (channel) => channel.id === server.server_id
   );
-  if (!Array.isArray(server_channels)) return server_channels;
+  if (!Array.isArray(server_channels))
+    server_channels = server_channels = [server_channels];
+  console.log(
+    "Check Channel: ",
+    server_channels[0],
+    `Check Server ${server.server_name} for stored channels`,
+    server.channels
+  );
+  if (!server_channels[0]) {
+    console.log("Find Channel...");
+    const find = channelsWithNoRobot.find(
+      (chan) => chan.id === server.channels[0].id
+    );
+    console.log(find, channelsWithNoRobot[0]);
+  }
+
   return server_channels[0]; //Just pick the first one
 };
 

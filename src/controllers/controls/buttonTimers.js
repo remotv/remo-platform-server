@@ -2,7 +2,7 @@ let buttonStore = []; //storing buttons in memmory to track timers
 let buttonsToRemove = []; //buttons slated for removal for next update loop
 let buttonsToUpdate = []; //state changes to be applied in next update loop
 /**
- * Notes:
+ * State management for active robot controls ( just buttons for now ):
  * - Doing all this in memmory for first pass,
  * - v2 will make use of the database
  *
@@ -78,7 +78,7 @@ module.exports.updateButtonStates = () => {
     //If the button is set for removal, do not push to updateButtons array.
     if (checkButtonForRemoval(button)) return;
 
-    //check for state changes in buttonsToUpdate array
+    //check for any latent state changes in buttonsToUpdate array
     const checkUpdated = checkButtonForUpdatedState(button);
     if (checkUpdated) button = checkUpdated;
 
@@ -95,7 +95,7 @@ module.exports.updateButtonStates = () => {
     }
   });
 
-  buttonStore = updateButtons; //update store with new array
+  buttonStore = updateButtons; //replace store with updated array
   buttonsToRemove = []; //clear array after removing buttons
   buttonsToUpdate = []; //clear array after updating buttons
   this.cleanupInterval(); //wait till next update loop
