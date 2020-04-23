@@ -1,14 +1,17 @@
+/**
+ * Validate and Authorize input for robot controls:
+ * - Once a user passes account and moderation checks, their input is validated against controls stored in DB
+ */
 module.exports = async (input) => {
   const { getControls } = require("../../models/controls");
   const { testControls } = require("./");
   const { pushButtonTimer } = require("./buttonTimers");
   const { authMemberRole } = require("../roles");
-  // console.log("VALIDATE INPUT: ", input);
-  let response = {}; //response object
-  let validate = false; //direct input validation
-  let authAccess = false;
 
-  console.log("INPUT DETECTED...");
+  let response = {}; //return response object
+  let validate = false; //validation flag
+  let authAccess = false; //restricted access flag
+
   const isOwner = await authMemberRole(input.user, { server_id: input.server });
 
   //pretty much validate any input from server owners
@@ -17,6 +20,7 @@ module.exports = async (input) => {
     authAccess = true;
   }
 
+  //Don't allow use of disabled buttons for normal users
   if (!isOwner && input.button.disabled) return (response.validated = false);
 
   // Disabling this check for now since we only have owner roles accounted for
