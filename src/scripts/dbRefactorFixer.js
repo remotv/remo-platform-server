@@ -12,7 +12,7 @@
  * - GUI no longer distinguishes between channels and robots
  */
 
-let execute = false; //ONLY SET THIS TO FALSE WHEN READY TO GO!
+let execute = false; //ONLY SET THIS TO TRUE WHEN READY TO GO!
 let serversWithNoDefaultChannels = 0;
 let robotsWithLinkedChannels = [];
 let robotsWithNoChannels = [];
