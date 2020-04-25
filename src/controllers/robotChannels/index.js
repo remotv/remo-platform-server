@@ -9,14 +9,12 @@ module.exports = {
   renameChannel: require("./renameChannel"),
   setDefaultChannel: require("./setDefaultChannel"),
   ensureDefaultChannel: require("./ensureDefaultChannel"),
+  checkName: require("./checkName"),
 
   //Robot Management
+  robotChannelStatus: require("./robotChannelStatus"),
   robotChannelAuth: require("./robotChannelAuth"),
-  updateHeartbeat: "",
-
-  //Internal Use Only:
-  updateLiveRobotStatus: "",
 
   //logging:
-  log: "",
+  log: require("./log"),
 };

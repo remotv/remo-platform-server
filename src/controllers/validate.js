@@ -9,7 +9,7 @@ const { reservedWordsDefault } = require("../models/filters");
 const typeDefault = "string";
 
 //VALIDATOR Interfaces
-module.exports.validateButtonsJSON = input => {
+module.exports.validateButtonsJSON = (input) => {
   const limit = 64; //# of buttons
   // console.log("JSON ENTRIES: ", input.length);
   if (input.length > limit)
@@ -25,7 +25,7 @@ module.exports.validateButton = ({
   max,
   min,
   notRequired,
-  type
+  type,
 }) => {
   // console.log("VALIDATE BUTTON VALUE: ", label, input, "type: ", type);
   if (notRequired && input === "") return "";
@@ -36,53 +36,57 @@ module.exports.validateButton = ({
     min: min || 1,
     regex: asciiRegex,
     regexInfo: "ASCII Characters",
-    type: type || typeDefault
+    type: type || typeDefault,
   });
 };
 
-module.exports.validateServerName = input => {
+module.exports.validateServerName = (input) => {
   return this.validator({
     input: input,
     label: "Server Name",
     max: 18,
     min: 4,
     removeSpaces: true,
-    filter: "reserved"
+    filter: "reserved",
+    regex: alphaNum_,
   });
 };
 
-module.exports.validateUserName = input => {
+module.exports.validateUserName = (input) => {
   return this.validator({
     input: input,
     label: "UserName",
     max: 18,
     min: 4,
     removeSpaces: true,
-    filter: "reserved"
+    filter: "reserved",
+    regex: alphaNum_,
   });
 };
 
-module.exports.validateChannelName = input => {
+module.exports.validateChannelName = (input) => {
   return this.validator({
     input: input,
     label: "Channel Name",
     max: 18,
     min: 3,
-    removeSpaces: true
+    removeSpaces: true,
+    regex: alphaNum_,
   });
 };
 
-module.exports.validateRobotName = input => {
+module.exports.validateRobotName = (input) => {
   return this.validator({
     input: input,
     label: "Robot Name",
     max: 18,
     min: 3,
-    removeSpaces: true
+    removeSpaces: true,
+    regex: alphaNum_,
   });
 };
 
-module.exports.validateUserEmail = input => {
+module.exports.validateUserEmail = (input) => {
   return this.validator({
     input: input,
     label: "Email",
@@ -90,7 +94,7 @@ module.exports.validateUserEmail = input => {
     min: 5,
     removeSpaces: true,
     regex: emailRegex,
-    regexInfo: "a valid email format, example: name@domain.com"
+    regexInfo: "a valid email format, example: name@domain.com",
   });
 };
 
@@ -100,7 +104,7 @@ module.exports.validator = (
     type: type || typeDefault,
     regex: regex || alphaNum_,
     regexInfo: regexInfo || "Letters, Numbers, and Underscores",
-    filter: filter || "none"
+    filter: filter || "none",
   }
 ) => {
   let updateInput = input;
