@@ -39,7 +39,7 @@ const generateChannel = async ({ name, server_id, chat_id, controls_id }) => {
   chat_id = chat_id || (await getChatRooms(data.server_id)[0].id);
   controls_id = controls_id || (await createControls({ channel_id: data.id }));
 
-  if (!chat_id || controls_id) return null;
+  if (!chat_id || !controls_id) return null;
 
   return {
     name: name,
