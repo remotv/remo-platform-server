@@ -2,7 +2,7 @@ const router = require("express").Router();
 const { jsonError } = require("../../modules/logging");
 const auth = require("../auth");
 
-router.post("/kick", auth({ user: true }), async (req, res) => {
+router.post("/kick", auth({ user: true, required: true }), async (req, res) => {
   const { member, server_id } = req.body;
   const { kickMember } = require("../../controllers/moderation");
   console.log("KICKING MEMBER THROUGH API");
@@ -19,7 +19,7 @@ router.post("/kick", auth({ user: true }), async (req, res) => {
       channel_id: null,
       display_message: false,
       badges: [],
-      type: null
+      type: null,
     });
 
     if (!kick.error) {

@@ -115,15 +115,20 @@ module.exports.getControls = async (id, channel_id) => {
       "No controls found on this channel, generating controls for this channel"
     );
     if (channel_id) {
-      const { setControls } = require("./channel");
+      const { updateControlsId } = require("./robotChannels");
       const makeControls = await this.createControls({
         channel_id: channel_id,
       });
-      setControls({
-        id: makeControls.id,
-        channel_id: channel_id,
-      });
-      if (makeControls) return makeControls;
+
+      //Updating for robot channels refactor
+      updateControlsId(makeControls.channel_id, makeControls.id);
+      if (makeControls) {
+        const { emitEvent } = require("../controllers/robotChannels");
+        emitEvent(makeControls.channel_id, "CONTROLS_UPDATED");
+        //--------------------------------------
+
+        return makeControls;
+      }
     }
     console.log("Error, cannot find or generate controls for this channel");
   }

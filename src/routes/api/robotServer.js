@@ -3,7 +3,7 @@ const {
   createRobotServer,
   getRobotServer,
   deleteRobotServer,
-  updateRobotServer
+  updateRobotServer,
 } = require("../../models/robotServer");
 
 const { checkTypes } = require("../../models/user");
@@ -44,7 +44,7 @@ router.post("/get-member", auth({ user: true }), async (req, res) => {
   if (server_id) return res.send(jsonError("Invalid Server ID"));
   const member = await getMember({
     user_id: req.body.user.id,
-    server_id: server_id
+    server_id: server_id,
   });
   return res.send(member);
 });
@@ -53,7 +53,7 @@ router.post("/get-member", auth({ user: true }), async (req, res) => {
 router.get("/create", (req, res) => {
   const response = {
     server_name: "required",
-    authorization: "Bearer token must be included in authorization headers"
+    authorization: "Bearer token must be included in authorization headers",
   };
   res.send(response);
 });
@@ -65,7 +65,7 @@ router.post("/invite", auth({ user: true }), async (req, res) => {
     const generate = await makeInvite({
       user: req.user,
       server_id: req.body.server_id,
-      expires: req.body.expires || null
+      expires: req.body.expires || null,
     });
     res.send(generate);
     return;
@@ -82,7 +82,7 @@ router.post("/join", auth({ user: true }), async (req, res) => {
     const join = await joinServer({
       user_id: req.user.id,
       server_id: req.body.server_id,
-      join: req.body.join
+      join: req.body.join,
     });
 
     if (join) {
@@ -102,7 +102,7 @@ router.post("/validate-invite", async (req, res) => {
   const { validateServerInvite } = require("../../controllers/members");
   const {
     getServerById,
-    getPublicServerInfo
+    getPublicServerInfo,
   } = require("../../controllers/robotServer");
   const { getPublicUserFromId } = require("../../controllers/user");
 
@@ -127,7 +127,7 @@ router.post("/validate-invite", async (req, res) => {
 router.post("/deactivate-invite", auth({ user: true }), async (req, res) => {
   const {
     deactivateInvite,
-    getInviteInfoFromId
+    getInviteInfoFromId,
   } = require("../../controllers/members");
   if (req.body.id) {
     //get invite info
@@ -151,7 +151,7 @@ router.post("/leave", auth({ user: true }), async (req, res) => {
     const leave = await leaveServer({
       user_id: req.user.id,
       server_id: req.body.server_id,
-      join: req.body.join
+      join: req.body.join,
     });
 
     if (leave) {
@@ -172,7 +172,7 @@ router.post("/delete-member", auth({ user: true }), async (req, res) => {
   if (req.user && req.body.server_id) {
     const leave = await deleteMember({
       user_id: req.user.id,
-      server_id: req.body.server_id
+      server_id: req.body.server_id,
     });
     if (leave) {
       response.status = "Success";
@@ -215,7 +215,7 @@ router.post("/settings/update", auth({ user: true }), async (req, res) => {
  */
 router.post(
   "/get-server",
-  auth({ user: true, robot: true }),
+  auth({ user: true, robot: true, required: true }),
   async (req, res) => {
     const { getServerByName } = require("../../controllers/robotServer");
     if (!req.body.server_name)
@@ -229,62 +229,70 @@ router.post(
   }
 );
 
-router.post("/create", auth({ user: true }), async (req, res) => {
-  const { validateServerName } = require("../../controllers/validate");
-  let storeReq = req.body;
-  if (req.body.server_name) {
-    const validate = validateServerName(req.body.server_name);
-    if (validate.error) return res.send(validate);
-    storeReq.server_name = validate;
-  } else {
-    res.send(jsonError("server_name is required."));
+router.post(
+  "/create",
+  auth({ user: true, required: true }),
+  async (req, res) => {
+    const { validateServerName } = require("../../controllers/validate");
+    let storeReq = req.body;
+    if (req.body.server_name) {
+      const validate = validateServerName(req.body.server_name);
+      if (validate.error) return res.send(validate);
+      storeReq.server_name = validate;
+    } else {
+      res.send(jsonError("server_name is required."));
+      return;
+    }
+    const buildRobotServer = await createRobotServer(storeReq, req.user);
+    res.send(buildRobotServer);
     return;
   }
-  const buildRobotServer = await createRobotServer(storeReq, req.user);
-  res.send(buildRobotServer);
-  return;
-});
+);
 
 //REMOVE SERVER
 router.get("/delete", async (req, res) => {
   const response = {
-    server_id: "required"
+    server_id: "required",
   };
   res.send(response);
 });
 
-router.post("/delete", auth({ user: true }), async (req, res) => {
-  // console.log("API / Robot Server / Delete: ", req.body);
-  let response = {};
+router.post(
+  "/delete",
+  auth({ user: true, required: true }),
+  async (req, res) => {
+    // console.log("API / Robot Server / Delete: ", req.body);
+    let response = {};
 
-  if (req.user) {
-    const robotServerToDelete = await getRobotServer(req.body.server_id);
-    const moderator = await checkTypes(req.user, ["staff, global_moderator"]);
-    if (
-      (robotServerToDelete && req.user.id === robotServerToDelete.owner_id) ||
-      moderator
-    ) {
-      response.deleting = req.body.server_id;
-      try {
-        if (await deleteRobotServer(req.body.server_id)) {
-          response.success = `Server successfully Deleted`;
-          updateRobotServer();
-        } else {
-          response.error = "There was a problem deleting the server";
+    if (req.user) {
+      const robotServerToDelete = await getRobotServer(req.body.server_id);
+      const moderator = await checkTypes(req.user, ["staff, global_moderator"]);
+      if (
+        (robotServerToDelete && req.user.id === robotServerToDelete.owner_id) ||
+        moderator
+      ) {
+        response.deleting = req.body.server_id;
+        try {
+          if (await deleteRobotServer(req.body.server_id)) {
+            response.success = `Server successfully Deleted`;
+            updateRobotServer();
+          } else {
+            response.error = "There was a problem deleting the server";
+          }
+        } catch (err) {
+          console.log(err);
+          response.error = "Could not Delete Server";
         }
-      } catch (err) {
-        console.log(err);
-        response.error = "Could not Delete Server";
+      } else {
+        response.error = "Insuffecient privileges to delete server";
       }
     } else {
-      response.error = "Insuffecient privileges to delete server";
+      response.error = "Invalid User";
     }
-  } else {
-    response.error = "Invalid User";
-  }
 
-  res.send(response);
-});
+    res.send(response);
+  }
+);
 
 /**
  * Input:
@@ -300,14 +308,14 @@ router.post("/delete", auth({ user: true }), async (req, res) => {
 
 router.post(
   "/membership/update-settings",
-  auth({ user: true }),
+  auth({ user: true, required: true }),
   async (req, res) => {
     const { updateMemberSettings } = require("../../controllers/members");
     const { settings, server_id } = req.body;
     const result = await updateMemberSettings({
       user_id: req.user.id,
       server_id: server_id,
-      settings: settings
+      settings: settings,
     });
     res.send(result);
   }

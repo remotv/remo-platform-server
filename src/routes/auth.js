@@ -3,15 +3,15 @@ const { authRobotData } = require("../models/robot");
 const { extractToken } = require("../modules/jwt");
 
 const { logger } = require("../modules/logging");
-const log = message => {
+const log = (message) => {
   logger({
     message: message,
     level: "debug",
-    source: "routes/auth.js"
+    source: "routes/auth.js",
   });
 };
 
-const auth = options => {
+const auth = (options) => {
   // console.log(options);
   return async (req, res, next) => {
     try {
@@ -34,7 +34,9 @@ const auth = options => {
             // console.log("AUTH ROBOT: ", req.robot, req.body);
           }
         }
-      } else {
+      }
+
+      if (options.required && !req.user && !req.robot) {
         return res.json({ error: "Invalid Authorization" });
       }
       next();

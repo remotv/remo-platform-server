@@ -19,18 +19,23 @@
  */
 
 module.exports = {
+  //channel specific stuff
   saveRobotChannel: require("./saveRobotChannel"),
-  getRobotChannelsForServer: "",
-  deleteRobotChannel: "",
-  updateRobotChannelName: "",
-  updateRobotChannelControls: "",
-  getRobotChannelById: "",
-  verifyRobotChannelAuth: "",
-  updateHeartbeat: "",
+  getRobotChannelsForServer: require("./getRobotChannelsForServer"),
+  deleteRobotChannel: require("./deleteRobotChannel"),
+  updateRobotChannelName: require("./updateRobotChannelName"),
+  updateRobotChannelControls: require("./updateControlsId"),
+  getRobotChannelById: require("./getRobotChannelById"),
+
+  //robot specific stuff
+  verifyRobotTokenData: require("./verifyRobotTokenData"),
+  updateHeartbeat: require("./updateHeartbeat"),
   updateSecretKey: "",
 
   //Interal use only:
-  getAllRobotChannels: "",
+  getAllRobotChannels: require("./getAllRobotChannels"),
+  getAllChannelsCount: require("./getAllChannelsCount"),
+
   getTotalRobotChannelCount: "",
   log: require("./log"),
 };

@@ -14,16 +14,20 @@ const auth = require("../auth");
  * Response Success: Object containing { patreon_id: <string> }
  * Response Error: { error: "error message." }
  */
-router.post("/patreon", auth({ user: true }), async (req, res) => {
-  const { linkPatron } = require("../../controllers/patreon");
-  const { code, redirect_uri } = req.body;
-  const uri = `${urlPrefix}patreon`;
-  if (code && uri) {
-    const link = await linkPatron(req.body.code, uri, req.user);
-    res.send(link);
-    return;
+router.post(
+  "/patreon",
+  auth({ user: true, required: true }),
+  async (req, res) => {
+    const { linkPatron } = require("../../controllers/patreon");
+    const { code, redirect_uri } = req.body;
+    const uri = `${urlPrefix}patreon`;
+    if (code && uri) {
+      const link = await linkPatron(req.body.code, uri, req.user);
+      res.send(link);
+      return;
+    }
   }
-});
+);
 
 /**
  * REMOVE PATREON ACCOUNT LINK:
@@ -33,10 +37,14 @@ router.post("/patreon", auth({ user: true }), async (req, res) => {
  * Response Success: <string>
  * Response Error: { error: "error message." }
  */
-router.post("/patreon-remove", auth({ user: true }), async (req, res) => {
-  const { removePatreon } = require("../../controllers/patreon");
-  const remove = await removePatreon(req.user.id);
-  return res.send(remove);
-});
+router.post(
+  "/patreon-remove",
+  auth({ user: true, required: true }),
+  async (req, res) => {
+    const { removePatreon } = require("../../controllers/patreon");
+    const remove = await removePatreon(req.user.id);
+    return res.send(remove);
+  }
+);
 
 module.exports = router;

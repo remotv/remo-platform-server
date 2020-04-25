@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const auth = require("../auth");
 
-router.get("/messages", auth({ user: true }), async (req, res) => {
+router.get("/messages", async (req, res) => {
   const { loadChat } = require("../../controllers/chat");
   if (req.body && req.body.chat_id) {
     const getMessages = await loadChat(req.body.chat_id);
@@ -10,7 +10,7 @@ router.get("/messages", auth({ user: true }), async (req, res) => {
   }
   res.send({
     status: "error!",
-    error: "Could not find any recent chat messages"
+    error: "Could not find any recent chat messages",
   });
 });
 

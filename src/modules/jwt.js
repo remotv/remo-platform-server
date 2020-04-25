@@ -17,8 +17,8 @@ module.exports.extractToken = async (token) => {
     let reason = {
       error: "problem creating token from user",
     };
-    Promise.reject(reason);
-    console.log(reason);
+    //Promise.reject(reason);
+    //console.log(reason);
     return null;
   }
 };

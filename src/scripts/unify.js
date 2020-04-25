@@ -18,7 +18,7 @@ CREATE TABLE robot_channels (
     heartbeat timestamp NOT NULL DEFAULT '1970-1-1',
     server_id text NOT NULL REFERENCES robot_servers(server_id) ON DELETE CASCADE,
     chat_id text NOT NULL,
-    control_id text NOT NULL REFERENCES controls(id) ON DELETE CASCADE
+    controls_id text NOT NULL REFERENCES controls(id) ON DELETE CASCADE
 );
 */
 //make chat_rooms.id a primary key later
@@ -62,12 +62,12 @@ async function run() {
     const heartbeat = new Date(robotData.heartbeat);
     const server_id = channel.host_id;
     const chat_id = channel.chat;
-    const control_id = channel.controls;
+    const controls_id = channel.controls;
 
     try {
       await db.query(
-        "INSERT INTO robot_channels (name, id, created, heartbeat, server_id, chat_id, control_id) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-        [name, id, created, heartbeat, server_id, chat_id, control_id]
+        "INSERT INTO robot_channels (name, id, created, heartbeat, server_id, chat_id, controls_id) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+        [name, id, created, heartbeat, server_id, chat_id, controls_id]
       );
     } catch (e) {
       if (e.code == "23503") {

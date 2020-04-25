@@ -1,10 +1,6 @@
 const router = require("express").Router();
 const auth = require("../auth");
-const {
-  createChannel,
-  getChannels,
-  deleteChannel
-} = require("../../models/channel");
+const { createChannel, getChannels } = require("../../models/channel");
 const { validateOwner } = require("../../models/robotServer");
 const { jsonError } = require("../../modules/logging");
 
@@ -27,52 +23,59 @@ router.get("/create", async (req, res) => {
   res.status(200).send(response);
 });
 
-router.post("/create", auth({ user: true }), async (req, res) => {
-  const { validateChannelName } = require("../../controllers/validate");
-  let response = {};
-  let makeChannel = {};
+router.post(
+  "/create",
+  auth({ user: true, required: true }),
+  async (req, res) => {
+    const { validateChannelName } = require("../../controllers/validate");
+    let response = {};
+    let makeChannel = {};
 
-  if (req.body.server_id && req.body.channel_name && req.user) {
-    response.channel_name = validateChannelName(req.body.channel_name);
-    response.user = { username: req.user.username, id: req.user.id };
-    response.server_id = req.body.server_id;
+    if (req.body.server_id && req.body.channel_name && req.user) {
+      response.channel_name = validateChannelName(req.body.channel_name);
+      response.user = { username: req.user.username, id: req.user.id };
+      response.server_id = req.body.server_id;
 
-    if (response.channel_name.error) {
-      res.send(response.channel_name);
-      return;
-    }
+      if (response.channel_name.error) {
+        res.send(response.channel_name);
+        return;
+      }
 
-    const getServer = await validateOwner(response.user.id, response.server_id);
+      const getServer = await validateOwner(
+        response.user.id,
+        response.server_id
+      );
 
-    if (getServer) {
-      response.validated = true;
+      if (getServer) {
+        response.validated = true;
+      } else {
+        response.error = "user does not appear to own this server.";
+      }
     } else {
-      response.error = "user does not appear to own this server.";
+      response.error = "unable to determine user information.";
     }
-  } else {
-    response.error = "unable to determine user information.";
-  }
 
-  try {
-    //TODO: Add default chatroom if none is provided
-    makeChannel = await createChannel({
-      host_id: response.server_id,
-      name: response.channel_name
-    });
+    try {
+      //TODO: Add default chatroom if none is provided
+      makeChannel = await createChannel({
+        host_id: response.server_id,
+        name: response.channel_name,
+      });
 
-    if (makeChannel) {
-      response.success = "Channel successfully created!";
-      response.channel = makeChannel;
+      if (makeChannel) {
+        response.success = "Channel successfully created!";
+        response.channel = makeChannel;
+      }
+    } catch (err) {
+      console.log("CREATE CHANNEL ERROR: ", err);
+      response.error = "There was a problem creating this channel";
+      response.error_details = makeChannel;
     }
-  } catch (err) {
-    console.log("CREATE CHANNEL ERROR: ", err);
-    response.error = "There was a problem creating this channel";
-    response.error_details = makeChannel;
-  }
 
-  if (!response.error) return res.status(201).send(response);
-  else return res.send(response);
-});
+    if (!response.error) return res.status(201).send(response);
+    else return res.send(response);
+  }
+);
 
 router.get("/delete", async (req, res) => {
   response = {};
@@ -89,22 +92,24 @@ router.get("/delete", async (req, res) => {
  * Response Success: { status: "success!", result: { deleted channel }}
  * Response Error: { error: "Error Message" }
  */
-router.post("/delete", auth({ user: true }), async (req, res) => {
-  let response = {};
-  if (req.body.channel_id && req.body.server_id && req.user)
-    response.channel_id = req.body.channel_id;
-  response.server_id = req.body.server_id;
-  response.user = { username: req.user.username, id: req.user.id };
+router.post(
+  "/delete",
+  auth({ user: true, required: true }),
+  async (req, res) => {
+    const { deleteChannel } = require("../../controllers/robotChannels");
+    let response = {};
+    if (req.body.channel_id && req.body.server_id && req.user)
+      response.channel_id = req.body.channel_id;
+    response.server_id = req.body.server_id;
+    response.user = { username: req.user.username, id: req.user.id };
 
-  validate = await validateOwner(req.user.id, response.server_id);
-  if (validate) {
+    const doDelete = await deleteChannel(req.user, req.body.channel_id);
+    if (doDelete.error) return doDelete;
     response.validated = true;
-    const result = await deleteChannel(req.body.channel_id, req.body.server_id);
-    if (result.error) return res.send(result);
-    response.status = result.status;
+    response.status = doDelete.status;
+    res.send(response);
   }
-  res.send(response);
-});
+);
 
 /**
  * Set Default Channel:
@@ -112,14 +117,18 @@ router.post("/delete", auth({ user: true }), async (req, res) => {
  * Response Success: { server: { settings } }
  * Response Error: { error: "Error Message" }
  */
-router.post("/set-default", auth({ user: true }), async (req, res) => {
-  const { setDefaultChannel } = require("../../controllers/channels");
-  if (!req.body.channel_id) return jsonError("Channel ID Required.");
-  if (!req.body.server_id) return jsonError("Server ID Required.");
-  const { channel_id, server_id } = req.body;
-  const setDefault = await setDefaultChannel(req.user, channel_id, server_id);
-  res.send(setDefault);
-});
+router.post(
+  "/set-default",
+  auth({ user: true, required: true }),
+  async (req, res) => {
+    const { setDefaultChannel } = require("../../controllers/channels");
+    if (!req.body.channel_id) return jsonError("Channel ID Required.");
+    if (!req.body.server_id) return jsonError("Server ID Required.");
+    const { channel_id, server_id } = req.body;
+    const setDefault = await setDefaultChannel(req.user, channel_id, server_id);
+    res.send(setDefault);
+  }
+);
 
 /**
  * Rename Channel:
@@ -131,16 +140,20 @@ router.post("/set-default", auth({ user: true }), async (req, res) => {
  * Response Success: { channel, { name: "New Name" }}
  * Response Error: { error: "Error Message" }
  */
-router.post("/rename", auth({ user: true }), async (req, res) => {
-  const { renameChannel } = require("../../controllers/channels");
-  const { id, name } = req.body;
-  if (id && name) {
-    const result = await renameChannel(req.user, id, name);
-    res.send(result);
+router.post(
+  "/rename",
+  auth({ user: true, required: true }),
+  async (req, res) => {
+    const { renameChannel } = require("../../controllers/channels");
+    const { id, name } = req.body;
+    if (id && name) {
+      const result = await renameChannel(req.user, id, name);
+      res.send(result);
+      return;
+    }
+    res.send(jsonError("Channel ID & New Channel name required."));
     return;
   }
-  res.send(jsonError("Channel ID & New Channel name required."));
-  return;
-});
+);
 
 module.exports = router;

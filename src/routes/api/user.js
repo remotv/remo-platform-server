@@ -3,18 +3,18 @@ const auth = require("../auth");
 const { err } = require("../../modules/utilities");
 const { jsonError } = require("../../modules/logging");
 
-router.get("/followed", auth({ user: true }), async (req, res) => {
-  const { followedServers } = require("../../controllers/user");
+router.get(
+  "/followed",
+  auth({ user: true, required: true }),
+  async (req, res) => {
+    const { followedServers } = require("../../controllers/user");
 
-  if (req.user && req.user.id) {
     // console.log("Checking Followed Servers: ", req.user.username);
     const followed = await followedServers(req.user);
     res.send(followed);
     return;
   }
-  res.send({ status: "Error!", error: "Unable to get followed servers." });
-  return;
-});
+);
 
 router.post("/request-password-reset", async (req, res) => {
   const { emailResetToken } = require("../../controllers/user");
@@ -40,9 +40,12 @@ router.post("/request-password-reset", async (req, res) => {
 });
 
 //Will need to get user email, and this probably shouldn't need auth
-router.post("/get-password-reset", auth({ user: true }), async (req, res) => {
-  const { generateResetKey } = require("../../controllers/user");
-  if (req.user && req.user.id) {
+router.post(
+  "/get-password-reset",
+  auth({ user: true, required: true }),
+  async (req, res) => {
+    const { generateResetKey } = require("../../controllers/user");
+
     let emailKey = false;
     if (req.body.emailKey) emailKey = true;
     console.log(`Reset Password for: ${req.user.username}`);
@@ -50,8 +53,7 @@ router.post("/get-password-reset", auth({ user: true }), async (req, res) => {
     res.send(reset);
     return;
   }
-  res.send(err("There was a problem generating a reset key through the API"));
-});
+);
 
 router.post("/password-reset", async (req, res) => {
   // console.log("PASSWORD RESET");
@@ -60,7 +62,7 @@ router.post("/password-reset", async (req, res) => {
     // console.log("PASSWORD RESET CHECK: ", req.body);
     const reset = await useResetKey({
       key_id: req.body.key_id,
-      password: req.body.password
+      password: req.body.password,
     });
 
     if (reset) {
@@ -86,24 +88,32 @@ router.post("/validate-key", async (req, res) => {
   res.send(response);
 });
 
-router.post("/profile", auth({ user: true }), async (req, res) => {
-  const { fetchProfileInfo } = require("../../controllers/user");
-  const info = await fetchProfileInfo(req.user.id);
-  res.send(info);
-});
+router.post(
+  "/profile",
+  auth({ user: true, required: true }),
+  async (req, res) => {
+    const { fetchProfileInfo } = require("../../controllers/user");
+    const info = await fetchProfileInfo(req.user.id);
+    res.send(info);
+  }
+);
 
-router.post("/update-email", auth({ user: true }), async (req, res) => {
-  const { updateEmail } = require("../../controllers/user");
-  let { email } = req.body;
+router.post(
+  "/update-email",
+  auth({ user: true, required: true }),
+  async (req, res) => {
+    const { updateEmail } = require("../../controllers/user");
+    let { email } = req.body;
 
-  if (email) {
-    const update = await updateEmail({ email: email, id: req.user.id });
-    res.send(update);
+    if (email) {
+      const update = await updateEmail({ email: email, id: req.user.id });
+      res.send(update);
+      return;
+    }
+    res.send(jsonError("Invalid email"));
     return;
   }
-  res.send(jsonError("Invalid email"));
-  return;
-});
+);
 module.exports = router;
 
 /**
@@ -114,14 +124,18 @@ module.exports = router;
  * Response Success: { result: "Response Message" }
  * Response Error: { error: "Error message!" }
  */
-router.post("/validate-email", auth({ user: true }), async (req, res) => {
-  const { validateEmail } = require("../../controllers/validateEmail");
-  if (!req.user) return jsonError("User required");
-  const { expire } = req.body || null;
-  // console.log("REQUEST EMAIL VALIDATION...");
-  const validate = await validateEmail(req.user, expire);
-  res.send(validate);
-});
+router.post(
+  "/validate-email",
+  auth({ user: true, required: true }),
+  async (req, res) => {
+    const { validateEmail } = require("../../controllers/validateEmail");
+
+    const { expire } = req.body || null;
+    // console.log("REQUEST EMAIL VALIDATION...");
+    const validate = await validateEmail(req.user, expire);
+    res.send(validate);
+  }
+);
 
 /**
  * Input: ( No Auth Required )
@@ -154,11 +168,15 @@ router.post("/validate-email-with-key", async (req, res) => {
  * Response Success: "OK".
  * Response Error: N/A
  */
-router.post("/welcome", auth({ user: true }), async (req, res) => {
-  const { setWelcomeFalse } = require("../../controllers/users/welcome");
-  if (req.user) setWelcomeFalse(req.user);
-  res.send("OK.");
-});
+router.post(
+  "/welcome",
+  auth({ user: true, required: true }),
+  async (req, res) => {
+    const { setWelcomeFalse } = require("../../controllers/users/welcome");
+    setWelcomeFalse(req.user);
+    res.send("OK.");
+  }
+);
 
 /**
  * Input: settings {
@@ -168,12 +186,16 @@ router.post("/welcome", auth({ user: true }), async (req, res) => {
  * Response Error: { error: "error message" }
  */
 
-router.post("/update-settings", auth({ user: true }), async (req, res) => {
-  const { updateUserSettings } = require("../../controllers/user");
-  const { settings } = req.body;
-  if (!settings) return jsonError("settings required.");
-  const user = req.user;
-  user.settings = settings;
-  const update = await updateUserSettings(user);
-  return res.send(update);
-});
+router.post(
+  "/update-settings",
+  auth({ user: true, required: true }),
+  async (req, res) => {
+    const { updateUserSettings } = require("../../controllers/user");
+    const { settings } = req.body;
+    if (!settings) return jsonError("settings required.");
+    const user = req.user;
+    user.settings = settings;
+    const update = await updateUserSettings(user);
+    return res.send(update);
+  }
+);

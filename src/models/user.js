@@ -310,16 +310,28 @@ module.exports.createAuthToken = (user) => {
 //TOKEN MANAGEMENT
 //used by WS for auth
 module.exports.authUser = async (token) => {
-  let auth = await this.extractToken(token);
-  log("Extracted Token: ", auth);
-  auth = await this.verifyAuthToken(auth);
-  return auth;
+  try {
+    let auth = await this.extractToken(token);
+    if (auth) {
+      log("Extracted Token: ", auth);
+      auth = await this.verifyAuthToken(auth);
+      return auth;
+    } else {
+      return null;
+    }
+  } catch (e) {
+    console.error(e);
+  }
 };
 
 //used by API for auth
 module.exports.authUserData = async (tokenData) => {
-  let auth = await this.verifyAuthToken(tokenData);
-  return auth;
+  try {
+    let auth = await this.verifyAuthToken(tokenData);
+    return auth;
+  } catch (e) {
+    return null;
+  }
 };
 
 // Moving to /src/modules/jwt
@@ -350,7 +362,9 @@ module.exports.verifyAuthToken = async (token) => {
     if (token && token.id) {
       const query = `SELECT * FROM users WHERE id = $1 LIMIT 1`;
       const result = await db.query(query, [token["id"]]);
-      log(`Get user from DB: ${result.rows[0].username}`);
+      log(
+        `Get user from DB: ${result.rows[0] ? result.rows[0].username : null}`
+      );
       return result.rows[0];
     }
   } catch (err) {

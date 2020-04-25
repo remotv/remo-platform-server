@@ -8,7 +8,11 @@ const port = serverPort;
 
 const init = require("../../scripts/init");
 init(); //Initialize scripts on server start
-
+/*
+process.on("unhandledRejection", (reason, p) => {
+  console.log("Unhandled Rejection at: Promise", p, "reason:", reason);
+});
+*/
 //run server
 const server = http.listen(port, () => {
   if (app.get("env") === "test") return;
