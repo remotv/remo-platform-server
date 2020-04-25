@@ -1,5 +1,5 @@
 //WARNING: DO NOT ALLOW A CHANNEL TO GET DELETED IF A SERVER ONLY CONTAINS ONE
-module.exports.deleteChannel = async (id) => {
+module.exports = async (id) => {
   const db = require("../services/db");
   const query = `DELETE FROM robot_channels WHERE id =$1`;
   try {

@@ -1,4 +1,4 @@
-module.exports.tempEnsureDefaultChannel = async (server_id, channel_id) => {
+module.exports = async (server_id, channel_id) => {
   const { getRobotChannels } = require("../../models/robotChannels");
   const {
     getRobotServer,

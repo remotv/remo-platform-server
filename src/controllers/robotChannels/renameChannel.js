@@ -1,4 +1,4 @@
-module.exports.renameChannel = async (user, channel_id, channel_name) => {
+module.exports = async (user, channel_id, channel_name) => {
   const {
     updateRobotChannelName,
     getRobotChannel,

@@ -1,4 +1,4 @@
-module.exports.setDefaultChannel = async (user, channel_id, server_id) => {
+module.exports = async (user, channel_id, server_id) => {
   const { authMemberRole } = require("../roles");
   const { getRobotChannel } = require("../../models/robotChannels");
   const {

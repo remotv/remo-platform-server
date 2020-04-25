@@ -1,4 +1,4 @@
-module.exports.deleteChannel = async (user, channel_id) => {
+module.exports = async (user, channel_id) => {
   const {
     deleteRobotChannel,
     getRobotChannelById,
