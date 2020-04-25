@@ -1,7 +1,6 @@
 module.exports = async (channel_id, user) => {
-  const { getServerIdFromChannelId } = require("../../models/channel");
   const { getRobotServer } = require("../../models/robotServer");
-  const { getChannel } = require("../../models/channel");
+  const { getRobotChannelById } = require("../../models/robotChannels");
   const { getControlsFromId } = require("../../models/controls");
   const { logger } = require("../../modules/logging");
   const { log } = require("./");
@@ -9,15 +8,14 @@ module.exports = async (channel_id, user) => {
   const { authMemberRole } = require("../../controllers/roles");
 
   log(`Get Controls from ID: ${channel_id}, ${user.username}`);
-  let controls = await getChannel(channel_id);
-  controls = await getControlsFromId(controls.controls);
+  const channel = await getRobotChannelById(channel_id);
+  const controls = await getControlsFromId(channel.controls_id);
 
   let sendButtons = [];
   if (controls && controls.buttons) {
     const { buttons } = controls;
-    const getServerId = await getServerIdFromChannelId(channel_id);
-    const getServer = await getRobotServer(getServerId.result);
-    const testy = async button => {
+    const getServer = await getRobotServer(channel.server_id);
+    const testy = async (button) => {
       if (button.cooldown) button = await getButtonStatus(button); //attach button status
       if (user && button.access) {
         const auth = await authMemberRole(user, getServer, button.access);
@@ -25,8 +23,8 @@ module.exports = async (channel_id, user) => {
       } else return button;
     };
 
-    sendButtons = await Promise.all(buttons.map(button => testy(button)));
-    sendButtons = sendButtons.filter(button => button != undefined);
+    sendButtons = await Promise.all(buttons.map((button) => testy(button)));
+    sendButtons = sendButtons.filter((button) => button != undefined);
     //await Promise.all(testy);
   }
   if (controls.buttons && sendButtons) {
@@ -35,7 +33,7 @@ module.exports = async (channel_id, user) => {
     logger({
       level: "error",
       source: "controllers/controls.js",
-      message: "Unable to Fetch Controls"
+      message: "Unable to Fetch Controls",
     });
   }
   return controls;

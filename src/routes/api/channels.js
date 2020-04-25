@@ -117,6 +117,7 @@ router.post(
   async (req, res) => {
     const { jsonError } = require("../../modules/logging");
     const { setDefaultChannel } = require("../../controllers/robotChannels");
+    console.log("Set Default Channel: ", req.body);
     try {
       if (req.body.channel_id && req.body.server_id) {
         const { channel_id, server_id } = req.body;
