@@ -3,13 +3,12 @@ module.exports = {
   //Channel Management
   createRobotChannel: require("./createRobotChannel"),
   deleteRobotChannel: require("./deleteRobotChannel"),
-  checkName: require("./checkName"),
-  emitEvent: require("./emitEvent"),
-  updateChannelsOnServer: require("./updateChannelsOnServer"),
+  checkName: require("./checkName"), //validate channel name, check for dupes
+  emitEvent: require("./emitEvent"), //emit websocket event for channel
+  updateChannelsOnServer: require("./updateChannelsOnServer"), //updates server with recent channel list
   renameChannel: require("./renameChannel"),
   setDefaultChannel: require("./setDefaultChannel"),
   ensureDefaultChannel: require("./ensureDefaultChannel"),
-  checkName: require("./checkName"),
 
   //Robot Management
   robotChannelStatus: require("./robotChannelStatus"),

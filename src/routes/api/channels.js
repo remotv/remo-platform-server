@@ -1,20 +1,27 @@
 const router = require("express").Router();
 const auth = require("../auth");
-const { createChannel, getChannels } = require("../../models/channel");
-const { validateOwner } = require("../../models/robotServer");
-const { jsonError } = require("../../modules/logging");
 
+/**
+ * Channels has been refactored:
+ * - new model combines channels and robots into robot_channels
+ * - internal methods have been updated to reflect this
+ */
+
+//get list of channels on a server
 router.get("/list/:id", async (req, res) => {
-  let response = {};
-  const result = await getChannels(req.params.id);
-  if (result) {
-    response.channels = result;
-  } else {
-    response.error = "unable to get channels for specified server";
+  const { getRobotChannelsForServerId } = require("../../models/robotChannels");
+  const { jsonError } = require("../../modules/logging");
+  try {
+    const result = await getRobotChannelsForServerId(req.params.id);
+    if (result && !result.error)
+      return res.status(200).send({ channels: result });
+  } catch (err) {
+    console.log(err);
   }
-  res.status(200).send(response);
+  return res.status(500).send(jsonError("Unable to process request"));
 });
 
+//get requirements for creating a channel
 router.get("/create", async (req, res) => {
   let response = {};
   response.server_id = "<Please provide a server_id to add channel too >";
@@ -23,57 +30,41 @@ router.get("/create", async (req, res) => {
   res.status(200).send(response);
 });
 
+/**
+ * Create Robot Channel: api/dev/create
+ * auth: required
+ * method: post
+ *
+ * @param {string} user
+ * @param {string} channel_name name of channel
+ * @param {string} server_id id of server to add channel
+ *
+ * Response Success: 201
+ * @returns {robot_channel}
+ *
+ * Response Error: 400
+ * @returns {error}
+ *
+ */
 router.post(
   "/create",
   auth({ user: true, required: true }),
   async (req, res) => {
-    const { validateChannelName } = require("../../controllers/validate");
-    let response = {};
-    let makeChannel = {};
-
-    if (req.body.server_id && req.body.channel_name && req.user) {
-      response.channel_name = validateChannelName(req.body.channel_name);
-      response.user = { username: req.user.username, id: req.user.id };
-      response.server_id = req.body.server_id;
-
-      if (response.channel_name.error) {
-        res.send(response.channel_name);
-        return;
-      }
-
-      const getServer = await validateOwner(
-        response.user.id,
-        response.server_id
-      );
-
-      if (getServer) {
-        response.validated = true;
-      } else {
-        response.error = "user does not appear to own this server.";
-      }
-    } else {
-      response.error = "unable to determine user information.";
-    }
-
+    const { jsonError } = require("../../modules/logging");
+    const { createRobotChannel } = require("../../controllers/robotChannels");
     try {
-      //TODO: Add default chatroom if none is provided
-      makeChannel = await createChannel({
-        host_id: response.server_id,
-        name: response.channel_name,
+      const { channel_name, server_id } = req.body;
+      const make = await createRobotChannel({
+        name: channel_name,
+        server_id: server_id,
+        user_id: req.user.id,
       });
-
-      if (makeChannel) {
-        response.success = "Channel successfully created!";
-        response.channel = makeChannel;
-      }
+      if (!make.error) return res.status(201).send(make);
+      return res.status(400).send(make);
     } catch (err) {
-      console.log("CREATE CHANNEL ERROR: ", err);
-      response.error = "There was a problem creating this channel";
-      response.error_details = makeChannel;
+      console.log(err);
+      return res.status(400).send(jsonError("Unable to make channel"));
     }
-
-    if (!response.error) return res.status(201).send(response);
-    else return res.send(response);
   }
 );
 
@@ -81,9 +72,7 @@ router.get("/delete", async (req, res) => {
   response = {};
   response.channel_id = "<Channel ID Required>";
   response.authorization = "<Authorization Required>";
-
-  res.status(200).send(response);
-  console.log(response);
+  return res.status(200).send(response);
 });
 
 /**
@@ -96,18 +85,23 @@ router.post(
   "/delete",
   auth({ user: true, required: true }),
   async (req, res) => {
-    const { deleteChannel } = require("../../controllers/robotChannels");
-    let response = {};
-    if (req.body.channel_id && req.body.server_id && req.user)
-      response.channel_id = req.body.channel_id;
-    response.server_id = req.body.server_id;
-    response.user = { username: req.user.username, id: req.user.id };
+    const { deleteRobotChannel } = require("../../controllers/robotChannels");
+    try {
+      let response = {};
+      if (req.body.channel_id && req.body.server_id && req.user)
+        response.channel_id = req.body.channel_id;
+      response.server_id = req.body.server_id;
+      response.user = { username: req.user.username, id: req.user.id };
 
-    const doDelete = await deleteChannel(req.user, req.body.channel_id);
-    if (doDelete.error) return doDelete;
-    response.validated = true;
-    response.status = doDelete.status;
-    res.send(response);
+      const doDelete = await deleteRobotChannel(req.user, req.body.channel_id);
+      if (doDelete.error) return res.status(400).send(doDelete);
+      response.validated = true;
+      response.status = doDelete.status;
+      return res.status(200).send(response);
+    } catch (err) {
+      console.log(err);
+      return res.status(500).send({ error: "unable to process request" });
+    }
   }
 );
 
@@ -121,12 +115,25 @@ router.post(
   "/set-default",
   auth({ user: true, required: true }),
   async (req, res) => {
-    const { setDefaultChannel } = require("../../controllers/channels");
-    if (!req.body.channel_id) return jsonError("Channel ID Required.");
-    if (!req.body.server_id) return jsonError("Server ID Required.");
-    const { channel_id, server_id } = req.body;
-    const setDefault = await setDefaultChannel(req.user, channel_id, server_id);
-    res.send(setDefault);
+    const { jsonError } = require("../../modules/logging");
+    const { setDefaultChannel } = require("../../controllers/robotChannels");
+    try {
+      if (req.body.channel_id && req.body.server_id) {
+        const { channel_id, server_id } = req.body;
+        const setDefault = await setDefaultChannel(
+          req.user,
+          channel_id,
+          server_id
+        );
+        res.send(setDefault);
+      }
+    } catch (err) {
+      console.log(err);
+      return res.status(500).send(jsonError("Unable to process request"));
+    }
+    return res
+      .status(400)
+      .send(jsonError("parameters required, { server_id, channel_id }"));
   }
 );
 
@@ -144,15 +151,22 @@ router.post(
   "/rename",
   auth({ user: true, required: true }),
   async (req, res) => {
-    const { renameChannel } = require("../../controllers/channels");
-    const { id, name } = req.body;
-    if (id && name) {
-      const result = await renameChannel(req.user, id, name);
-      res.send(result);
-      return;
+    const { renameChannel } = require("../../controllers/robotChannels");
+    const { jsonError } = require("../../modules/logging");
+    try {
+      const { id, name } = req.body;
+      if (id && name) {
+        const result = await renameChannel(req.user, id, name);
+        return res.status(201).send(result);
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(500).send(jsonError("Unable to process request"));
     }
-    res.send(jsonError("Channel ID & New Channel name required."));
-    return;
+
+    return res
+      .status(400)
+      .send(jsonError("missing required params for robot_channel: name, id"));
   }
 );
 

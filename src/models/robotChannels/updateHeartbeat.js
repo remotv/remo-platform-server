@@ -7,5 +7,5 @@ module.exports = async (id) => {
   } catch (err) {
     console.log(err);
   }
-  return { error: "Could not update controls at this time" };
+  return { error: "no robot_channel entry found for id" };
 };

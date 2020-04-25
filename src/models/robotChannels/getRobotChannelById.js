@@ -1,4 +1,6 @@
 module.exports = async (id) => {
+  const { log } = require("./");
+  log(`Get robot_channel by ID: ${id}`);
   const db = require("../../services/db");
   try {
     const query = `SELECT * FROM robot_channels WHERE id = $1 LIMIT 1`;
