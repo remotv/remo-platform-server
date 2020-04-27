@@ -25,8 +25,10 @@ module.exports = async (user, channel_id) => {
     if (!auth) return { error: "You are not authorized to do this action" };
 
     //Do not delete the last channel on a server
-    const checkChannelCount = await getRobotChannelsForServer(server_id);
-    log(`Channel Count Check: ${checkChannelCount}`);
+    const checkChannelCount = await getRobotChannelsForServer(
+      getChannel.server_id
+    );
+    log(`Channel Count Check: ${checkChannelCount.length}`);
     if (checkChannelCount && checkChannelCount.length <= 1) {
       return jsonError(
         "Unable to delete channel, server must contain at least one channel."
@@ -38,6 +40,7 @@ module.exports = async (user, channel_id) => {
     if (!remove) return { error: "Unable to delete channel, try again later" };
     response.status = "success!";
     response.result = remove;
+    response.validated = true;
     log(`Channel Deleted Successfully, ensuring default channel`);
     await ensureDefaultChannel(getChannel.server_id, getChannel.id);
     updateChannelsOnServer(getChannel.server_id);
@@ -46,9 +49,9 @@ module.exports = async (user, channel_id) => {
     return response;
     //}
   } catch (err) {
-    response.error = err;
-    response.status = "error!";
-    console.log(response);
-    return response;
+    console.log(err);
+    return {
+      error: "Server could not complete request, please try again later",
+    };
   }
 };

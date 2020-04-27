@@ -4,7 +4,7 @@ module.exports = async (server_id, channel_id) => {
     getRobotServer,
     updateRobotServerSettings,
     updateRobotServer,
-  } = require("../models/robotServer");
+  } = require("../../models/robotServer");
   const getServer = await getRobotServer(server_id);
   if (getServer.settings.default_channel === channel_id) {
     let { settings } = getServer;

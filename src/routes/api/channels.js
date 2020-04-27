@@ -92,16 +92,8 @@ router.post(
   async (req, res) => {
     const { deleteRobotChannel } = require("../../controllers/robotChannels");
     try {
-      let response = {};
-      if (req.body.channel_id && req.body.server_id && req.user)
-        response.channel_id = req.body.channel_id;
-      response.server_id = req.body.server_id;
-      response.user = { username: req.user.username, id: req.user.id };
-
-      const doDelete = await deleteRobotChannel(req.user, req.body.channel_id);
-      if (doDelete.error) return res.status(400).send(doDelete);
-      response.validated = true;
-      response.status = doDelete.status;
+      let response = await deleteRobotChannel(req.user, req.body.channel_id);
+      if (response.error) return res.status(400).send(response);
       return res.status(200).send(response);
     } catch (err) {
       console.log(err);
