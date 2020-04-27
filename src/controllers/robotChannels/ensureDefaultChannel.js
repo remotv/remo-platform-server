@@ -1,3 +1,8 @@
+/**
+ * - Sets the default channel a server will load when opened by client
+ * - returns true when complete
+ */
+
 module.exports = async (server_id, channel_id) => {
   const { getRobotChannels } = require("../../models/robotChannels");
   const {
@@ -10,7 +15,6 @@ module.exports = async (server_id, channel_id) => {
     let { settings } = getServer;
     newDefault = await getRobotChannels(server_id);
     settings.default_channel = newDefault[0].id;
-    // console.log("SETTING NEW DEFAULT CHANNEL: ", settings);
     await updateRobotServerSettings(server_id, settings);
     updateRobotServer();
   }
