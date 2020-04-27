@@ -1,11 +1,16 @@
 module.exports = async (user, channel_id, server_id) => {
   const { authMemberRole } = require("../roles");
-  const { getRobotChannel } = require("../../models/robotChannels");
+  const { getRobotChannelById } = require("../../models/robotChannels");
   const {
     getRobotServer,
     updateRobotServerSettings,
   } = require("../../models/robotServer");
   const { updateSelectedServer } = require("../robotServer");
+  const { log } = require("./");
+
+  log(`Set default channel for server, 
+    channel: ${channel_id},
+    server: ${server_id}`);
 
   //get server information:
   const server = await getRobotServer(server_id);
@@ -17,7 +22,7 @@ module.exports = async (user, channel_id, server_id) => {
   if (!auth) return jsonError("Not Authorized");
 
   //verify channel exists:
-  const checkChannel = await getRobotChannel(channel_id);
+  const checkChannel = await getRobotChannelById(channel_id);
   if (checkChannel.error) return checkChannel;
 
   //Update Settings:

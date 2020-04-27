@@ -126,15 +126,16 @@ router.post(
           channel_id,
           server_id
         );
-        res.send(setDefault);
+        return res.send(setDefault);
+      } else {
+        return res
+          .status(400)
+          .send(jsonError("parameters required, { server_id, channel_id }"));
       }
     } catch (err) {
       console.log(err);
       return res.status(500).send(jsonError("Unable to process request"));
     }
-    return res
-      .status(400)
-      .send(jsonError("parameters required, { server_id, channel_id }"));
   }
 );
 

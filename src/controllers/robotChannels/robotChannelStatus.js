@@ -7,7 +7,7 @@
  * - Live status check should depend on robot.heartbeat, not server.status.live_devices
  */
 
-let robots = []; //currently live robots in memmory
+let robots = []; //store live robots in memmory
 let prevBots = []; //store previous bots to compare data against
 
 const { logger } = require("../../modules/logging");
