@@ -11,32 +11,42 @@
 module.exports = async (data) => {
   const { saveRobotChannel } = require("../../models/robotChannels");
   const { authMemberRole } = require("../roles");
-  const { checkName } = require(".");
+  const { checkName, log, updateChannelsOnServer } = require("./");
 
-  console.log("Make Robot Channel: ", data);
+  try {
+    log(`Create Robot Channel: 
+  name: ${data.name}, 
+  server: ${data.server_id}`);
 
-  //ensure data:
-  if (!data.name || data.server_id)
-    return { error: "name & server_id required" };
+    //ensure data:
+    if (!data.name || !data.server_id)
+      return { error: "name & server_id required" };
 
-  //auth user to make channel
-  const auth = await authMemberRole(data.user_id, data.server_id);
-  if (!auth) return { error: "You are not authorized to make this request" };
+    //auth user to make channel
+    const auth = await authMemberRole(data.user_id, data.server_id);
+    if (!auth) return { error: "You are not authorized to make this request" };
 
-  //validate Name
-  const checkChannelName = await checkName(data);
-  if (checkChannelName.error) return checkChannelName;
+    //validate Name
+    const checkChannelName = await checkName(data);
+    if (checkChannelName.error) return checkChannelName;
 
-  //generate channel
-  console.log("Generating Channel For: ", data.name);
-  const generate = generateChannel(data);
-  if (!generate) return { error: "problem creating channel" };
+    //generate channel
+    const generate = await generateChannel(data);
+    if (!generate) return { error: "problem creating channel" };
 
-  //save and return channel
-  console.log("Saving Channel: ", generate.name);
-  const save = await saveRobotChannel(generate);
-  console.log("Save Complete");
-  return save;
+    //save and return channel
+    const save = await saveRobotChannel(generate);
+    if (save) updateChannelsOnServer(data.server_id);
+    log(`Channel ${save.name},
+    ${save.id},
+     created successfully.\n`);
+
+    //broadcast event ( to be deprecrated );
+    return save;
+  } catch (err) {
+    console.log(err);
+    return { error: "The server encountered a problem creating a channel." };
+  }
 };
 
 const generateChannel = async ({ name, server_id, chat_id, controls_id }) => {
@@ -44,19 +54,37 @@ const generateChannel = async ({ name, server_id, chat_id, controls_id }) => {
   const { createControls } = require("../../models/controls");
   const uuidv4 = require("uuid/v4");
 
-  //get reference id's, controls will always be generated for a new channel
-  chat_id = chat_id || (await getChatRooms(data.server_id)[0].id);
-  controls_id = controls_id || (await createControls({ channel_id: data.id }));
+  try {
+    //input required!
+    if (!name || !server_id) return null;
+    const id = "rbot-" + uuidv4();
 
-  if (!chat_id || !controls_id) return null;
+    //get chat id if not included
+    if (!chat_id) {
+      let getChatId = await getChatRooms(server_id);
+      chat_id = getChatId[0].id;
+    }
 
-  return {
-    name: name,
-    id: "rbot-" + uuidv4(),
-    created: Date.now(),
-    heartbeat: 0,
-    server_id: server_id,
-    controls_id: controls_id,
-    chat_id: chat_id,
-  };
+    //generate controls if no controls_id included
+    if (!controls_id) {
+      let getControlsId = await createControls({ channel_id: id });
+      controls_id = getControlsId.id;
+    }
+
+    //get reference id's, controls will always be generated for a new channel
+    if (!chat_id || !controls_id) return null;
+
+    return {
+      name: name,
+      id: id,
+      created: Date.now(),
+      heartbeat: 0,
+      server_id: server_id,
+      controls_id: controls_id,
+      chat_id: chat_id,
+    };
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
 };

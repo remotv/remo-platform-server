@@ -35,15 +35,20 @@ router.get("/create", async (req, res) => {
  * auth: required
  * method: post
  *
+ * notes:
+ *  - currently triggers ws event on success that sends updated list of all channels
+ *  - will include updated list in response as well
+ *
  * @param {string} user
  * @param {string} channel_name name of channel
  * @param {string} server_id id of server to add channel
  *
  * Response Success: 201
- * @returns {robot_channel}
+ *    returns:  { robot_channel }
+ *    triggers: websocket update, "CHANNELS UPDATED", [ ...robot_channels ]
  *
- * Response Error: 400
- * @returns {error}
+ * Response Error: 400 ( bad request ), 500 ( internal error )
+ *     returns: { error }
  *
  */
 router.post(
@@ -63,7 +68,7 @@ router.post(
       return res.status(400).send(make);
     } catch (err) {
       console.log(err);
-      return res.status(400).send(jsonError("Unable to make channel"));
+      return res.status(500).send(jsonError("Unable to make channel"));
     }
   }
 );

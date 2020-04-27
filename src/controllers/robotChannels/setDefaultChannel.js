@@ -10,7 +10,7 @@ module.exports = async (user, channel_id, server_id) => {
 
   log(`Set default channel for server, 
     channel: ${channel_id},
-    server: ${server_id}`);
+    server: ${server_id} \n`);
 
   //get server information:
   const server = await getRobotServer(server_id);
