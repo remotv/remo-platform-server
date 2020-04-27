@@ -61,26 +61,24 @@ router.post(
 );
 
 router.post("/key", auth({ user: true, required: true }), async (req, res) => {
-  const { createRobotAuth, getRobotFromId } = require("../../models/robot");
-  let response = {};
-  const getRobot = await getRobotFromId(req.body.robot_id);
-  if (getRobot && getRobot.owner_id && getRobot.owner_id === req.user.id) {
-    try {
-      response.key = await createRobotAuth(req.body.robot_id);
-      response.status = "success!";
-    } catch (err) {
-      console.log(err);
-      response.status = "error";
-    }
-  } else {
-    (response.status = "error"), (response.error = "Problem Generating Token");
+  const {
+    createRobotAuth,
+  } = require("../../controllers/robotChannels/robotChannelAuth");
+  try {
+    let response = await createRobotAuth(req.body.robot_id);
+    if (!response.error) return res.status(201).send(response);
+    else return res.status(400).send(response);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ error: "Unable to generate Token." });
   }
-  res.send(response);
 });
 
 router.post("/auth", async (req, res) => {
   let response = {};
-  const { authRobot } = require("../../models/robot");
+  const {
+    authRobot,
+  } = require("../../controllers/robotChannels/robotChannelAuth");
   try {
     let getRobot = await authRobot(req.body.token);
     if (getRobot) {

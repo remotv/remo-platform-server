@@ -9,10 +9,15 @@ const auth = require("../auth");
 
 //get list of channels on a server
 router.get("/list/:id", async (req, res) => {
-  const { getRobotChannelsForServerId } = require("../../models/robotChannels");
+  const { getRobotChannelsForServer } = require("../../models/robotChannels");
   const { jsonError } = require("../../modules/logging");
   try {
-    const result = await getRobotChannelsForServerId(req.params.id);
+    const result = await getRobotChannelsForServer(req.params.id);
+    //old formatting fix
+    for (channel of result) {
+      channel.chat = channel.chat_id;
+      delete channel.chat_id;
+    }
     if (result && !result.error)
       return res.status(200).send({ channels: result });
   } catch (err) {

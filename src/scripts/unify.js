@@ -47,6 +47,14 @@ function findRobotDataElse(channelId, robots) {
   return { id: newId(), heartbeat: 0 };
 }
 
+function getServer(servers, server_id) {
+  for (const server of servers) {
+    if (server.server_id === server_id) {
+      return server;
+    }
+  }
+}
+
 async function run() {
   const channelsQuery = await db.query("SELECT * FROM channels");
   const channels = channelsQuery.rows;
@@ -54,7 +62,14 @@ async function run() {
   const robotsQuery = await db.query("SELECT * FROM robots");
   const robots = robotsQuery.rows;
 
+  const serversQuery = await db.query("SELECT * FROM robot_servers");
+  const servers = serversQuery.rows;
+
+  let notFoundCount = 0;
+
   for (const channel of channels) {
+    const existingChannelId = channel.id;
+
     const robotData = findRobotDataElse(channel.id, robots);
     const name = channel.name;
     const id = robotData.id;
@@ -64,19 +79,37 @@ async function run() {
     const chat_id = channel.chat;
     const controls_id = channel.controls;
 
-    try {
-      await db.query(
-        "INSERT INTO robot_channels (name, id, created, heartbeat, server_id, chat_id, controls_id) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-        [name, id, created, heartbeat, server_id, chat_id, controls_id]
-      );
-    } catch (e) {
-      if (e.code == "23503") {
-        console.log(`${server_id} not found`);
-      } else {
-        console.error(e);
+    const robotServer = getServer(servers, server_id);
+
+    if (robotServer) {
+      try {
+        await db.query(
+          "INSERT INTO robot_channels (name, id, created, heartbeat, server_id, chat_id, controls_id) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+          [name, id, created, heartbeat, server_id, chat_id, controls_id]
+        );
+      } catch (e) {
+        return console.error(e);
       }
+
+      if (
+        robotServer.settings &&
+        robotServer.settings.default_channel === existingChannelId
+      ) {
+        const newSettings = { ...robotServer.settings, default_channel: id };
+        await db.query(
+          "UPDATE robot_servers SET settings = $1 WHERE server_id = $2",
+          [newSettings, server_id]
+        );
+      }
+    } else {
+      notFoundCount++;
+      console.log(`${server_id} not found`);
     }
   }
+
+  console.log(
+    `Finished with ${notFoundCount}/${channels.length} channels servers not found!`
+  );
 }
 
 run().then(() => {
