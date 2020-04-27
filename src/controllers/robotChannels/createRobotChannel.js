@@ -34,14 +34,13 @@ module.exports = async (data) => {
     const generate = await generateChannel(data);
     if (!generate) return { error: "problem creating channel" };
 
-    //save and return channel
+    //save, return, and broadcast update event for channel
     const save = await saveRobotChannel(generate);
     if (save) updateChannelsOnServer(data.server_id);
     log(`Channel ${save.name},
     ${save.id},
      created successfully.\n`);
 
-    //broadcast event ( to be deprecrated );
     return save;
   } catch (err) {
     console.log(err);
