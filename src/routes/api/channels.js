@@ -156,16 +156,18 @@ router.post(
       const { id, name } = req.body;
       if (id && name) {
         const result = await renameChannel(req.user, id, name);
+        if (result.error) return res.status(500).send(result);
         return res.status(201).send(result);
-      }
+      } else
+        return res
+          .status(400)
+          .send(
+            jsonError("missing required params for robot_channel: name, id")
+          );
     } catch (err) {
       console.log(err);
       res.status(500).send(jsonError("Unable to process request"));
     }
-
-    return res
-      .status(400)
-      .send(jsonError("missing required params for robot_channel: name, id"));
   }
 );
 
