@@ -5,8 +5,9 @@
  * - Sends updated status to clients
  *
  * todo:
- * - update robot / channel references to robot_channel
- * - Live status check should depend on robot.heartbeat, not server.status.live_devices
+ * - done:  update robot / channel references to robot_channel
+ * - done:  Live status check should depend on robot.heartbeat, not server.status.live_devices
+ * -
  */
 
 let robots = [];
@@ -25,7 +26,7 @@ module.exports.robotStatus = async () => {
   prevBots = robots;
   robots = await getLiveRobots(); //get robots from wss connection
   await updateRobotStatus(robots); //update robot heartbeat for all live robots
-  await this.checkForLiveRobotsOnServer(); //checking...
+  await pushLiveDevicesToServers();
   updateRobotServer(); //only send update event on changes
   announceRecentlyLive();
   checkInterval();
@@ -42,13 +43,6 @@ const announceRecentlyLive = async () => {
   });
 };
 
-module.exports.updateChannelStatus = async ({ robot, channel_id }) => {
-  const { updateRobotStatus } = require("../../models/robot");
-  log(`Update current channel for robot: ${robot.name}, ${channel_id}`);
-  robot.status.current_channel = channel_id;
-  updateRobotStatus(robot.id, robot.status);
-};
-
 //check wss connections for live robots
 const getLiveRobots = async () => {
   wss = require("../../services/wss");
@@ -57,7 +51,7 @@ const getLiveRobots = async () => {
     if (ws.robot) {
       //No dupes!
       if (!checkRobots.some((robot) => robot.id === ws.robot.id)) {
-        console.log("UPDATING ROBOT STATUS: ", robot);
+        console.log("UPDATING ROBOT STATUS: ", ws.robot);
         checkRobots.push(ws.robot);
       }
     }
@@ -74,44 +68,49 @@ const checkInterval = async () => {
 
 //update heartbeat for all live robots
 const updateRobotStatus = async (robotsToUpdate) => {
-  const { updateHeartbeat } = require("../../models/robot");
+  const { updateHeartbeat } = require("../../models/robotChannels");
   await robotsToUpdate.forEach(async (robot) => {
+    console.log("ROBOT: ", robot);
     log(`Robot, ${robot}, Status: ${robot.status}`);
     await updateHeartbeat(robot.id);
   });
   return;
 };
 
-const getLiveRobotList = () => {
-  return robots;
-};
-
-//live robots are saved to a list stored on robot_server object currently
-module.exports.checkForLiveRobotsOnServer = async () => {
+const pushLiveDevicesToServers = async () => {
   const { getRobotServers } = require("../../models/robotServer");
-  const servers = await getRobotServers();
-  console.log("GETTING ACTIVE ROBOTS ON SERVER... ");
-  await servers.forEach(async (server) => {
-    await this.pushActiveRobotsToServer(server);
-  });
-};
-
-//push currently active robots for a server to server.status.liveDevices;
-module.exports.pushActiveRobotsToServer = async (server) => {
-  const { getAllRobotChannels } = require("../../models/robotChannels");
-  const { createTimeStamp } = require("../../modules/utilities");
+  const { getRobotChannelsForServer } = require("../../models/robotChannels");
   const { liveStatusInterval } = require("../../config");
   const { updateRobotServerStatus } = require("../../models/robotServer");
-  const robotChannels = await getAllRobotChannels(server.server_id);
-  let liveDevices = [];
-  const checkTimeStamp = createTimeStamp() - liveStatusInterval * 1.25;
-  if (!robotChannels || (robotChannels && robotChannels.error)) return;
-  robotChannels.map((robot) => {
-    if (robot.heartbeat && robot.heartbeat >= checkTimeStamp) {
-      liveDevices.push(robot);
-      console.log("Pushing live robot to server: ", robot.name);
+  const servers = await getRobotServers();
+  log("Check Servers for Updates: ", servers.length);
+  const compareDate = new Date();
+  await servers.forEach(async (server) => {
+    let liveDevices = [];
+    const channels = await getRobotChannelsForServer(
+      server.server_id || server.id
+    );
+    channels.forEach((channel) => {
+      if (channel.heartbeat >= compareDate - liveStatusInterval * 1.25) {
+        log("Pushing Live Device to Server: ", channel.name);
+        liveDevices.push(channel);
+        return;
+      }
+    });
+
+    //Update Server only if there are changes.
+    if (
+      JSON.stringify(liveDevices) !== JSON.stringify(server.status.liveDevices)
+    ) {
+      log("Update This Server: ", server.server_name || server.name);
+      server.status.liveDevices = liveDevices;
+      updateRobotServerStatus(server.server_id || server.id, server.status);
     }
+    return;
   });
-  server.status.liveDevices = liveDevices;
-  await updateRobotServerStatus(server.server_id, server.status);
+  return;
+};
+
+const getLiveRobotList = () => {
+  return robots;
 };

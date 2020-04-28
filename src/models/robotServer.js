@@ -213,21 +213,6 @@ module.exports.activeUsersUpdated = async (server_id) => {
   this.emitEvent(server_id, ACTIVE_USERS_UPDATED, pickServer.users);
 };
 
-//Create a default chat when a server is first generated
-
-/*
-module.exports.initChannels = async server => {
-  const { createChannel } = require("./channel");
-
-  const { id } = makeChat;
-  const makeChannel = await createChannel({
-    name: defaultChannel,
-    host_id: server.server_id,
-    chat: id
-  });
-  return { id: makeChannel.id, name: makeChannel.name };
-};
-*/
 //sends globaltimeout message ot user on chatroom in which the ban was initiated
 //This could probably be better
 module.exports.sendGlobalTimeout = (server_id, badUser) => {

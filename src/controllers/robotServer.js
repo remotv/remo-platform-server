@@ -11,36 +11,6 @@ module.exports.updateSelectedServer = (server_id) => {
   });
 };
 
-// module.exports.checkForLiveRobots = async () => {
-//   const { getRobotServers } = require("../models/robotServer");
-//   const servers = await getRobotServers();
-//   await servers.forEach(async (server) => {
-//     await this.getActiveRobotsOnServer(server);
-//   });
-// };
-
-// module.exports.getActiveRobotsOnServer = async (server) => {
-//   const { getRobotsFromServerId } = require("../models/robot");
-//   const { createTimeStamp } = require("../modules/utilities");
-//   const { liveStatusInterval } = require("../config");
-//   const { updateRobotServerStatus } = require("../models/robotServer");
-//   const robots = await getRobotsFromServerId(server.server_id);
-//   let liveDevices = [];
-//   if (!robots || (robots && robots.error)) return;
-//   robots.map((robot) => {
-//     if (
-//       robot.status.heartBeat &&
-//       robot.status.heartBeat >= createTimeStamp() - liveStatusInterval * 1.25
-//     ) {
-//       liveDevices.push(robot);
-//       console.log("updatingLiveRobot", robot.name);
-//     }
-//   });
-//   server.status.liveDevices = liveDevices;
-//   await updateRobotServerStatus(server.server_id, server.status);
-//   return;
-// };
-
 module.exports.deleteRobotServer = async (server_id) => {
   const { deleteRobotServer } = require("../models/robotServer");
   const remove = await deleteRobotServer(server_id);
