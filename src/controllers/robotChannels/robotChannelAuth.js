@@ -1,6 +1,5 @@
-const { log } = require("./");
-
 module.exports.createRobotAuth = async (robot_id) => {
+  const { log } = require("./");
   const { createAuthToken } = require("../../models/user");
   const { getRobotChannelById } = require("../../models/robotChannels");
   try {

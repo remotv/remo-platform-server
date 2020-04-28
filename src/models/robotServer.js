@@ -62,6 +62,9 @@ module.exports.createRobotServer = async (server, user) => {
   if (!save) return { status: "Error!", error: "Unable to save server" };
   console.log("Generating Server: ", buildServer);
 
+  const { createChatRoom } = require("./chatRoom");
+  await createChatRoom(buildServer, defaultChannelName);
+
   const defaultChannel = await createRobotChannel({
     name: defaultChannelName,
     server_id: buildServer.server_id,
@@ -69,9 +72,9 @@ module.exports.createRobotServer = async (server, user) => {
   });
 
   buildServer.settings.default_channel = defaultChannel.id;
-  await db.query(
-    "UPDATE robot_servers SET settings = $1 WHERE server_id = $2",
-    [buildServer.settings, buildServer.server_id]
+  await this.updateRobotServerSettings(
+    buildServer.server_id,
+    buildServer.settings
   );
   this.pushToActiveServers(buildServer);
 
@@ -215,8 +218,7 @@ module.exports.activeUsersUpdated = async (server_id) => {
 /*
 module.exports.initChannels = async server => {
   const { createChannel } = require("./channel");
-  const { createChatRoom } = require("./chatRoom");
-  const makeChat = await createChatRoom(server, defaultChannel);
+
   const { id } = makeChat;
   const makeChannel = await createChannel({
     name: defaultChannel,

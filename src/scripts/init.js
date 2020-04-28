@@ -1,10 +1,12 @@
 module.exports = () => {
-  const { robotStatus } = require("../controllers/robots");
+  const {
+    robotStatus,
+  } = require("../controllers/robotChannels/robotChannelStatus");
   const { syncPatreonData } = require("../controllers/patreon");
   const { initActiveServers } = require("../models/robotServer");
   const { initActiveChats } = require("../models/chatRoom");
   const {
-    initButtonTimerCleanup
+    initButtonTimerCleanup,
   } = require("../controllers/controls/buttonTimers");
 
   robotStatus();

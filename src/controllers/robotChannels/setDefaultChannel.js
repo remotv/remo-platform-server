@@ -4,8 +4,9 @@ module.exports = async (user, channel_id, server_id) => {
   const {
     getRobotServer,
     updateRobotServerSettings,
+    updateRobotServer,
   } = require("../../models/robotServer");
-  const { updateSelectedServer } = require("../robotServer");
+
   const { log } = require("./");
 
   log(`Set default channel for server, 
@@ -32,7 +33,7 @@ module.exports = async (user, channel_id, server_id) => {
     settings
   );
   if (!updateSettings) return jsonError("Could not update settings for server");
-  updateSelectedServer(server.server_id);
+  updateRobotServer();
   // console.log("Update Settings Result: ", updateSettings);
   return updateSettings;
 };

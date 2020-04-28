@@ -7,14 +7,14 @@ const { makeId, createTimeStamp } = require("../modules/utilities");
 
 module.exports.emitEvent = (chat_id, event, data) => {
   const wss = require("../services/wss");
-  wss.clients.forEach(ws => {
+  wss.clients.forEach((ws) => {
     if (ws.chat_id === chat_id) {
       ws.emitEvent(event, data);
     }
   });
 };
 
-module.exports.createChatRoom = (chat, channel) => {
+module.exports.createChatRoom = async (chat, channel) => {
   let makeChat = {};
   makeChat.messages = [];
   makeChat.name = channel;
@@ -23,7 +23,7 @@ module.exports.createChatRoom = (chat, channel) => {
   makeChat.created = createTimeStamp();
 
   console.log("Generating Chat Room: ", makeChat, chat);
-  this.saveChatRoom(makeChat);
+  await this.saveChatRoom(makeChat);
   return makeChat;
 };
 
@@ -32,7 +32,7 @@ const chatRoomPrototype = {
   name: "",
   id: "",
   host_id: "",
-  messages: []
+  messages: [],
 };
 
 //TODO: Put this into some kind of global instead of here
@@ -52,18 +52,18 @@ module.exports.initActiveChats = async () => {
   }
 };
 
-module.exports.pushToActiveChats = chat => {
+module.exports.pushToActiveChats = (chat) => {
   activeChats.push(chat);
   console.log("Active Chats Updated: ", activeChats);
 };
 
-module.exports.getActiveChat = chatId => {
+module.exports.getActiveChat = (chatId) => {
   //console.log("From Get Active Chat - chatId: ", chatId, activeChats);
-  let pickChat = activeChats.filter(activeChat => activeChat.id === chatId);
+  let pickChat = activeChats.filter((activeChat) => activeChat.id === chatId);
   return pickChat[0];
 };
 
-module.exports.saveChatRoom = async chatRoom => {
+module.exports.saveChatRoom = async (chatRoom) => {
   const db = require("../services/db");
   // console.log("Saving Chat Room: ", chatRoom);
   const { host_id, name, id, messages, created } = chatRoom;
@@ -77,7 +77,7 @@ module.exports.saveChatRoom = async chatRoom => {
 };
 
 //Get chatrooms that belong to a robot server
-module.exports.getChatRooms = async server_id => {
+module.exports.getChatRooms = async (server_id) => {
   // console.log("Server Id from getChatRooms: ", server_id);
   const db = require("../services/db");
   const query = `SELECT name, id FROM chat_rooms WHERE host_id = $1`;
@@ -91,7 +91,7 @@ module.exports.getChatRooms = async server_id => {
 };
 
 //Get a single chatroom & all its contents
-module.exports.getChat = async chatId => {
+module.exports.getChat = async (chatId) => {
   // console.log("Server Id from getChatRooms: ", chatId);
   const db = require("../services/db");
   const query = `SELECT * FROM chat_rooms WHERE id = $1 LIMIT 1`;
@@ -104,9 +104,9 @@ module.exports.getChat = async chatId => {
   }
 };
 
-module.exports.saveMessageToActiveChat = message => {
+module.exports.saveMessageToActiveChat = (message) => {
   const activeChat = activeChats.find(
-    currentActiveChat => currentActiveChat.chat_id === message.chatId
+    (currentActiveChat) => currentActiveChat.chat_id === message.chatId
   );
   if (!activeChat) {
     throw new Error(`Couldn't find an activeChat with id ${message.chatId}`);

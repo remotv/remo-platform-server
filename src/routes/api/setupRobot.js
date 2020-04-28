@@ -38,27 +38,28 @@ router.post(
   }
 );
 
-router.post(
-  "/delete",
-  auth({ user: true, required: true }),
-  async (req, res) => {
-    let response = {};
-    if (
-      req.body.robot_id &&
-      req.body.host_id &&
-      req.user.id === req.body.owner_id
-    ) {
-      const result = await deleteRobot({
-        id: req.body.robot_id,
-        host_id: req.body.host_id,
-      });
-      response.status = result.status;
-      res.send(response);
-      return;
-    }
-    res.send(jsonError("Unable to delete robot."));
-  }
-);
+//TO BE DELETED!
+// router.post(
+//   "/delete",
+//   auth({ user: true, required: true }),
+//   async (req, res) => {
+//     let response = {};
+//     if (
+//       req.body.robot_id &&
+//       req.body.host_id &&
+//       req.user.id === req.body.owner_id
+//     ) {
+//       const result = await deleteRobot({
+//         id: req.body.robot_id,
+//         host_id: req.body.host_id,
+//       });
+//       response.status = result.status;
+//       res.send(response);
+//       return;
+//     }
+//     res.send(jsonError("Unable to delete robot."));
+//   }
+// );
 
 router.post("/key", auth({ user: true, required: true }), async (req, res) => {
   const {

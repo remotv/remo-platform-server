@@ -7,19 +7,17 @@
  * - Live status check should depend on robot.heartbeat, not server.status.live_devices
  */
 
-let robots = []; //store live robots in memmory
-let prevBots = []; //store previous bots to compare data against
-
+let robots = [];
+let prevBots = [];
 const { logger } = require("../../modules/logging");
 const log = (message) => {
   logger({
     message: message,
     level: "debug",
-    source: "controllers/robotChannels/robotChannelStatus.js",
+    source: "controllers/robot.js",
   });
 };
 
-//gets called by /src/scripts/init.js
 module.exports.robotStatus = async () => {
   const { updateRobotServer } = require("../../models/robotServer");
   const { checkForLiveRobots } = require("../robotServer");
@@ -32,9 +30,8 @@ module.exports.robotStatus = async () => {
   checkInterval();
 };
 
-//checks for recent changes in live robots for triggering notifications
 const announceRecentlyLive = async () => {
-  const { liveRobotAlert } = require("./notifications/index");
+  const { liveRobotAlert } = require("../notifications");
   robots.forEach((robot) => {
     let found = false;
     prevBots.forEach((prevBot) => {
@@ -44,16 +41,15 @@ const announceRecentlyLive = async () => {
   });
 };
 
-//update robot_channel heartbeat
-module.exports.updateChannelStatus = async ({ name, id }) => {
-  const { updateHeartBeat } = require("../../models/robotChannels");
-  log(`Update current channel for robot: ${name}, ${id}`);
-  updateHeartBeat(id);
+module.exports.updateChannelStatus = async ({ robot, channel_id }) => {
+  const { updateRobotStatus } = require("../../models/robot");
+  log(`Update current channel for robot: ${robot.name}, ${channel_id}`);
+  robot.status.current_channel = channel_id;
+  updateRobotStatus(robot.id, robot.status);
 };
 
-//look for live robots connected via websockets
 const getLiveRobots = async () => {
-  wss = require("../services/wss");
+  wss = require("../../services/wss");
   let checkRobots = [];
   await wss.clients.forEach(async (ws) => {
     if (ws.robot) {
@@ -68,14 +64,16 @@ const getLiveRobots = async () => {
 };
 
 const checkInterval = async () => {
-  const { liveStatusInterval } = require("../config");
+  const { liveStatusInterval } = require("../../config");
   setTimeout(this.robotStatus, liveStatusInterval);
   return;
 };
 
 const updateRobotStatus = async (robotsToUpdate) => {
+  const { updateHeartbeat } = require("../../models/robot");
   await robotsToUpdate.forEach(async (robot) => {
-    await this.updateChannelStatus(robot);
+    log(`Robot, ${robot}, Status: ${robot.status}`);
+    await updateHeartbeat(robot.id);
   });
   return;
 };
