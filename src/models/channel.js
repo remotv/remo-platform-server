@@ -1,9 +1,11 @@
+//TO BE DELETED!
+
 const { logger, jsonError } = require("../modules/logging");
-const log = message => {
+const log = (message) => {
   logger({
     level: "debug",
     source: "models/channel",
-    message: message
+    message: message,
   });
 };
 
@@ -27,30 +29,30 @@ channelPrototype = {
   controls: "ID of robot interface controls to reference",
   display: "ID of display to reference",
   id: "Unique ID",
-  created: "timestamp - when channel was first created"
+  created: "timestamp - when channel was first created",
 };
 
 let activeChannels = [];
 
 const settingsPt = {
   public: true, //Deprecate
-  access: "@everyone"
+  access: "@everyone",
 };
 
 const statusPt = {
-  test_value: true
+  test_value: true,
 };
 
 module.exports.emitEvent = (channel_id, event, data) => {
   const wss = require("../services/wss");
-  wss.clients.forEach(ws => {
+  wss.clients.forEach((ws) => {
     if (ws.channel_id === channel_id) {
       ws.emitEvent(event, data);
     }
   });
 };
 
-module.exports.createChannel = async data => {
+module.exports.createChannel = async (data) => {
   log(`Channel Data: ${data}`);
 
   if (!data.chat) {
@@ -85,13 +87,13 @@ module.exports.createChannel = async data => {
   //Todo: Add channel to active server in memmory
 };
 
-const setChannelChat = channel => {
+const setChannelChat = (channel) => {
   //If channel uses an existing chat, return that id,
   //If chat doesn't exist for channel already, create one
 };
 
 //Make sure each element has a value assigned
-const checkChannelElement = elementId => {
+const checkChannelElement = (elementId) => {
   if (elementId !== "" && elementId !== undefined) {
     return elementId;
   } else {
@@ -99,7 +101,7 @@ const checkChannelElement = elementId => {
   }
 };
 
-module.exports.saveChannel = async channel => {
+module.exports.saveChannel = async (channel) => {
   const db = require("../services/db");
   const {
     host_id,
@@ -111,7 +113,7 @@ module.exports.saveChannel = async channel => {
     created,
     settings,
     status,
-    robot
+    robot,
   } = channel;
   const dbPut = `INSERT INTO channels (host_id, name, id, chat, controls, display, created, settings, status, robot) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10 ) RETURNING *`;
   try {
@@ -126,7 +128,7 @@ module.exports.saveChannel = async channel => {
       created,
       settings,
       status,
-      robot
+      robot,
     ]);
     this.updateServerChannels(host_id);
     return result.rows;
@@ -135,7 +137,7 @@ module.exports.saveChannel = async channel => {
   }
 };
 
-module.exports.getChannels = async server_id => {
+module.exports.getChannels = async (server_id) => {
   const db = require("../services/db");
   try {
     const query = `SELECT * FROM channels WHERE host_id = $1`;
@@ -144,7 +146,7 @@ module.exports.getChannels = async server_id => {
   } catch (err) {
     const error = {
       error: "Unable to get channels from DB",
-      error_message: err
+      error_message: err,
     };
     console.log(error);
     return error;
@@ -152,7 +154,7 @@ module.exports.getChannels = async server_id => {
 };
 
 //Moving to /controllers
-module.exports.updateServerChannels = server_id => {
+module.exports.updateServerChannels = (server_id) => {
   const { updateChannelsOnServer } = require("../controllers/channels");
   updateChannelsOnServer(server_id);
 };
@@ -190,7 +192,7 @@ module.exports.deleteChannel = async (channel_id, server_id) => {
   }
 };
 
-module.exports.getServerIdFromChannelId = async channel_id => {
+module.exports.getServerIdFromChannelId = async (channel_id) => {
   const db = require("../services/db");
   response = {};
   try {
@@ -229,7 +231,7 @@ module.exports.updateChannelName = async ({ name, id }) => {
   return jsonError("Unable to name channel, please try again later");
 };
 
-module.exports.setControls = async controlData => {
+module.exports.setControls = async (controlData) => {
   const { sendUpdatedControls } = require("./controls");
   // console.log("SET CONTROLS CHECK: ", controlData);
   //save new controls to channel
@@ -256,7 +258,7 @@ module.exports.setControls = async controlData => {
 };
 
 //Get data for individual channel
-module.exports.getChannel = async channel_id => {
+module.exports.getChannel = async (channel_id) => {
   if (!channel_id) return { status: "error!", error: "channel ID required" };
   const db = require("../services/db");
   console.log("Fetch data for channel: ", channel_id);
