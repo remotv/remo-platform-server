@@ -1,17 +1,17 @@
 /**
  * Refactoring from: /controllers/robots.js
  * Robot Channel State Management:
- * - Gets live-status updates from active robots
- * - Sends updated status to clients
+ * - Each robot channel has a ws connection
+ * - Updates heartbeats for active robots
+ * - Checks channels for every server for updated heartbeats
+ * - Pushes active channels to server.status.liveDevices,
+ * - Broadcasts global event w/ updated server information,
  *
- * todo:
- * - done:  update robot / channel references to robot_channel
- * - done:  Live status check should depend on robot.heartbeat, not server.status.live_devices
- * -
  */
 
-let robots = [];
-let prevBots = [];
+let robots = []; //store list of robots in memmory
+let prevBots = []; //store list of previous updated robots to compare for changes
+
 const { logger } = require("../../modules/logging");
 const log = (message) => {
   logger({
@@ -27,7 +27,7 @@ module.exports.robotStatus = async () => {
   robots = await getLiveRobots(); //get robots from wss connection
   await updateRobotStatus(robots); //update robot heartbeat for all live robots
   await pushLiveDevicesToServers();
-  updateRobotServer(); //only send update event on changes
+  updateRobotServer(); //broadcast event for updated servers
   announceRecentlyLive();
   checkInterval();
 };
@@ -77,6 +77,10 @@ const updateRobotStatus = async (robotsToUpdate) => {
   return;
 };
 
+/**
+ * - Checks every channel on each server for updated heartbeat
+ * - Pushes currently active channels to server.status.liveDevices
+ */
 const pushLiveDevicesToServers = async () => {
   const { getRobotServers } = require("../../models/robotServer");
   const { getRobotChannelsForServer } = require("../../models/robotChannels");
