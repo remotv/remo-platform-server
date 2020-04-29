@@ -1,7 +1,7 @@
 module.exports.getActiveUsers = () => {
   const wss = require("../services/wss");
   let users = [];
-  wss.clients.forEach(ws => {
+  wss.clients.forEach((ws) => {
     if (ws.user && ws.user.id) {
       users.push(ws.user.id);
     }
@@ -15,7 +15,7 @@ module.exports.getActiveUsers = () => {
 module.exports.getActiveRobots = async () => {
   const wss = require("../services/wss");
   let robots = [];
-  wss.clients.forEach(ws => {
+  wss.clients.forEach((ws) => {
     if (ws.robot && ws.robot.id) {
       robots.push(ws.robot.id);
     }
@@ -41,8 +41,8 @@ module.exports.getRobotServerCount = async () => {
 };
 
 module.exports.getTotalRobotCount = async () => {
-  const { getTotalRobotCount } = require("../models/robot");
-  const count = await getTotalRobotCount();
+  const { getAllChannelsCount } = require("../models/robotChannels");
+  const count = await getAllChannelsCount();
   console.log("TOTAL ROBOT COUNT: ", count);
   return count;
 };

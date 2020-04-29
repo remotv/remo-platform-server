@@ -4,18 +4,21 @@ const {
   getActiveRobots,
   getTotalUserCount,
   getRobotServerCount,
-  getTotalRobotCount
+  getTotalRobotCount,
 } = require("../../controllers/stats");
 
 router.get("/", async (req, res) => {
-  console.log("Get Stats!");
-  res.send({
-    activeUsers: await getActiveUsers(),
-    totalUsers: await getTotalUserCount(),
-    totalServers: await getRobotServerCount(),
-    activeDevices: await getActiveRobots(),
-    registeredDevices: await getTotalRobotCount()
-  });
+  try {
+    res.status(200).send({
+      activeUsers: await getActiveUsers(),
+      totalUsers: await getTotalUserCount(),
+      totalServers: await getRobotServerCount(),
+      activeDevices: await getActiveRobots(),
+      registeredDevices: await getTotalRobotCount(),
+    });
+  } catch (err) {
+    return res.status(500).send({ error: "unable to get stats." });
+  }
 });
 
 module.exports = router;
