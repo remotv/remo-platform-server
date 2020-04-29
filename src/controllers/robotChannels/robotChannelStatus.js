@@ -104,7 +104,7 @@ const pushLiveDevicesToServers = async () => {
     if (
       JSON.stringify(liveDevices) !== JSON.stringify(server.status.liveDevices)
     ) {
-      log("Update This Server: ", server.server_name || server.name);
+      log(`Update This Server: ${server.server_name || server.name}`);
       server.status.liveDevices = liveDevices;
       updateRobotServerStatus(server.server_id || server.id, server.status);
     }

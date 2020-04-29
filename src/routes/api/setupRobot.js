@@ -12,31 +12,31 @@ router.get("/setup", async (req, res) => {
   console.log("Send Robot Object");
 });
 
-router.post(
-  "/setup",
-  auth({ user: true, required: true }),
-  async (req, res) => {
-    const { validateRobotName } = require("../../controllers/validate");
+// router.post(
+//   "/setup",
+//   auth({ user: true, required: true }),
+//   async (req, res) => {
+//     const { validateRobotName } = require("../../controllers/validate");
 
-    let response = {};
-    if (req.body.robot_name && req.body.host_id) {
-      let robot_name = validateRobotName(req.body.robot_name);
-      if (robot_name.error) {
-        res.send(robot_name);
-        return;
-      }
-    } else {
-      res.send(jsonError("robot_name & host_id are required"));
-    }
-    response.result = await createRobot({
-      robot_name: req.body.robot_name,
-      host_id: req.body.host_id,
-      owner: req.user,
-    });
-    res.send(response);
-    return;
-  }
-);
+//     let response = {};
+//     if (req.body.robot_name && req.body.host_id) {
+//       let robot_name = validateRobotName(req.body.robot_name);
+//       if (robot_name.error) {
+//         res.send(robot_name);
+//         return;
+//       }
+//     } else {
+//       res.send(jsonError("robot_name & host_id are required"));
+//     }
+//     response.result = await createRobot({
+//       robot_name: req.body.robot_name,
+//       host_id: req.body.host_id,
+//       owner: req.user,
+//     });
+//     res.send(response);
+//     return;
+//   }
+// );
 
 router.post("/key", auth({ user: true, required: true }), async (req, res) => {
   const {

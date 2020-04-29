@@ -2,7 +2,8 @@ const { BUTTON_COMMAND } = require("./definitions");
 
 module.exports = async (ws, command) => {
   if (!ws.user || !command) return;
-  const channel = require("../models/channel");
+  const { emitEvent } = require("../controllers/robotChannels");
+
   const { publicUser, getUserInfoFromId } = require("../models/user");
   const { validateInput } = require("../controllers/controls");
   command.user = publicUser(ws.user);
@@ -45,7 +46,7 @@ module.exports = async (ws, command) => {
       command.user.username,
       command.button.label
     );*/
-    channel.emitEvent(command.channel, BUTTON_COMMAND, command);
+    emitEvent(command.channel, BUTTON_COMMAND, command);
   } else {
     //console.log("Command failed validation", check);
   }
