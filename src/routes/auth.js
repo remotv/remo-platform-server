@@ -1,5 +1,7 @@
 const { authUserData } = require("../models/user");
-const { authRobotData } = require("../models/robot");
+const {
+  authRobotData,
+} = require("../controllers/robotChannels/robotChannelAuth"); //moved to controller
 const { extractToken } = require("../modules/jwt");
 
 const { logger } = require("../modules/logging");

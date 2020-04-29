@@ -6,6 +6,7 @@ module.exports = async (buttons, channel_id, controls_id) => {
   const { validateButtonsJSON, validateButton } = require("./../validate");
   const { makeId } = require("../../modules/utilities");
   const { clearControlsForChannel } = require("./buttonTimers");
+  const { log } = require("./");
   let response = {};
   let newButtons = [];
   let buildControls = {};
@@ -16,6 +17,7 @@ module.exports = async (buttons, channel_id, controls_id) => {
   //generate json
 
   try {
+    log(`Generating Buttons for channel: ${channel_id}`);
     if (buttons) {
       const checkButtonsArray = validateButtonsJSON(buttons);
       if (checkButtonsArray.error) return checkButtonsArray;
@@ -89,9 +91,7 @@ module.exports = async (buttons, channel_id, controls_id) => {
             newButton.cooldown = jsonError(
               "Cooldown cannot be over 5 digits in length, or less than 1."
             );
-          console.log("Cooldown Result: ", newButton);
           if (newButton.cooldown.error) {
-            console.log("Error Detected");
             foundError = true;
             errorData = newButton.cooldown;
             return errorData;

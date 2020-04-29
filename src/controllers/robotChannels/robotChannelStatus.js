@@ -1,12 +1,10 @@
 /**
- * Refactoring from: /controllers/robots.js
- * Robot Channel State Management:
+ * Robot Server & Channel State Management: Does not include controls or chat
  * - Each robot channel has a ws connection
  * - Updates heartbeats for active robots
  * - Checks channels for every server for updated heartbeats
  * - Pushes active channels to server.status.liveDevices,
  * - Broadcasts global event w/ updated server information,
- *
  */
 
 let robots = []; //store list of robots in memmory
@@ -79,7 +77,7 @@ const updateRobotStatus = async (robotsToUpdate) => {
 
 /**
  * - Checks every channel on each server for updated heartbeat
- * - Pushes currently active channels to server.status.liveDevices
+ * - Pushes changes to live robot_channels to server.status.liveDevices
  */
 const pushLiveDevicesToServers = async () => {
   const { getRobotServers } = require("../../models/robotServer");

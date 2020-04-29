@@ -1,4 +1,4 @@
-const { getControlsFromId } = require("../controllers/controls");
+const { getControlsFromChannelId } = require("../controllers/controls");
 const { logger } = require("../modules/logging");
 const log = (message) => {
   logger({
@@ -17,7 +17,7 @@ module.exports = async (ws, channel) => {
 
   try {
     if (channel && channel.id) {
-      const getControls = await getControlsFromId(channel.id, ws.user);
+      const getControls = await getControlsFromChannelId(channel.id, ws.user);
       ws.emitEvent("GET_USER_CONTROLS", getControls);
 
       //Subscribe user to controls

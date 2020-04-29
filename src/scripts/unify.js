@@ -20,6 +20,12 @@ CREATE TABLE robot_channels (
     chat_id text NOT NULL,
     controls_id text NOT NULL REFERENCES controls(id) ON DELETE CASCADE
 );
+
+run script verify the data is correct then
+
+ALTER TABLE controls DROP COLUMN channel_id;
+DROP TABLE channels;
+DROP TABLE robots;
 */
 //make chat_rooms.id a primary key later
 const db = require("../services/db");

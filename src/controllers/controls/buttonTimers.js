@@ -50,7 +50,7 @@ module.exports.pushButtonTimer = async (button, channel_id, authOverride) => {
 //Override disabled state and update the timestamp to the button
 const overrideButtonState = (button, channel_id) => {
   const { controlStateUpdated } = require("./");
-  console.log("Override Button State: ", button.label);
+  // console.log("Override Button State: ", button.label);
   button.timeStamp = Date.now();
   if (button.cooldown) button.count = 0; //reset count to 0
   button.disabled = true; // here
@@ -75,6 +75,7 @@ module.exports.updateButtonStates = () => {
   const { controlStateUpdated } = require("./");
   let updateButtons = [];
   buttonStore.forEach((button) => {
+    // console.log("Check Button State: ", button);
     //If the button is set for removal, do not push to updateButtons array.
     if (checkButtonForRemoval(button)) return;
 

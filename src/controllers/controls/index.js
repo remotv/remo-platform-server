@@ -6,7 +6,7 @@ module.exports = {
   getButtonInputForChannel: require("./getButtonInputForChannel"),
   getButtonInputForUser: require("./getButtonInputForUser"),
   buildButtons: require("./buildButtons"),
-  getControlsFromId: require("./getControlsFromId"),
+  getControlsFromChannelId: require("./getControlsFromChannelId"),
   buttonTimers: require("./buttonTimers"),
-  controlStateUpdated: require("./controlStateUpdated")
+  controlStateUpdated: require("./controlStateUpdated"),
 };

@@ -1,16 +1,16 @@
-module.exports = async robot => {
-  const { getRobotFromId } = require("../../models/robot");
+module.exports = async (robot) => {
+  const { getRobotChannelById } = require("../../models/robotChannels");
   const { createMessage } = require("../../models/chatMessage");
   const { robotAlerts } = require("./");
   const {
     getRobotServer,
-    updateRobotServerStatus
+    updateRobotServerStatus,
   } = require("../../models/robotServer");
   const { notifyFollowers } = require("./");
   const { emailNotificationInterval } = require("../../config");
 
   let { settings, status, server_name, owner_id } = await getRobotServer(
-    robot.host_id
+    robot.server_id
   );
 
   //TODO: Setting specifically for annoucing live robots in chat
@@ -19,9 +19,9 @@ module.exports = async robot => {
     createMessage({
       message: alertMessage,
       user: robot,
-      server_id: robot.host_id,
+      server_id: robot.server_id,
       type: "event",
-      broadcast: "server"
+      broadcast: "server",
     });
   }
 
@@ -41,18 +41,18 @@ module.exports = async robot => {
     !status.notification_sent ||
     time > status.notification_sent + emailNotificationInterval
   ) {
-    const getRobot = await getRobotFromId(robot.id);
-    const { current_channel } = getRobot.status;
-    const linkChannel = current_channel || settings.default_channel;
+    const getRobot = await getRobotChannelById(robot.id);
+
+    const linkChannel = getRobot.id || settings.default_channel;
     notifyFollowers(
-      robot.host_id,
+      robot.server_id,
       server_name,
       linkChannel,
       robot.name,
       owner_id
     );
     status.notification_sent = time;
-    updateRobotServerStatus(robot.host_id, status);
+    updateRobotServerStatus(robot.server_id, status);
   } else {
     // console.log("NOTIFICATION NOT SENT!");
   }

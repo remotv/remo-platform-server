@@ -6,6 +6,14 @@ Right now this only covers buttons, will will eventually include other types of 
 */
 const { makeId, createTimeStamp } = require("../modules/utilities");
 const { exampleControls } = require("../controllers/controls");
+const { logger } = require("../modules/logging");
+const log = (message) => {
+  logger({
+    message: message,
+    level: "debug",
+    source: "models/controls.js",
+  });
+};
 //TEMPORARY VALUES JUST TO ENSURE VALIDATION:
 testControls = exampleControls();
 
@@ -47,16 +55,16 @@ module.exports.createControls = async (controls) => {
 };
 
 module.exports.updateControls = async (controls) => {
-  console.log("UPDATING EXISTING CONTROLS: ", controls);
   const db = require("../services/db");
   const { buttons, id } = controls;
   const query = `UPDATE controls SET buttons = $1 WHERE id = $2 RETURNING *`;
   try {
+    log(`UPDATING EXISTING CONTROLS:  ${id}`);
     const result = await db.query(query, [buttons, id]);
     // console.log(result.rows[0]);
     if (result.rows[0]) {
       const details = result.rows[0];
-      this.sendUpdatedControls(details.channel_id);
+      this.sendUpdatedControls(controls.channel_id);
       return result.rows[0];
     }
   } catch (err) {
@@ -72,12 +80,11 @@ module.exports.updateControls = async (controls) => {
 
 module.exports.saveControls = async (controls) => {
   const db = require("../services/db");
-  const { id, channel_id, created, buttons, settings, status } = controls;
-  const dbPut = `INSERT INTO controls (id, channel_id, created, buttons, settings, status) VALUES($1, $2, $3, $4, $5, $6) RETURNING *`;
+  const { id, created, buttons, settings, status } = controls;
+  const dbPut = `INSERT INTO controls (id, created, buttons, settings, status) VALUES($1, $2, $3, $4, $5) RETURNING *`;
   try {
     const save = await db.query(dbPut, [
       id,
-      channel_id,
       created,
       buttons,
       settings,
@@ -103,7 +110,10 @@ module.exports.getControls = async (id, channel_id) => {
     try {
       const result = await db.query(query, [id]);
       //console.log(result.rows[0]);
-      if (result.rows[0]) return result.rows[0];
+      if (result.rows[0]) {
+        result.rows[0].channel_id = channel_id;
+        return result.rows[0];
+      }
       console.log("Error, could not fetch data for CONTROLS");
       return null;
     } catch (err) {
@@ -147,18 +157,6 @@ module.exports.getControlsFromId = async (id) => {
   const query = `SELECT * FROM controls WHERE id = $1`;
   try {
     const result = await db.query(query, [id]);
-    if (result.rows[0]) return result.rows[0];
-  } catch (err) {
-    console.log(err);
-  }
-  return null;
-};
-
-module.exports.getControlsForChannel = async (channel_id) => {
-  const db = require("../services/db");
-  const query = `SELECT * FROM controls WHERE channel_id = $1`;
-  try {
-    const result = await db.query(query, [channel_id]);
     if (result.rows[0]) return result.rows[0];
   } catch (err) {
     console.log(err);

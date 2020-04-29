@@ -8,7 +8,6 @@ module.exports = async (
   const { getMemberAndUserSettings } = require("../../models/mixedQueries");
   const { emailLiveRobotAnnoucemnent } = require("../../controllers/mailers");
   const { robotAlerts } = require("./");
-  const { enableEmailAlerts } = require("../../config");
 
   if (!server_name || !robot_name || !channel_id) return;
 
@@ -17,23 +16,23 @@ module.exports = async (
   //
   //   console.log("Sending notifications to members: ");
   // console.log("//////ENABLE EMAIL ALERTS: ", enableEmailAlerts);
-  if (enableEmailAlerts === true)
-    members.forEach(member => {
-      if (
-        member.member_status.member &&
-        member.id !== owner_id &&
-        member.status.email_verified &&
-        (member.member_settings.enable_notifications ||
-          !member.member_settings.hasOwnProperty("enable_notifications")) &&
-        (member.settings.enable_email_notifications ||
-          !member.settings.hasOwnProperty("enable_email_notifications"))
-      ) {
-        emailLiveRobotAnnoucemnent(member, {
-          server_name: server_name,
-          channel_id: channel_id,
-          robotAlert: alert
-        });
-      }
-    });
+  // if (enableEmailAlerts === true)
+  members.forEach((member) => {
+    if (
+      member.member_status.member &&
+      member.id !== owner_id &&
+      member.status.email_verified &&
+      (member.member_settings.enable_notifications ||
+        !member.member_settings.hasOwnProperty("enable_notifications")) &&
+      (member.settings.enable_email_notifications ||
+        !member.settings.hasOwnProperty("enable_email_notifications"))
+    ) {
+      emailLiveRobotAnnoucemnent(member, {
+        server_name: server_name,
+        channel_id: channel_id,
+        robotAlert: alert,
+      });
+    }
+  });
   return;
 };

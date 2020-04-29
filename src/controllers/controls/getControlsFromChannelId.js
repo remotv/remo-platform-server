@@ -11,6 +11,8 @@ module.exports = async (channel_id, user) => {
   const channel = await getRobotChannelById(channel_id);
   const controls = await getControlsFromId(channel.controls_id);
 
+  controls.channel_id = channel_id; //NOTE 2
+
   let sendButtons = [];
   if (controls && controls.buttons) {
     const { buttons } = controls;

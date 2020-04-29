@@ -13,21 +13,13 @@ router.post(
   async (req, res) => {
     let response = {};
     let validate = false;
-    const {
-      getServerIdFromChannelId,
-      getChannel,
-    } = require("../../models/channel");
+    const { getRobotChannelById } = require("../../models/robotChannels");
     const { buildButtons } = require("../../controllers/controls");
     const { getRobotServer } = require("../../models/robotServer");
 
-    let robotServer = await getServerIdFromChannelId(req.body.channel_id);
+    const checkForControls = await getRobotChannelById(req.body.channel_id);
 
-    if (robotServer.error) {
-      res.status(500).json(robotServer);
-      return;
-    }
-
-    robotServer = await getRobotServer(robotServer.result);
+    const robotServer = await getRobotServer(checkForControls.server_id);
 
     if (!robotServer) {
       res.status(500).json({
@@ -38,18 +30,18 @@ router.post(
     }
 
     if (req.robot) {
-      if (robotServer.server_id == req.robot.host_id) validate = true;
+      if (robotServer.server_id === req.robot.server_id) validate = true;
     } else if (req.user) {
       if (robotServer.owner_id === req.user.id) validate = true;
     }
 
     if (req.body.channel_id && req.body.buttons && validate) {
       console.log("BUTTONS LENGTH: ", req.body.buttons.length);
-      const checkForControls = await getChannel(req.body.channel_id);
+
       const setControls = await buildButtons(
         req.body.buttons,
         req.body.channel_id,
-        checkForControls.controls
+        checkForControls.controls_id
       );
       if (setControls.error) return res.send(setControls);
 
