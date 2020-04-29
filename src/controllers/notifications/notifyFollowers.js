@@ -13,10 +13,6 @@ module.exports = async (
 
   const members = await getMemberAndUserSettings(server_id);
   const alert = robotAlerts(robot_name, server_name);
-  //
-  //   console.log("Sending notifications to members: ");
-  // console.log("//////ENABLE EMAIL ALERTS: ", enableEmailAlerts);
-  // if (enableEmailAlerts === true)
   members.forEach((member) => {
     if (
       member.member_status.member &&

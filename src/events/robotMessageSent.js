@@ -8,7 +8,6 @@ module.exports = async (ws, message) => {
         `${ws.robot.id} attempted to send message to non existant or other servers chat ${message.chatId}`
       );
     }
-    // console.log("Robot Message Received: ", message, ws.robot);
     message.robot = ws.robot;
     message.type = "robot";
     createRobotMessage(message);

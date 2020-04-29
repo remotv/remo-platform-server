@@ -1,42 +1,13 @@
 const router = require("express").Router();
-const { createRobot, deleteRobot } = require("../../models/robot");
 const auth = require("../auth");
-const { jsonError } = require("../../modules/logging");
 
 router.get("/setup", async (req, res) => {
-  res.send({
-    username: "<Your User Name>", //This probably won't be needed
-    robot_name: "<Name of Your Robot>",
-    host_id: "<ID Of Server to host this robot>",
+  res.status(200).send({
+    warning:
+      "Use /api/ver/channels for initial robot setup, this route now only manages auth.",
   });
   console.log("Send Robot Object");
 });
-
-// router.post(
-//   "/setup",
-//   auth({ user: true, required: true }),
-//   async (req, res) => {
-//     const { validateRobotName } = require("../../controllers/validate");
-
-//     let response = {};
-//     if (req.body.robot_name && req.body.host_id) {
-//       let robot_name = validateRobotName(req.body.robot_name);
-//       if (robot_name.error) {
-//         res.send(robot_name);
-//         return;
-//       }
-//     } else {
-//       res.send(jsonError("robot_name & host_id are required"));
-//     }
-//     response.result = await createRobot({
-//       robot_name: req.body.robot_name,
-//       host_id: req.body.host_id,
-//       owner: req.user,
-//     });
-//     res.send(response);
-//     return;
-//   }
-// );
 
 router.post("/key", auth({ user: true, required: true }), async (req, res) => {
   const {

@@ -1,6 +1,6 @@
 /**
  * Robot Server & Channel State Management: Does not include controls or chat
- * - Each robot channel has a ws connection
+ * - tracks ws connections from live robot_channels for state management
  * - Updates heartbeats for active robots
  * - Checks channels for every server for updated heartbeats
  * - Pushes active channels to server.status.liveDevices,
