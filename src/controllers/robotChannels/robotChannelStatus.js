@@ -77,7 +77,7 @@ const updateRobotStatus = async (robotsToUpdate) => {
 
 /**
  * - Checks every channel on each server for updated heartbeat
- * - Pushes changes to live robot_channels to server.status.liveDevices
+ * - Pushes changes from live robot_channels to server.status.liveDevices
  */
 const pushLiveDevicesToServers = async () => {
   const { getRobotServers } = require("../../models/robotServer");

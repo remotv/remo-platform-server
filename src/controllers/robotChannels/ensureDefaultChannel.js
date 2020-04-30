@@ -1,5 +1,5 @@
 /**
- * - Sets the default channel a server will load when opened by client
+ * - Ensures a server has a default channel
  * - returns true when complete
  */
 
