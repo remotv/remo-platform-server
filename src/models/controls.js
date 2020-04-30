@@ -147,7 +147,7 @@ module.exports.getControls = async (id, channel_id) => {
 
 module.exports.sendUpdatedControls = async (channel_id) => {
   //flag web client to pull updated controls
-  const channel = require("./channel");
+  const channel = require("../controllers/robotChannels");
   channel.emitEvent(channel_id, "CONTROLS_UPDATED");
 };
 
