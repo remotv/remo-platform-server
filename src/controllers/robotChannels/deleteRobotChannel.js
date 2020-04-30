@@ -9,7 +9,7 @@ module.exports = async (user, channel_id) => {
     ensureDefaultChannel,
     updateChannelsOnServer,
   } = require("../robotChannels");
-  const { log } = require("./");
+  const { log, jsonError } = require("./");
 
   let response = {};
   try {
