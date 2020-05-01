@@ -49,8 +49,8 @@ module.exports.updateSettings = async (server, user_id) => {
 };
 
 module.exports.getPublicServers = async () => {
-  const { getRobotServers } = require("../models/robotServer");
-  let getServers = await getRobotServers();
+  const { getRobotServersWithOwner } = require("../models/robotServer");
+  let getServers = await getRobotServersWithOwner();
   let list = [];
   getServers.forEach((server) => {
     if (server.settings.unlist === true || server.settings.private === true) {
