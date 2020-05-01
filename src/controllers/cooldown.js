@@ -3,21 +3,8 @@ let ips = [];
 const { authRequestTimeout } = require("../config");
 
 //This script is meant to help throttle security related requests like requesting a password reset
-Array.prototype.remove = function() {
-  var what,
-    a = arguments,
-    L = a.length,
-    ax;
-  while (L && this.length) {
-    what = a[--L];
-    while ((ax = this.indexOf(what)) !== -1) {
-      this.splice(ax, 1);
-    }
-  }
-  return this;
-};
-
-module.exports.addUser = user => {
+//This should be handled through NGINX
+module.exports.addUser = (user) => {
   const { createTimer } = require("../modules/utilities");
   console.log("adding user: ", user);
   if (usernames.includes(user)) {
@@ -31,11 +18,11 @@ module.exports.addUser = user => {
   }
 };
 
-const removeUsername = username => {
+const removeUsername = (username) => {
   usernames.remove(username);
 };
 
-module.exports.addIp = ip => {
+module.exports.addIp = (ip) => {
   const { createTimer } = require("../modules/utilities");
   console.log("adding ip: ", ip);
   if (ips.includes(ip)) {
@@ -49,7 +36,7 @@ module.exports.addIp = ip => {
   }
 };
 
-const removeIp = ip => {
+const removeIp = (ip) => {
   ips.remove(ip);
 };
 

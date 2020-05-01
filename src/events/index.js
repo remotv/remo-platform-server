@@ -28,9 +28,6 @@ module.exports.handleConnection = (ws, req) => {
     } else {
       console.log("Unknown Event: ", event);
     }
-
-    // const { getWss } = require("../controllers/wss");
-    //getWss();
   });
 
   ws.emitEvent = (event, data) => {
@@ -52,6 +49,7 @@ function registerEvent(event, func) {
   events[event] = func;
 }
 
+//REGISTER WS EVENT HANDLERS:
 //robot and user client events
 registerEvent("TEST_EVENT", require("./testEvent"));
 registerEvent("AUTHENTICATE", require("./authenticate"));
@@ -74,4 +72,3 @@ registerEvent(
 registerEvent("INTERNAL_LISTENER_BAN", require("./internalListenerBan"));
 registerEvent("INTERNAL_LISTENER_UNBAN", require("./internalListenerUnban"));
 registerEvent("INTERNAL_SEND_BANNED", require("./internalSendBanned"));
-//have to register them all with there definitions here
