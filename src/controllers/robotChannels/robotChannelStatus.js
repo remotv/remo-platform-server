@@ -49,7 +49,7 @@ const getLiveRobots = async () => {
     if (ws.robot) {
       //No dupes!
       if (!checkRobots.some((robot) => robot.id === ws.robot.id)) {
-        console.log("UPDATING ROBOT STATUS: ", ws.robot);
+        // console.log("UPDATING ROBOT STATUS: ", ws.robot);
         checkRobots.push(ws.robot);
       }
     }
