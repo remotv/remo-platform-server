@@ -179,12 +179,23 @@ module.exports.getRobotServers = async () => {
   const db = require("../services/db");
   try {
     const query = `SELECT * FROM robot_servers`;
-    result = await db.query(query);
+    const result = await db.query(query);
     // console.log(result.rows);
     return result.rows;
   } catch (err) {
     console.log(err);
   }
+};
+
+module.exports.getRobotServersWithOwner = async () => {
+  const db = require("../services/db");
+  const query = `SELECT robot_servers.server_id, robot_servers.server_name, robot_servers.owner_id, robot_servers.created, robot_servers.status, robot_servers.settings, users.username FROM robot_servers, users WHERE robot_servers.owner_id = users.id`;
+  try {
+  } catch (err) {
+    const result = await db.query(query);
+    if (result.rows) console.log(err);
+  }
+  return null;
 };
 
 module.exports.getRobotServerCount = async () => {
