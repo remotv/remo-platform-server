@@ -2,7 +2,7 @@ const { makeId, createTimeStamp } = require("../modules/utilities");
 const { getMessageType } = require("./chatCommands");
 
 //Create Message is called from events/index as an incoming socket.io event from the client
-module.exports.createMessage = async message => {
+module.exports.createMessage = async (message) => {
   const { filterPhoneticMessage } = require("../controllers/chatFilter");
   const { getRobotServerSettings } = require("../models/robotServer");
   //build the message:
@@ -53,7 +53,7 @@ module.exports.createMessage = async message => {
 };
 
 //Like User Message, except for robots
-module.exports.createRobotMessage = async message => {
+module.exports.createRobotMessage = async (message) => {
   let makeMess = {};
   makeMess.message = message.message;
   makeMess.sender = message.robot.name; //Will deprecate
@@ -80,7 +80,7 @@ module.exports.createRobotMessage = async message => {
   return;
 };
 
-module.exports.saveMessage = async getMessage => {
+module.exports.saveMessage = async (getMessage) => {
   const db = require("../services/db");
   const {
     message,
@@ -94,7 +94,7 @@ module.exports.saveMessage = async getMessage => {
     display_message,
     badges,
     type,
-    channel_id
+    channel_id,
   } = getMessage;
 
   const dbPut = `INSERT INTO chat_messages ( message,
@@ -122,7 +122,7 @@ module.exports.saveMessage = async getMessage => {
       display_message,
       badges,
       type,
-      channel_id
+      channel_id,
     ]);
     if (result.rows[0]) return result.rows[0];
   } catch (err) {
@@ -134,8 +134,9 @@ module.exports.saveMessage = async getMessage => {
 module.exports.getRecentMessages = async (chat_id, numberOfMessages) => {
   const db = require("../services/db");
   //TODO: Maybe don't return messages more than 24 hours old
-  const query = `SELECT * FROM chat_messages WHERE chat_id = $1 ORDER BY time_stamp DESC LIMIT ${numberOfMessages ||
-    10}`;
+  const query = `SELECT * FROM chat_messages WHERE chat_id = $1 ORDER BY time_stamp DESC LIMIT ${
+    numberOfMessages || 10
+  }`;
   try {
     const result = await db.query(query, [chat_id]);
     if (result.rows) {
@@ -148,7 +149,7 @@ module.exports.getRecentMessages = async (chat_id, numberOfMessages) => {
   return null;
 };
 
-module.exports.sendMessage = message => {
+module.exports.sendMessage = (message) => {
   const chatRoomModel = require("../models/chatRoom");
   const userModel = require("../models/user");
   const serverModel = require("../models/robotServer");
@@ -203,7 +204,7 @@ module.exports.getBadges = async (checkRoles, server_id, userId) => {
 
   //getLocalTypes can probably be replaced now that local status is is called in controllers/chatMessages/messageHandler()
   const addTypes = await getLocalTypes(server_id, userId);
-  addTypes.forEach(type => {
+  addTypes.forEach((type) => {
     checkRoles.push(type);
   });
   console.log("GET BADGES: ", checkRoles, server_id, userId);
@@ -226,7 +227,7 @@ module.exports.updateDisplayMessage = async ({ sender_id, server_id }) => {
     const result = await db.query(query, [
       display_message,
       sender_id,
-      server_id
+      server_id,
     ]);
     if (result.rows) return result.rows;
   } catch (err) {

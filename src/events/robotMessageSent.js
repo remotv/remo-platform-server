@@ -1,5 +1,6 @@
 const { createRobotMessage } = require("../models/chatMessage");
 const { getChat } = require("../models/chatRoom");
+const { getRobotChannelById } = require("../models/robotChannels");
 module.exports = async (ws, message) => {
   if (ws.robot) {
     const chat = await getChat(message.chatId);
@@ -10,6 +11,8 @@ module.exports = async (ws, message) => {
     }
     message.robot = ws.robot;
     message.type = "robot";
+    const getName = await getRobotChannelById(ws.robot.id);
+    message.robot.name = getName.name;
     createRobotMessage(message);
   } else {
     console.log("Robot Message Rejected (not authed): ", message);
