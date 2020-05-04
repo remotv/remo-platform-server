@@ -1,15 +1,17 @@
-const overides = require("./overrides");
+const overrides = require("./overrides");
 
+const routePrefix =
+  overrides.routePrefix || `http://localhost:3231/internal/api/`;
 const defaults = {
   internalKey: undefined, // Undefined for disabled
   serverPort: 3231,
   secret: "temp_secret",
-  reCaptchaSecretKey: overides.reCaptchaSecretKey,
+  reCaptchaSecretKey: "",
   maxTimeout: 15768000, //Seconds, not milliseconds
   loadMessages: 25, //number of messages chatroom will get on load
   currentAPIVersion: "/dev",
   logLevel: "debug",
-  sendGrid: overides.sendGrid,
+  sendGrid: "",
   sendMail: "",
   enableEmailAlerts: true,
 
@@ -30,15 +32,15 @@ const defaults = {
   //PATREON STUFF
   patreonClientID:
     "qzqYm-sCfZsMr-Va7LoFGRsNPBPO_bNb_TpLbxCOLSRVod_4t7sI2ezCVu3VMQ7o",
-  patreonClientSecret: overides.patreonClientSecret,
-  creatorAccessToken: overides.creatorAccessToken,
-  creatorRefreshToken: overides.creatorRefreshToken,
+  patreonClientSecret: "",
+  creatorAccessToken: "",
+  creatorRefreshToken: "",
   campaignId: "3356897",
   patreonSyncInterval: 30000,
 
   //Internal Routes:
-  sendAlert: `http://localhost:3231/internal/api/send-alert`,
-  testRoute: `http://localhost:3231/internal/api/test`,
+  sendAlert: `${routePrefix}send-alert`,
+  testRoute: `${routePrefix}test`,
 
   db: {
     user: "postgres",
@@ -84,4 +86,4 @@ const defaults = {
   ],
 };
 
-module.exports = Object.assign({}, defaults, overides);
+module.exports = Object.assign({}, defaults, overrides);
