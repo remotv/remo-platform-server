@@ -37,7 +37,7 @@ const defaults = {
   patreonSyncInterval: 30000,
 
   //Internal Routes:
-  sendAlert: `http:locahost:${this.serverPort}/internal/api/send-alert`,
+  sendAlert: `http://localhost:3231/internal/api/send-alert`,
   testRoute: `http://localhost:3231/internal/api/test`,
 
   db: {

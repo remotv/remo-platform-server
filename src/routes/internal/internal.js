@@ -9,11 +9,12 @@ router.post(
   "/send-alert",
   auth({ internal: true, required: true }),
   async (req, res) => {
-    console.log("/send-alert");
+    const { sendGlobalChatAlert } = require("../../controllers/internal");
     const { alert } = req.body;
-
-    console.log(req.internal, alert);
-    return res.status(200).send(alert);
+    sendGlobalChatAlert(alert);
+    return res
+      .status(200)
+      .send({ response: "Message processed.", alert: alert });
   }
 );
 

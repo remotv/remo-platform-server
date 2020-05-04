@@ -1,27 +1,19 @@
 const send = async () => {
   const axios = require("axios");
   const { internalKey, sendAlert } = require("../config");
-  const { makeId, createTimeStamp } = require("../modules/utilities");
+
   const { createInternalAuth } = require("../modules/jwt");
 
   const token = await createInternalAuth(`priv-${internalKey}`);
   console.log("Token: ", token);
 
-  const message = {
-    message: process.argv.slice(2).join(" "),
-    sender: "System Alert",
-    type: "alert",
-    broadcast: "",
-    display_message: true,
-    id: `mesg-${makeId()}`,
-    time_stamp: createTimeStamp(),
-  };
+  const message = process.argv.slice(2).join(" ");
 
   console.log("Sending Message: ", message);
 
   await axios
     .post(
-      "http://localhost:3231/internal/api/send-alert",
+      sendAlert,
       {
         alert: message,
       },
