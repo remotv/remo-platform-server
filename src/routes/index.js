@@ -6,5 +6,6 @@ router.get("/", (req, res) => {
 });
 
 router.use(`/api/dev`, require("./api"));
+router.use(`/internal`, require("./internal"));
 
 module.exports = router;

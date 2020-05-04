@@ -36,6 +36,10 @@ const defaults = {
   campaignId: "3356897",
   patreonSyncInterval: 30000,
 
+  //Internal Routes:
+  sendAlert: `http:locahost:${this.serverPort}/internal/api/send-alert`,
+  testRoute: `http://localhost:3231/internal/api/test`,
+
   db: {
     user: "postgres",
     password: "",
@@ -43,7 +47,7 @@ const defaults = {
     host: "localhost",
     port: 5432,
     max: 50,
-    idleTimeoutMillis: 30000
+    idleTimeoutMillis: 30000,
   },
 
   //BadWords
@@ -51,13 +55,13 @@ const defaults = {
     normal_bad_words: {
       //replacement word: [ array, of, bad, word, iterations ]
       example1: ["test1", "test2", "test3"],
-      example2: ["word1", "word2", "word3"]
+      example2: ["word1", "word2", "word3"],
     },
     phonetic_bad_words: {
       //lookup phonetics: https://words.github.io/metaphone/
       // Bad Phonetic Word : Replacement Word
-      TST: "example"
-    }
+      TST: "example",
+    },
   },
   filterWhiteList: [
     "cant",
@@ -76,8 +80,8 @@ const defaults = {
     "pass",
     "shout",
     "sheet",
-    "chat"
-  ]
+    "chat",
+  ],
 };
 
 module.exports = Object.assign({}, defaults, overides);

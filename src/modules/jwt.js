@@ -32,3 +32,20 @@ module.exports.createAuthToken = (user) => {
     algorithm: "HS256",
   });
 };
+
+module.exports.createInternalAuth = (data) => {
+  return jwt.sign({ id: data }, tempSecret, {
+    subject: "",
+    algorithm: "HS256",
+  });
+};
+
+module.exports.authInternal = (data) => {
+  const { internalKey } = require("../config");
+  console.log("AUTH INTERNAL: ", data, internalKey);
+  return new Promise((resolve, reject) => {
+    if (data && data.id && data.id === `priv-${internalKey}`)
+      return resolve(data);
+    else return reject({ error: "supplied key does not match internal key" });
+  });
+};
