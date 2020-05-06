@@ -78,15 +78,23 @@ module.exports.createUser = async (user) => {
   user.type = []; //Change to "Roles" at some point.
   user.status = statusPt;
   user.settings = settingsPt;
-  user.session = `ssin-${makeId()}`;
+  user.session_id = `ssin-${makeId()}`;
   log(
     `${user.username} also saved will be saved,  status set: ${user.status} intialized settings: ${user.settings}`
   );
 
   log("Generating User: ", user);
 
-  const { username, id, password, created, status, settings, session } = user;
-  const dbPut = `INSERT INTO users (username, id, password, email, created, status, settings, session) VALUES( $1, $2, $3, $4, $5, $6, $7, $8 ) RETURNING *`;
+  const {
+    username,
+    id,
+    password,
+    created,
+    status,
+    settings,
+    session_id,
+  } = user;
+  const dbPut = `INSERT INTO users (username, id, password, email, created, status, settings, session_id) VALUES( $1, $2, $3, $4, $5, $6, $7, $8 ) RETURNING *`;
   try {
     await db.query(dbPut, [
       username,
@@ -96,7 +104,7 @@ module.exports.createUser = async (user) => {
       created,
       status,
       settings,
-      session,
+      session_id,
     ]);
 
     const token = await this.createAuthToken(user);
@@ -467,18 +475,6 @@ module.exports.updateStatus = async (user) => {
   }
 };
 
-//update session id for user
-module.exports.updateSession = async ({ id, session }) => {
-  const query = `UPDATE users SET session = $1 WHERE id = $2 RETURNING users.id, users.session`;
-  try {
-    const result = await db.query(query, [session, id]);
-    if (result.rows[0]) return result.rows[0];
-  } catch (err) {
-    console.log(err);
-  }
-  return null;
-};
-
 //MANAGE TIMEOUTS
 //If a user is timed out already, and a new timeout is applied, then we need to check if the new timeout will expire before the previous timeout.
 /*
@@ -626,6 +622,18 @@ module.exports.updateSettings = async (user) => {
   try {
     const result = await db.query(query, [user.settings, user.id]);
     if (result.rows[0]) return result.rows;
+  } catch (err) {
+    console.log(err);
+  }
+  return null;
+};
+
+//update session id for user
+module.exports.updateSession = async ({ id, session_id }) => {
+  const query = `UPDATE users SET session_id = $1 WHERE id = $2 RETURNING users.id, users.session_id`;
+  try {
+    const result = await db.query(query, [session_id, id]);
+    if (result.rows[0]) return result.rows[0];
   } catch (err) {
     console.log(err);
   }
