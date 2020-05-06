@@ -78,7 +78,7 @@ module.exports.createUser = async (user) => {
   user.type = []; //Change to "Roles" at some point.
   user.status = statusPt;
   user.settings = settingsPt;
-  user.session = "";
+  user.session = `ssin-${makeId()}`;
   log(
     `${user.username} also saved will be saved,  status set: ${user.status} intialized settings: ${user.settings}`
   );
@@ -465,6 +465,18 @@ module.exports.updateStatus = async (user) => {
       source: "models/user.js",
     });
   }
+};
+
+//update session id for user
+module.exports.updateSession = async ({ id, session }) => {
+  const query = `UPDATE users SET session = $1 WHERE id = $2 RETURNING users.id, users.session`;
+  try {
+    const result = await db.query(query, [session, id]);
+    if (result.rows[0]) return result.rows[0];
+  } catch (err) {
+    console.log(err);
+  }
+  return null;
 };
 
 //MANAGE TIMEOUTS
