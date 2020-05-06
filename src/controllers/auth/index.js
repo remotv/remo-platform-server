@@ -6,5 +6,5 @@ module.exports = {
   //tbd: authRobot, verifyRobotToken
 
   //tbd: createInternalAuth, authInternal
-  //tbd: extract token
+  extractToken: require("./extractToken"),
 };
