@@ -1,13 +1,13 @@
 const { err } = require("../modules/utilities");
 const { jsonError } = require("../modules/logging");
 
-module.exports.followedServers = async user => {
+module.exports.followedServers = async (user) => {
   const { getFollowedServers } = require("../models/serverMembers");
   const { getServerGroup } = require("../models/robotServer");
   const checkFollowed = await getFollowedServers(user.id);
   let followed = [];
   if (checkFollowed) {
-    checkFollowed.forEach(server => {
+    checkFollowed.forEach((server) => {
       if (server.status.member === true) followed.push(server.server_id);
     });
     followed = await getServerGroup(followed);
@@ -36,11 +36,11 @@ const passwordResetKey = (user, setExpire) => {
     expires: setExpire || Date.now() + passResetExpires,
     ref: user.id,
     expire: expire,
-    setExpiration: value => handleExpire(value)
+    setExpiration: (value) => handleExpire(value),
   };
 };
 
-module.exports.emailResetToken = async username => {
+module.exports.emailResetToken = async (username) => {
   const { getInfoFromUsername } = require("../models/user");
   const { generateResetKey } = require("./user");
   const user = await getInfoFromUsername(username);
@@ -50,7 +50,7 @@ module.exports.emailResetToken = async username => {
   }
   return {
     response:
-      "A reset token has been sent to the email account associated with this username."
+      "A reset token has been sent to the email account associated with this username.",
   };
 };
 
@@ -77,7 +77,8 @@ module.exports.validateResetKey = async ({ key_id }) => {
 module.exports.useResetKey = async ({ key_id, password }) => {
   console.log("RESET KEY CONTROLLER: ", key_id, password);
   const { getKey, updateKey } = require("../models/keys");
-  const { getUserInfoFromId, createAuthToken } = require("../models/user");
+  const { getUserInfoFromId } = require("../models/user");
+  const { createUserToken } = require("./auth");
   const { expired, expires, ref } = await getKey({ key_id });
   // console.log("GET KEY: ", expired, expires, Date.now());
   if (expired === true || expired === "true" || expires <= Date.now()) {
@@ -92,30 +93,30 @@ module.exports.useResetKey = async ({ key_id, password }) => {
     const useKey = await updateKey({
       key_id: key_id,
       ref: getUser.id,
-      expired: true
+      expired: true,
     });
     if (!useKey) return err("There was a problem updating your key");
   }
   if (!reset) return err("Could not reset password");
-  const token = await createAuthToken(getUser);
+  const token = await createUserToken(getUser);
   return { token: token };
 };
 
-module.exports.checkUsername = async name => {
+module.exports.checkUsername = async (name) => {
   const { checkUsername } = require("../models/user");
   const check = await checkUsername(name);
   if (check) return check;
   return null;
 };
 
-module.exports.getPublicUserFromId = async user_id => {
+module.exports.getPublicUserFromId = async (user_id) => {
   const { getUserInfoFromId } = require("../models/user");
   const user = await getUserInfoFromId(user_id);
   if (user) return user;
   return jsonError("Unable to get user information");
 };
 
-module.exports.fetchProfileInfo = async user_id => {
+module.exports.fetchProfileInfo = async (user_id) => {
   const { getPrivateInfoFromId } = require("../models/user");
   const { getPatron } = require("../models/patreon");
   let info = await getPrivateInfoFromId(user_id);
@@ -133,7 +134,7 @@ module.exports.fetchProfileInfo = async user_id => {
   return info;
 };
 
-const privateInfo = info => {
+const privateInfo = (info) => {
   return {
     username: info.username,
     email: info.email,
@@ -141,7 +142,7 @@ const privateInfo = info => {
     created: info.created,
     settings: info.settings,
     type: info.type,
-    status: info.status
+    status: info.status,
   };
 };
 
@@ -167,7 +168,7 @@ module.exports.updateEmail = async ({ email, id }) => {
   }
 };
 
-module.exports.resetVerifiedEmailStatus = async user => {
+module.exports.resetVerifiedEmailStatus = async (user) => {
   const { updateStatus } = require("../models/user");
   user.status.email_verified = false;
   const update = await updateStatus(user);
@@ -177,7 +178,7 @@ module.exports.resetVerifiedEmailStatus = async user => {
   return null;
 };
 
-module.exports.updateUserSettings = async user => {
+module.exports.updateUserSettings = async (user) => {
   const { updateSettings, getPrivateInfoFromId } = require("../models/user");
   let getUser = await getPrivateInfoFromId(user.id);
 

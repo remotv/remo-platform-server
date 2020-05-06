@@ -48,6 +48,7 @@ module.exports.emitEvent = (user_id, event, data) => {
 
 module.exports.createUser = async (user) => {
   const { validateEmail } = require("../controllers/validateEmail");
+  const { createUserToken } = require("../controllers/auth");
   let response = {};
   //ALWAYS SAVE EMAIL AS LOWERCASE!!!!!
   const email = user.email.toLowerCase();
@@ -107,7 +108,7 @@ module.exports.createUser = async (user) => {
       session_id,
     ]);
 
-    const token = await this.createAuthToken(user);
+    const token = await createUserToken(user);
 
     //Send Email Validation on creation:
     validateEmail(user);
@@ -277,6 +278,7 @@ module.exports.checkEmail = async (user) => {
 };
 
 module.exports.checkPassword = async (user) => {
+  const { createUserToken } = require("../controllers/auth");
   log("Password Check: ", user.username);
 
   try {
@@ -292,7 +294,7 @@ module.exports.checkPassword = async (user) => {
     );
     let verify = {
       password: checkPassword,
-      token: await this.createAuthToken(queryResult.rows[0]),
+      token: await createUserToken(queryResult.rows[0]),
       username: username,
     };
     return verify;
@@ -304,15 +306,6 @@ module.exports.checkPassword = async (user) => {
       source: "models/user.js",
     });
   }
-};
-
-module.exports.createAuthToken = (user) => {
-  log("Create Auth Token: ", user.username);
-  const { id } = user;
-  return jwt.sign({ id: id }, tempSecret, {
-    subject: "",
-    algorithm: "HS256",
-  });
 };
 
 //TOKEN MANAGEMENT

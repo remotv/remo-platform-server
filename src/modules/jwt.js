@@ -23,16 +23,6 @@ module.exports.extractToken = async (token) => {
   }
 };
 
-module.exports.createAuthToken = (user) => {
-  //   console.log("Create Auth Token: ", user);
-  const { id } = user;
-  return jwt.sign({ id: id }, tempSecret, {
-    subject: "",
-    expiresIn: "30d",
-    algorithm: "HS256",
-  });
-};
-
 module.exports.createInternalAuth = (data) => {
   return jwt.sign({ id: data }, tempSecret, {
     subject: "",

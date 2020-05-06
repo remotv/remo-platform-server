@@ -19,6 +19,7 @@ const auth = (options) => {
       if (req.headers.authorization) {
         const bearer = req.headers["authorization"].split(" ");
         const token = bearer[1];
+        console.log("Token: ", token);
         const tokenData = await extractToken(token);
         log(`Token Data: ${tokenData}`);
         if (tokenData && tokenData.id) {

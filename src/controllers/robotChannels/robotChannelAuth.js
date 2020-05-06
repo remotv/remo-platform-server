@@ -1,12 +1,12 @@
 module.exports.createRobotAuth = async (robot_id) => {
   const { log } = require("./");
-  const { createAuthToken } = require("../../models/user");
+  const { createRobotToken } = require("../auth");
   const { getRobotChannelById } = require("../../models/robotChannels");
   try {
     if (!robot_id) return { error: "robot_channel.id required." };
     log(`Getting key for robot_channel: ${robot_id}`);
     const getRobot = await getRobotChannelById(robot_id);
-    const key = await createAuthToken(getRobot);
+    const key = await createRobotToken(getRobot);
     return { key: key };
   } catch (err) {
     console.log(err);
