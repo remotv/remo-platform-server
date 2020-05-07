@@ -2,8 +2,7 @@ module.exports = async (token) => {
   const { extractToken, authUserData, log } = require("./");
   //extract token, validate data, and return authorized user or null
   try {
-    log(`Auth user w/ Token: 
-      ${token}`);
+    log(`Auth user w/ Token`);
     const tokenData = await extractToken(token);
     if (!tokenData) throw Error(`Unable to extract token from data`);
     const user = await authUserData(tokenData);

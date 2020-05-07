@@ -389,6 +389,7 @@ module.exports.publicUser = (user) => {
     return {
       username: user.username,
       id: user.id,
+      session_id: user.session_id || null,
       created: user.created,
       type: user.type,
       status: user.status,
@@ -622,7 +623,8 @@ module.exports.updateSettings = async (user) => {
 };
 
 //update session id for user
-module.exports.updateSession = async ({ id, session_id }) => {
+module.exports.updateSessionId = async ({ id, session_id }) => {
+  console.log("Update Session ID: ", id, session_id);
   const query = `UPDATE users SET session_id = $1 WHERE id = $2 RETURNING users.id, users.session_id`;
   try {
     const result = await db.query(query, [session_id, id]);

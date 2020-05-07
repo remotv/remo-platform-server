@@ -1,7 +1,8 @@
 module.exports = {
   log: require("./log"),
   createUserToken: require("./createUserToken"),
-  //tbd: authUser, verifyUserToken
+  authUser: require("./authUser"),
+  authUserData: require("./authUserData"),
   createRobotToken: require("./createRobotToken"),
   //tbd: authRobot, verifyRobotToken
 

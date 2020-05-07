@@ -1,27 +1,18 @@
-const { authUserData } = require("../models/user");
 const {
   authRobotData,
 } = require("../controllers/robotChannels/robotChannelAuth"); //moved to controller
-const { extractToken, authInternalTokenData } = require("../controllers/auth");
-
-const { logger } = require("../modules/logging");
-const log = (message) => {
-  logger({
-    message: message,
-    level: "debug",
-    source: "routes/auth.js",
-  });
-};
-
+const {
+  extractToken,
+  authInternalTokenData,
+  authUserData,
+} = require("../controllers/auth");
 const auth = (options) => {
   return async (req, res, next) => {
     try {
       if (req.headers.authorization) {
         const bearer = req.headers["authorization"].split(" ");
         const token = bearer[1];
-        console.log("Token: ", token);
         const tokenData = await extractToken(token);
-        log(`Token Data: ${tokenData}`);
         if (tokenData && tokenData.id) {
           let type = tokenData.id.substring(0, 4);
           if (type === "user" && options.user) {
@@ -39,7 +30,7 @@ const auth = (options) => {
       }
       next();
     } catch (e) {
-      console.log("Failed Authentication");
+      console.log("Failed Authentication: ", e);
       res.status(500).json({ error: "Internal Server Error" });
     }
   };
