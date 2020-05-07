@@ -1,5 +1,7 @@
 --
 -- PostgreSQL database dump
+-- Note: This script is only updated as the DB is updated, but not usually tested.
+-- As a result, this script may be prone to errors, so be mindful of that. 
 --
 
 -- Dumped from database version 10.12 (Ubuntu 10.12-0ubuntu0.18.04.1)
