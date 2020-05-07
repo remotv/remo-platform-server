@@ -4,7 +4,7 @@ module.exports = async (robot) => {
   const { log } = require("./");
   try {
     log("Create Robot Auth Token: ", robot.name);
-    const { id } = user;
+    const { id } = robot;
     return jwt.sign({ id: id }, secret, {
       subject: "",
       algorithm: "HS256",

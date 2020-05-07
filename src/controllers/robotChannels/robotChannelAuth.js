@@ -14,15 +14,11 @@ module.exports.createRobotAuth = async (robot_id) => {
   }
 };
 
-module.exports.extractRobotToken = async (token) => {
-  const { extractToken } = require("../../models/user");
-  return await extractToken(token);
-};
-
 //used by WS for auth
 module.exports.authRobot = async (token) => {
   const { verifyRobotTokenData } = require("../../models/robotChannels");
-  const auth = await this.extractRobotToken(token);
+  const { extractToken } = require("../auth");
+  const auth = await extractToken(token);
   // console.log("Extracting Robot Token: ", auth);
   const robot = await verifyRobotTokenData(auth);
   return robot;
