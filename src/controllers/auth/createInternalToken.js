@@ -1,5 +1,6 @@
 module.exports = (data) => {
   const { secret } = require("../../config");
+  const jwt = require("jsonwebtoken");
   try {
     return jwt.sign({ id: data }, secret, {
       subject: "",

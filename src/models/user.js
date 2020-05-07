@@ -309,7 +309,7 @@ module.exports.checkPassword = async (user) => {
 };
 
 //TOKEN MANAGEMENT
-//used by WS for auth
+//TO BE DELETED - CHECK SRC/CONTROLLERS/AUTH
 module.exports.authUser = async (token) => {
   try {
     let auth = await this.extractToken(token);
@@ -325,7 +325,7 @@ module.exports.authUser = async (token) => {
   }
 };
 
-//used by API for auth
+//TO BE DELETED - CHECK SRC/CONTROLLERS/AUTH
 module.exports.authUserData = async (tokenData) => {
   try {
     let auth = await this.verifyAuthToken(tokenData);
@@ -335,7 +335,7 @@ module.exports.authUserData = async (tokenData) => {
   }
 };
 
-// Moving to /src/modules/jwt
+//TO BE DELETED - CHECK SRC/CONTROLLERS/AUTH
 module.exports.extractToken = async (token) => {
   //   log("Verifying Auth Token is this file savedwait what the ", token);
   let checkToken = null;
@@ -357,6 +357,7 @@ module.exports.extractToken = async (token) => {
   }
 };
 
+//TO BE DELETED - CHECK SRC/CONTROLLERS/AUTH
 module.exports.verifyAuthToken = async (token) => {
   try {
     // log("Check Token: ", token);

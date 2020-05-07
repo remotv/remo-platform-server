@@ -1,4 +1,4 @@
-module.exports.authInternal = (data) => {
+module.exports = (data) => {
   const { internalKey } = require("../../config");
   console.log("AUTH INTERNAL: ", data, internalKey);
   return new Promise((resolve, reject) => {

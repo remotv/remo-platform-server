@@ -1,16 +1,17 @@
 const send = async () => {
   const axios = require("axios");
   const { internalKey, sendAlert } = require("../config");
+  const { createInternalToken } = require("../controllers/auth");
 
-  const { createInternalAuth } = require("../modules/jwt");
+  //Generate Auth Token to send message
+  const token = await createInternalToken(`priv-${internalKey}`);
+  if (!token) return console.log("Unable to generate token");
 
-  const token = await createInternalAuth(`priv-${internalKey}`);
-  console.log("Token: ", token);
-
+  //parse input for message
   const message = process.argv.slice(2).join(" ");
-
   console.log("Sending Message: ", message);
 
+  //send global chat message to all of remo
   await axios
     .post(
       sendAlert,
