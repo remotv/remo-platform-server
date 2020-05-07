@@ -5,6 +5,7 @@ module.exports = {
   createRobotToken: require("./createRobotToken"),
   //tbd: authRobot, verifyRobotToken
 
-  //tbd: createInternalAuth, authInternal
+  createInternalToken: require("./createInternalToken"),
+  authInternalTokenData: require("./authInternalTokenData"),
   extractToken: require("./extractToken"),
 };

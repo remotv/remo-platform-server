@@ -2,8 +2,7 @@ const { authUserData } = require("../models/user");
 const {
   authRobotData,
 } = require("../controllers/robotChannels/robotChannelAuth"); //moved to controller
-const { authInternal } = require("../modules/jwt");
-const { extractToken } = require("../controllers/auth");
+const { extractToken, authInternalTokenData } = require("../controllers/auth");
 
 const { logger } = require("../modules/logging");
 const log = (message) => {
@@ -30,7 +29,7 @@ const auth = (options) => {
           } else if (type === "rbot" && options.robot) {
             req.robot = await authRobotData(tokenData);
           } else if (type === "priv") {
-            req.internal = await authInternal(tokenData);
+            req.internal = await authInternalTokenData(tokenData);
           }
         }
       }
