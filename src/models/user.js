@@ -310,80 +310,80 @@ module.exports.checkPassword = async (user) => {
 
 //TOKEN MANAGEMENT
 //TO BE DELETED - CHECK SRC/CONTROLLERS/AUTH
-module.exports.authUser = async (token) => {
-  try {
-    let auth = await this.extractToken(token);
-    if (auth) {
-      log("Extracted Token: ", auth);
-      auth = await this.verifyAuthToken(auth);
-      return auth;
-    } else {
-      return null;
-    }
-  } catch (e) {
-    console.error(e);
-  }
-};
+// module.exports.authUser = async (token) => {
+//   try {
+//     let auth = await this.extractToken(token);
+//     if (auth) {
+//       log("Extracted Token: ", auth);
+//       auth = await this.verifyAuthToken(auth);
+//       return auth;
+//     } else {
+//       return null;
+//     }
+//   } catch (e) {
+//     console.error(e);
+//   }
+// };
 
 //TO BE DELETED - CHECK SRC/CONTROLLERS/AUTH
-module.exports.authUserData = async (tokenData) => {
-  try {
-    let auth = await this.verifyAuthToken(tokenData);
-    return auth;
-  } catch (e) {
-    return null;
-  }
-};
+// module.exports.authUserData = async (tokenData) => {
+//   try {
+//     let auth = await this.verifyAuthToken(tokenData);
+//     return auth;
+//   } catch (e) {
+//     return null;
+//   }
+// };
 
 //TO BE DELETED - CHECK SRC/CONTROLLERS/AUTH
-module.exports.extractToken = async (token) => {
-  //   log("Verifying Auth Token is this file savedwait what the ", token);
-  let checkToken = null;
-  try {
-    return (checkToken = await new Promise((resolve, reject) => {
-      jwt.verify(token, tempSecret, "HS256", (err, res) => {
-        if (token) log("JWT Verified");
-        if (err) return reject(err);
-        return resolve(res);
-      });
-    }));
-  } catch (err) {
-    let reason = {
-      error: "problem creating token from user",
-    };
-    Promise.reject(reason);
-    log(reason);
-    return null;
-  }
-};
+// module.exports.extractToken = async (token) => {
+//   //   log("Verifying Auth Token is this file savedwait what the ", token);
+//   let checkToken = null;
+//   try {
+//     return (checkToken = await new Promise((resolve, reject) => {
+//       jwt.verify(token, tempSecret, "HS256", (err, res) => {
+//         if (token) log("JWT Verified");
+//         if (err) return reject(err);
+//         return resolve(res);
+//       });
+//     }));
+//   } catch (err) {
+//     let reason = {
+//       error: "problem creating token from user",
+//     };
+//     Promise.reject(reason);
+//     log(reason);
+//     return null;
+//   }
+// };
 
 //TO BE DELETED - CHECK SRC/CONTROLLERS/AUTH
-module.exports.verifyAuthToken = async (token) => {
-  try {
-    // log("Check Token: ", token);
-    if (token && token.id) {
-      const query = `SELECT * FROM users WHERE id = $1 LIMIT 1`;
-      const result = await db.query(query, [token["id"]]);
-      log(
-        `Get user from DB: ${result.rows[0] ? result.rows[0].username : null}`
-      );
-      return result.rows[0];
-    }
-  } catch (err) {
-    logger({
-      level: "error",
-      message: err,
-      color: "red",
-      source: "models/user.js",
-    });
-  }
-  let reason = {
-    error: "cannot resolve user data from token",
-  };
-  log(reason);
-  Promise.reject(reason);
-  return null;
-};
+// module.exports.verifyAuthToken = async (token) => {
+//   try {
+//     // log("Check Token: ", token);
+//     if (token && token.id) {
+//       const query = `SELECT * FROM users WHERE id = $1 LIMIT 1`;
+//       const result = await db.query(query, [token["id"]]);
+//       log(
+//         `Get user from DB: ${result.rows[0] ? result.rows[0].username : null}`
+//       );
+//       return result.rows[0];
+//     }
+//   } catch (err) {
+//     logger({
+//       level: "error",
+//       message: err,
+//       color: "red",
+//       source: "models/user.js",
+//     });
+//   }
+//   let reason = {
+//     error: "cannot resolve user data from token",
+//   };
+//   log(reason);
+//   Promise.reject(reason);
+//   return null;
+// };
 
 module.exports.publicUser = (user) => {
   if (user)
