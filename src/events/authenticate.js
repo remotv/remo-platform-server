@@ -1,7 +1,5 @@
-const { VALIDATED } = require("./definitions");
-const user = require("../models/user");
-
 module.exports = async (ws, data) => {
+  const { VALIDATED } = require("./definitions");
   const wss = require("../services/wss");
   const { authUser } = require("../controllers/auth");
   const getUser = await authUser(data.token);
