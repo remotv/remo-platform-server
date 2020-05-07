@@ -35,24 +35,21 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: channels; Type: TABLE; Schema: public; Owner: postgres
+-- Name: robot_channels; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.channels (
-    host_id character varying,
-    id character varying NOT NULL,
-    name character varying,
-    chat character varying,
-    controls character varying,
-    display character varying,
-    created character varying,
-    status jsonb,
-    settings jsonb,
-    robot character varying
+CREATE TABLE robot_channels (
+    name text NOT NULL,
+    id text NOT NULL PRIMARY KEY,
+    created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    heartbeat timestamp NOT NULL DEFAULT '1970-1-1',
+    server_id text NOT NULL REFERENCES robot_servers(server_id) ON DELETE CASCADE,
+    chat_id text NOT NULL,
+    controls_id text NOT NULL REFERENCES controls(id) ON DELETE CASCADE
 );
 
 
-ALTER TABLE public.channels OWNER TO postgres;
+ALTER TABLE public.robot_channels OWNER TO postgres;
 
 --
 -- Name: chat_messages; Type: TABLE; Schema: public; Owner: postgres
@@ -190,24 +187,6 @@ CREATE TABLE public.robot_servers (
 
 ALTER TABLE public.robot_servers OWNER TO postgres;
 
---
--- Name: robots; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.robots (
-    name character varying,
-    id character varying NOT NULL,
-    owner_id character varying,
-    interfaces character varying[],
-    session character varying,
-    created bigint,
-    status jsonb,
-    settings jsonb,
-    host_id character varying
-);
-
-
-ALTER TABLE public.robots OWNER TO postgres;
 
 --
 -- Name: users; Type: TABLE; Schema: public; Owner: postgres
@@ -221,7 +200,7 @@ CREATE TABLE public.users (
     created bigint,
     type character varying[],
     check_username character varying,
-    session character varying,
+    session_id character varying,
     status jsonb,
     settings jsonb
 );
@@ -233,7 +212,7 @@ ALTER TABLE public.users OWNER TO postgres;
 -- Name: channels channels_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.channels
+ALTER TABLE ONLY public.robot_channels
     ADD CONSTRAINT channels_pkey PRIMARY KEY (id);
 
 
@@ -283,14 +262,6 @@ ALTER TABLE ONLY public.members
 
 ALTER TABLE ONLY public.robot_servers
     ADD CONSTRAINT "robotServers_pkey" PRIMARY KEY (server_id);
-
-
---
--- Name: robots robots_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.robots
-    ADD CONSTRAINT robots_pkey PRIMARY KEY (id);
 
 
 --
