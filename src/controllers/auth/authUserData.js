@@ -18,7 +18,7 @@ module.exports = async (tokenData) => {
 
     //handle invalid sessions, send logout event to expired user / session
     if (user.session_id && !tokenData.session_id) {
-      rejectAuthForUser(user);
+      // rejectAuthForUser(user);
       throw Error(`Invalid session data for user, ${user.username}`);
     }
 
@@ -28,7 +28,7 @@ module.exports = async (tokenData) => {
       user.session_id !== tokenData.session_id
     ) {
       //logout invalid sessions
-      rejectAuthForUser(user, tokenData.session_id);
+      // rejectAuthForUser(user, tokenData.session_id);
       throw Error(`Session is expired for user, ${user.username}`);
     }
 
