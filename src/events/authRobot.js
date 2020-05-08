@@ -10,7 +10,6 @@ const log = (message) => {
 
 module.exports = async (ws, data) => {
   const getRobot = await authRobot(data.token);
-  console.log("AUTH ROBOT CHECK: ", getRobot);
   if (getRobot) {
     //setup private user sub for user events
     ws.robot = getRobot;
@@ -22,5 +21,7 @@ module.exports = async (ws, data) => {
       id: getRobot.id,
       host: getRobot.server_id,
     });
+  } else {
+    log(`No data returned from authRobot: ${getRobot}`);
   }
 };
