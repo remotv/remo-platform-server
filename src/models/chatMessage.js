@@ -108,7 +108,7 @@ module.exports.saveMessage = async (getMessage) => {
     display_message,
     badges,
     type, channel_id ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12 ) RETURNING *`;
-  console.log("SAVING MESSAGE...");
+  // console.log("SAVING MESSAGE...");
   try {
     const result = await db.query(dbPut, [
       message,
@@ -190,7 +190,7 @@ module.exports.getBadges = async (checkRoles, server_id, userId) => {
 
   //handle Patreon:
   const checkPatreon = await getPatron({ user_id: userId });
-  console.log("PATREON CHECK: ", checkPatreon);
+  // console.log("PATREON CHECK: ", checkPatreon);
   if (
     checkPatreon &&
     checkPatreon.active_rewards &&
@@ -199,7 +199,7 @@ module.exports.getBadges = async (checkRoles, server_id, userId) => {
     checkRoles.push(`patreon${checkPatreon.active_rewards.reward_amount}`);
   }
 
-  console.log("GET BADGES PRE-CHECK: ", checkRoles, server_id, userId);
+  // console.log("GET BADGES PRE-CHECK: ", checkRoles, server_id, userId);
   const { getLocalTypes } = require("./robotServer");
 
   //getLocalTypes can probably be replaced now that local status is is called in controllers/chatMessages/messageHandler()
@@ -207,10 +207,10 @@ module.exports.getBadges = async (checkRoles, server_id, userId) => {
   addTypes.forEach((type) => {
     checkRoles.push(type);
   });
-  console.log("GET BADGES: ", checkRoles, server_id, userId);
+  // console.log("GET BADGES: ", checkRoles, server_id, userId);
 
   if (Array.isArray(checkRoles)) {
-    console.log("CHECK TYPES: ", checkRoles);
+    // console.log("CHECK TYPES: ", checkRoles);
     checkRoles = Array.from(new Set(checkRoles));
     return checkRoles;
   }

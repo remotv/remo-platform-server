@@ -250,7 +250,7 @@ module.exports.getLocalTypes = async (server_id, user_id) => {
     role.members.forEach((member) => {
       if (user_id === member) {
         localTypes.push(role.role);
-        console.log(`Pushing ${role.role} to ${localTypes}`);
+        // console.log(`Pushing ${role.role} to ${localTypes}`);
       }
     });
   });

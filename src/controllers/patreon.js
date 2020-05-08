@@ -10,7 +10,7 @@ const { jsonError } = require("../modules/logging");
 module.exports.linkPatron = async (code, uri, user) => {
   const {
     patreonGetTokens,
-    getInfoFromAccessToken
+    getInfoFromAccessToken,
   } = require("../modules/patreon");
   const tokenData = await patreonGetTokens(code, uri);
   // console.log("//////////////PATREON GET TOKENS: ", tokenData);
@@ -29,7 +29,7 @@ module.exports.savePatronLink = async (user, patronId) => {
     savePatron,
     getPatron,
     patronUpdateId,
-    checkPatreonId
+    checkPatreonId,
   } = require("../models/patreon");
 
   const checkPatron = await checkPatreonId(patronId); //check if patreon_id is in use
@@ -48,7 +48,7 @@ module.exports.savePatronLink = async (user, patronId) => {
     if (check.patreon_id !== patronId) {
       const updateUser = await patronUpdateId({
         user_id: user.id,
-        patreon_id: patronId
+        patreon_id: patronId,
       });
       return updateUser;
     } else {
@@ -59,13 +59,13 @@ module.exports.savePatronLink = async (user, patronId) => {
     const save = await savePatron({
       user_id: user.id,
       username: user.username,
-      patreon_id: patronId
+      patreon_id: patronId,
     });
     return save;
   }
 };
 
-module.exports.removePatreon = async user_id => {
+module.exports.removePatreon = async (user_id) => {
   const { removePatreonLink } = require("../models/patreon");
   const remove = await removePatreonLink(user_id);
   return remove;
@@ -85,15 +85,15 @@ module.exports.getPatreonData = async () => {
     if (getData && getData.data && getData.included) {
       const { data, included } = getData;
       // console.log("pledges: ", data.length, "included: ", included.length);
-      const promises = await data.map(async item => {
+      const promises = await data.map(async (item) => {
         const { relationships } = item;
         if (relationships.reward.data && relationships.reward.data.id) {
           let pledge = {
             patreon_id: relationships.patron.data.id,
-            reward_id: relationships.reward.data.id
+            reward_id: relationships.reward.data.id,
           };
 
-          included.map(item => {
+          included.map((item) => {
             if (item.type === "reward" && item.id === pledge.reward_id) {
               pledge.reward_title = item.attributes.title;
               pledge.reward_amount = item.attributes.amount;
@@ -113,13 +113,13 @@ module.exports.getPatreonData = async () => {
 /**
  * Save Pledge Data: Check if Patron has a linked account, save data accordingly
  */
-module.exports.savePledgeData = async pledge => {
+module.exports.savePledgeData = async (pledge) => {
   const { checkPatreonId, updatePatronRewards } = require("../models/patreon");
   //TODO: Currently does not handle multiple rewards. Not sure if that is a thing.
   const data = {
     reward_title: pledge.reward_title,
     reward_id: pledge.reward_id,
-    reward_amount: pledge.reward_amount
+    reward_amount: pledge.reward_amount,
   };
   const checkForPatron = await checkPatreonId(pledge.patreon_id);
   if (checkForPatron) {
@@ -131,7 +131,7 @@ module.exports.savePledgeData = async pledge => {
 };
 
 module.exports.syncPatreonData = async () => {
-  console.log("Pledge Data Sync");
+  // console.log("Pledge Data Sync");
   await this.getPatreonData();
   checkInterval();
 };

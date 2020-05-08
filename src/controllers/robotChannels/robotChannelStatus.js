@@ -68,8 +68,7 @@ const checkInterval = async () => {
 const updateRobotStatus = async (robotsToUpdate) => {
   const { updateHeartbeat } = require("../../models/robotChannels");
   await robotsToUpdate.forEach(async (robot) => {
-    console.log("ROBOT: ", robot);
-    log(`Robot, ${robot}, Status: ${robot.status}`);
+    console.log("ROBOT: ", robot.name, robot.server_id);
     await updateHeartbeat(robot.id);
   });
   return;

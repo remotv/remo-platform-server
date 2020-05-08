@@ -141,7 +141,6 @@ module.exports.getFollowedServers = async (user_id) => {
 
 module.exports.getMember = async (member) => {
   const db = require("../services/db");
-  console.log("get member...");
   const { server_id, user_id } = member;
   const query = `SELECT * FROM members WHERE ( server_id, user_id ) = ( $1, $2 )`;
   try {
