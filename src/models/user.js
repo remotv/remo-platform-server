@@ -41,10 +41,8 @@ module.exports.emitEvent = (user_id, event, data) => {
   wss.clients.forEach((ws) => {
     if (ws.user && ws.user.id === user_id) {
       log("USER EVENT: ", event, data);
-      if (event === "LOGOUT" && !ws.user.session_id) {
-        ws.emitEvent(event, data);
-        ws.close();
-      } else ws.emitEvent(event, data);
+      ws.emitEvent(event, data);
+      if (event === "LOGOUT") ws.close();
     }
   });
 };
