@@ -4,9 +4,15 @@ module.exports = async (token) => {
   try {
     log(`Auth user w/ Token`);
     const tokenData = await extractToken(token);
-    if (!tokenData) throw Error(`Unable to extract token from data`);
+    if (!tokenData) {
+      log("unable to extract data from token.");
+      return null;
+    }
     const user = await authUserData(tokenData);
-    if (!user) throw Error(`Unable to authorize user w/ token data`);
+    if (!user) {
+      log(`Unable to authorize user w/ token data`);
+      return null;
+    }
     return user;
   } catch (err) {
     log(err.message);
