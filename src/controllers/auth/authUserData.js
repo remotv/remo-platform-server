@@ -33,7 +33,6 @@ module.exports = async (tokenData) => {
     }
 
     //return user from DB on success, else log error and return null
-
     return user;
   } catch (err) {
     log(err.message);
@@ -41,10 +40,12 @@ module.exports = async (tokenData) => {
   return null;
 };
 
-const testLogout = async (user) => {
+const testLogout = async (user, logoutUser) => {
   const { rejectAuthForUser } = require("./");
-
-  setTimeout(() => {
-    rejectAuthForUser(user);
-  }, 10 * 1000);
+  if (user.username === logoutUser) {
+    console.log("LOGOUT USER: ", user.username);
+    setTimeout(() => {
+      rejectAuthForUser(user);
+    }, 10 * 1000);
+  }
 };
