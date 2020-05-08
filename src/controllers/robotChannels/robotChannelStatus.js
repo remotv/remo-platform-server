@@ -86,7 +86,7 @@ const pushLiveDevicesToServers = async () => {
   const servers = await getRobotServers();
   log("Check Servers for Updates: ", servers.length);
   const compareDate = new Date();
-  await servers.forEach(async (server) => {
+  servers.forEach(async (server) => {
     let liveDevices = [];
     const channels = await getRobotChannelsForServer(
       server.server_id || server.id
