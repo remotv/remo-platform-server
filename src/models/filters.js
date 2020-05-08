@@ -4,6 +4,7 @@ module.exports.reservedWordsDefault = () => {
     "admin",
     "system",
     "systemAdmin",
+    "systemAlert",
     "remoDeveloper",
     "remoAdmin",
     "login",
@@ -59,6 +60,6 @@ module.exports.reservedWordsDefault = () => {
     "privacy-policy",
     "privacy",
     "patreon",
-    "email_validation"
+    "email_validation",
   ];
 };
