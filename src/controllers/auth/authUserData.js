@@ -1,5 +1,6 @@
 module.exports = async (tokenData) => {
   const { getUserInfoFromId } = require("../../models/user");
+  const { rejectAuthForUser } = require("./");
   const { log } = require("./");
   try {
     //require data
@@ -9,23 +10,41 @@ module.exports = async (tokenData) => {
 
     //get user w/ token data:
     const user = await getUserInfoFromId(tokenData.id);
+    // rejectAuthForUser(user);
+
     if (!user) throw Error(`Unable to get user data from token: ${tokenData}`);
     if (user && user.id && user.id !== tokenData.id)
       throw Error(`Invalid Token Data for ID: ${tokenData.id}`);
 
-    //if session data is present, validate session data as well
+    //handle invalid sessions, send logout event to expired user / session
+    if (user.session_id && !tokenData.session_id) {
+      rejectAuthForUser(user);
+      throw Error(`Invalid session data for user, ${user.username}`);
+    }
+
     if (
-      (user.session_id && !tokenData.session_id) ||
+      user.session_id &&
+      tokenData.session_id &&
       user.session_id !== tokenData.session_id
-    )
-      throw Error(`Invalid token data for session, 
-      From Token: ${tokenData.session_id},
-      From User in DB: ${user.session_id}`);
+    ) {
+      //logout invalid sessions
+      rejectAuthForUser(user, tokenData.session_id);
+      throw Error(`Session is expired for user, ${user.username}`);
+    }
 
     //return user from DB on success, else log error and return null
+
     return user;
   } catch (err) {
     log(err.message);
   }
   return null;
+};
+
+const testLogout = async (user) => {
+  const { rejectAuthForUser } = require("./");
+
+  setTimeout(() => {
+    rejectAuthForUser(user);
+  }, 10 * 1000);
 };

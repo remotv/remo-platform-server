@@ -3,6 +3,7 @@ module.exports = {
   createUserToken: require("./createUserToken"),
   authUser: require("./authUser"),
   authUserData: require("./authUserData"),
+  rejectAuthForUser: require("./rejectAuthForUser"),
   createRobotToken: require("./createRobotToken"),
   //tbd: authRobot, verifyRobotToken
 

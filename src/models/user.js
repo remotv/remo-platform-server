@@ -46,6 +46,16 @@ module.exports.emitEvent = (user_id, event, data) => {
   });
 };
 
+module.exports.emitSessionEvent = (session_id, event, data) => {
+  const wss = require("../services/wss");
+  wss.clients.forEach((ws) => {
+    if (ws.user && ws.user.session_id && ws.user.session_id === session_id) {
+      log("SESSION EVENT: ", event, data);
+      ws.emitEvent(event, data);
+    }
+  });
+};
+
 module.exports.createUser = async (user) => {
   const { validateEmail } = require("../controllers/validateEmail");
   const { createUserToken } = require("../controllers/auth");
