@@ -6,6 +6,7 @@ const {
   authInternalTokenData,
   authUserData,
 } = require("../controllers/auth");
+const { logger } = require("../modules/logging");
 const auth = (options) => {
   return async (req, res, next) => {
     try {
@@ -32,8 +33,12 @@ const auth = (options) => {
       }
       next();
     } catch (e) {
-      console.log("Failed Authentication: ", e);
-      res.status(500).json({ error: "Internal Server Error" });
+      logger({
+        level: "debug",
+        source: "routes/auth.js",
+        message: e.message,
+      });
+      res.status(401).json({ error: "Invalid token data." });
     }
   };
 };
