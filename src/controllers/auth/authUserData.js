@@ -10,8 +10,6 @@ module.exports = async (tokenData) => {
 
     //get user w/ token data:
     const user = await getUserInfoFromId(tokenData.id);
-    // rejectAuthForUser(user);
-
     if (!user) throw Error(`Unable to get user data from token: ${tokenData}`);
     if (user && user.id && user.id !== tokenData.id)
       throw Error(`Invalid Token Data for ID: ${tokenData.id}`);
