@@ -20,7 +20,7 @@ module.exports = async (user, channel_id) => {
     log(`Channel retrieved from database: ${getChannel.name}`);
 
     //authorize user action
-    const auth = authMemberRole(user, getChannel.server_id);
+    const auth = await authMemberRole(user, getChannel.server_id);
     log(`Authorization Check: ${auth}`);
     if (!auth) return { error: "You are not authorized to do this action" };
 

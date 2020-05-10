@@ -10,15 +10,14 @@ Done -  Kick - Remove user as a member, but doesn't ban them
         Block - Users invisible to each other
 
 Global Level: 
-suspend, AKA Global Timeout - Unable to Use any site features that interact with users or robots
-Global Ban - Same, but permanent 
-Disable Server - Removes access to server for all users except owner and global level moderators
-Lock Server - No one can access a lock server except for global level mods
-Delete Server - Delete
+Done -  suspend, AKA Global Timeout - Unable to Use any site features that interact with users or robots
+        Global Ban - Same, but permanent 
+        Disable Server - Removes access to server for all users except owner and global level moderators
+        Lock Server - No one can access a lock server except for global level mods
 */
 
 //LOCAL TIMEOUT SEQUENCE
-module.exports.localTimeout = async moderate => {
+module.exports.localTimeout = async (moderate) => {
   moderate.error = false; //init error flag
   moderate = parseInput(moderate);
   moderate = await getMembers(moderate);
@@ -36,7 +35,7 @@ module.exports.localTimeout = async moderate => {
 };
 
 //Stand alone command for clearing chat messages
-module.exports.clearLocalMessagesFromMember = async moderate => {
+module.exports.clearLocalMessagesFromMember = async (moderate) => {
   // console.log("///////CLEAR MESSAGES FROM USER//////////", moderate);
   moderate.error = false;
   moderate = parseInput(moderate);
@@ -50,7 +49,7 @@ module.exports.clearLocalMessagesFromMember = async moderate => {
   return moderate.message;
 };
 
-module.exports.localUnTimeout = async moderate => {
+module.exports.localUnTimeout = async (moderate) => {
   moderate.error = false; //init error flag
   moderate = parseInput(moderate);
   moderate = await getMembers(moderate);
@@ -64,7 +63,7 @@ module.exports.localUnTimeout = async moderate => {
   return moderate.message;
 };
 
-module.exports.kickMember = async moderate => {
+module.exports.kickMember = async (moderate) => {
   const { emitEvent } = require("../models/user");
   // console.log("KICK MEMBER!");
   moderate.error = false;
@@ -81,7 +80,7 @@ module.exports.kickMember = async moderate => {
     // );
     emitEvent(moderate.badUser.user_id, "MODERATION_EVENT", {
       event: "kicked",
-      server_id: moderate.message.server_id
+      server_id: moderate.message.server_id,
     });
     await localMessageRemoval(moderate);
     // console.log("KICK MEMBER CHECK: ", moderate.badUser.username);
@@ -89,7 +88,7 @@ module.exports.kickMember = async moderate => {
   return moderate.message;
 };
 
-const doKickMember = async moderate => {
+const doKickMember = async (moderate) => {
   const { leaveServer } = require("../controllers/members");
   let { badUser } = moderate;
   const name = badUser.username;
@@ -165,31 +164,25 @@ const checkTime = ({ arg, badUser, moderator, message, ...rest }) => {
 };
 
 //PARSE INPUT
-const parseInput = message => {
+const parseInput = (message) => {
   // console.log("Parsing Command Input", message.message);
   let arg = "";
   message.type = "moderation";
-  let badUser = message.message
-    .substr(1)
-    .split(" ")[1]
-    .toLowerCase();
+  let badUser = message.message.substr(1).split(" ")[1].toLowerCase();
 
   if (message.message.substr(1).split(" ")[2])
-    arg = message.message
-      .substr(1)
-      .split(" ")[2]
-      .toLowerCase();
+    arg = message.message.substr(1).split(" ")[2].toLowerCase();
 
   let moderator = {
     user_id: message.sender_id,
-    server_id: message.server_id
+    server_id: message.server_id,
   };
   return { arg: arg, badUser: badUser, moderator: moderator, message: message };
 };
 
-const checkGlobalTypes = typesToCheck => {
+const checkGlobalTypes = (typesToCheck) => {
   let validate = false;
-  typesToCheck.forEach(type => {
+  typesToCheck.forEach((type) => {
     if (type === "staff" || type === "global_moderator") validate = true;
   });
   return validate;
@@ -210,7 +203,7 @@ const getMembers = async ({
 
   moderator = await getMember({
     server_id: message.server_id,
-    user_id: message.sender_id
+    user_id: message.sender_id,
   });
 
   //TOOD: CHECK MODERATOR ROLES, THIS SHOULD BE CHECKED BEFORE BADUSER IS SEARCHED FOR
@@ -314,15 +307,15 @@ module.exports.handleLocalTimeout = async ({
   if (!checkUpdatedStatus) {
     message = handleError(message, "Unable to timeout user");
   } else {
-    message.message = `User ${
-      badUser.username
-    } has been put in timeout for ${time / 1000} seconds.`;
+    message.message = `User ${badUser.username} has been put in timeout for ${
+      time / 1000
+    } seconds.`;
     // createTimer(time, clearLocalTimeout, badUser); //TODO: Uhm, do i need a timer? Timeout should just expire, right?
   }
   return { arg, badUser, moderator, message, ...rest };
 };
 
-const clearLocalTimeout = async member => {
+const clearLocalTimeout = async (member) => {
   // console.log("Clearing timeout for local member");
   const { updateMemberStatus } = require("../models/serverMembers");
   member.status.expireTimeout = 0;
@@ -345,25 +338,25 @@ const localMessageRemoval = async ({ badUser }) => {
   const { updateDisplayMessage } = require("../models/chatMessage");
   await updateDisplayMessage({
     sender_id: badUser.user_id,
-    server_id: badUser.server_id
+    server_id: badUser.server_id,
   });
   // console.log(scrubMessages);
   localModerationEvent({
     server_id: badUser.server_id,
     event: "remove_messages",
-    user: badUser.user_id
+    user: badUser.user_id,
   });
   return;
 };
 
-const localModerationEvent = data => {
+const localModerationEvent = (data) => {
   // console.log("LOCAL MODERATION EVENT", data);
   emitLocalEvent(data.server_id, "LOCAL_MODERATION", data);
 };
 
 const emitLocalEvent = (server_id, event, data) => {
   const wss = require("../services/wss");
-  wss.clients.forEach(ws => {
+  wss.clients.forEach((ws) => {
     if (ws.server_id === server_id) {
       ws.emitEvent(event, data);
     }

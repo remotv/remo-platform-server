@@ -23,7 +23,7 @@ module.exports = async (data) => {
       return { error: "name & server_id required" };
 
     //auth user to make channel
-    const auth = await authMemberRole(data.user_id, data.server_id);
+    const auth = await authMemberRole(data.user, data.server_id);
     if (!auth) return { error: "You are not authorized to make this request" };
 
     //validate Name

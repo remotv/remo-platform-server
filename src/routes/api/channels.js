@@ -67,7 +67,7 @@ router.post(
       const make = await createRobotChannel({
         name: channel_name,
         server_id: server_id,
-        user_id: req.user.id,
+        user: req.user,
       });
       if (!make.error) return res.status(201).send(make);
       return res.status(400).send(make);
