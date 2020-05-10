@@ -1,21 +1,21 @@
 const { logger, jsonError } = require("../modules/logging");
 
-const log = message => {
+const log = (message) => {
   logger({
     level: "debug",
     source: "controllers/members.js",
-    message: message
+    message: message,
   });
 };
 
 //TODO: Ensure that users cannot join private servers using the default invite.
-module.exports.joinServer = async member => {
+module.exports.joinServer = async (member) => {
   const {
     updateMemberInvites,
     updateMemberStatus,
     getMember,
     createMember,
-    updateMemberRoles
+    updateMemberRoles,
   } = require("../models/serverMembers");
   const { getRobotServer } = require("../models/robotServer");
   const { newFollower } = require("./notifications");
@@ -27,7 +27,7 @@ module.exports.joinServer = async member => {
 
   const validate = await this.validateInvite({
     id: member.join,
-    server_id: member.server_id
+    server_id: member.server_id,
   });
 
   const join = member.join;
@@ -63,19 +63,25 @@ module.exports.joinServer = async member => {
   return validate;
 };
 
-module.exports.leaveServer = async member => {
+module.exports.leaveServer = async (member) => {
   const {
     getMember,
     updateMemberInvites,
     updateMemberStatus,
-    updateMemberRoles
+    updateMemberRoles,
   } = require("../models/serverMembers");
   const { getRobotServer } = require("../models/robotServer");
 
   console.log("Leaving Server");
   member = await getMember(member);
+
   const robotServer = await getRobotServer(member.server_id);
-  if (member.user_id === robotServer.owner_id) return member; //SERVER OWNERS CANNOT LEAVE THEIR OWN SERVER
+  console.log("GET MEMBER: ", member, "GET SERVER: ", robotServer);
+  if (member.user_id === robotServer.owner_id) {
+    console.log("You cannot leave a server you own.");
+    member.error = "You cannot leave a server you own";
+    return member;
+  } //SERVER OWNERS CANNOT LEAVE THEIR OWN SERVER
 
   member.status.member = false;
   member = await updateMemberStatus(member);
@@ -91,17 +97,17 @@ module.exports.leaveServer = async member => {
   return member;
 };
 
-const isOwner = member => {
+const isOwner = (member) => {
   member.user_id;
 };
 
 //Checks to make sure this particular invite is valid.
-module.exports.validateInvite = async invite => {
+module.exports.validateInvite = async (invite) => {
   // console.log("Validating Invite", invite);
   const { getInvitesForServer } = require("../models/invites");
   const checkInvite = await getInvitesForServer(invite.server_id);
   let validate = false;
-  checkInvite.map(inv => {
+  checkInvite.map((inv) => {
     if (inv.id === invite.id || inv.id === invite.join) {
       validate = true;
     }
@@ -110,7 +116,7 @@ module.exports.validateInvite = async invite => {
 };
 
 //This method was updated to use invite.alias instead of invite.id
-module.exports.validateServerInvite = async invite_id => {
+module.exports.validateServerInvite = async (invite_id) => {
   log(`Validate Invite for Server: ${invite_id}`);
   const { getInviteByAlias } = require("../models/invites");
   const invite = await getInviteByAlias(invite_id);
@@ -132,19 +138,19 @@ module.exports.validateServerInvite = async invite_id => {
   return invite;
 };
 
-module.exports.getInviteInfoFromId = async invite_id => {
+module.exports.getInviteInfoFromId = async (invite_id) => {
   const { getInviteById } = require("../models/invites");
   const invite = await getInviteById(invite_id);
   return invite;
 };
 
-module.exports.getInviteInfoFromAlias = async alias => {
+module.exports.getInviteInfoFromAlias = async (alias) => {
   const { getInviteByAlias } = require("models/invites");
   const invite = await getInviteByAlias(alias);
   return invite;
 };
 
-module.exports.deactivateInvite = async invite => {
+module.exports.deactivateInvite = async (invite) => {
   const { updateInviteStatus } = require("../models/invites");
   if (invite && invite.id && !invite.is_default) {
     invite.status = "inactive";
@@ -154,20 +160,20 @@ module.exports.deactivateInvite = async invite => {
   return null;
 };
 
-module.exports.getMemberCount = async server_id => {
+module.exports.getMemberCount = async (server_id) => {
   const { getMembers } = require("../models/serverMembers");
   const members = await getMembers(server_id);
   let count = 0;
-  members.forEach(member => {
+  members.forEach((member) => {
     if (member.status.member === true) count++;
   });
   return count;
 };
 
-module.exports.updateMemberCount = async robotServer => {
+module.exports.updateMemberCount = async (robotServer) => {
   const {
     updateRobotServerStatus,
-    sendRobotServerStatus
+    sendRobotServerStatus,
   } = require("../models/robotServer");
   const { server_id } = robotServer;
 
@@ -206,16 +212,12 @@ module.exports.makeInvite = async ({ user, server_id, expires }) => {
 };
 
 //returns a 7 digit string, base 36
-module.exports.makeInviteAlias = async testData => {
+module.exports.makeInviteAlias = async (testData) => {
   const { checkAlias } = require("../models/invites");
   const alias =
     testData ||
-    Math.random()
-      .toString(36)
-      .substring(2, 5) +
-      Math.random()
-        .toString(36)
-        .substring(2, 6);
+    Math.random().toString(36).substring(2, 5) +
+      Math.random().toString(36).substring(2, 6);
   // console.log(alias);
   const check = await checkAlias(alias);
   if (check) {
@@ -225,7 +227,7 @@ module.exports.makeInviteAlias = async testData => {
   return alias;
 };
 
-module.exports.getMembers = async server_id => {
+module.exports.getMembers = async (server_id) => {
   const { getMembers } = require("../models/serverMembers");
   const members = await getMembers(server_id);
   return members;
@@ -237,7 +239,7 @@ module.exports.getMember = async ({ user_id, server_id }) => {
   return member;
 };
 
-module.exports.updateMemberSettings = async member => {
+module.exports.updateMemberSettings = async (member) => {
   const { updateMemberSettings } = require("../models/serverMembers");
 
   if (!member.server_id) return jsonError("Server ID required.");
@@ -256,9 +258,9 @@ module.exports.updateMemberSettings = async member => {
   return update;
 };
 
-module.exports.updateSelectedServerMember = member => {
+module.exports.updateSelectedServerMember = (member) => {
   const wss = require("../services/wss");
-  wss.clients.forEach(ws => {
+  wss.clients.forEach((ws) => {
     if (ws.server_id === member.server_id && ws.user.id === member.user_id)
       ws.emitEvent("SELECTED_SERVER_UDPATED");
   });

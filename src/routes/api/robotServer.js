@@ -166,24 +166,24 @@ router.post("/leave", auth({ user: true }), async (req, res) => {
 });
 
 //THIS WILL COMPLETELY REMOVE A MEMBER FROM A SERVER & CONSEQUENTLY REMOVE ALL THEIR DATA
-router.post("/delete-member", auth({ user: true }), async (req, res) => {
-  const { deleteMember } = require("../../models/serverMembers");
-  let response = {};
-  if (req.user && req.body.server_id) {
-    const leave = await deleteMember({
-      user_id: req.user.id,
-      server_id: req.body.server_id,
-    });
-    if (leave) {
-      response.status = "Success";
-      response.result = `Successfully Left Server ${req.body.server_id}`;
-    } else {
-      (response.status = "Error!"),
-        (response.error = "Unable to leave server...");
-    }
-  }
-  res.send(response);
-});
+// router.post("/delete-member", auth({ user: true }), async (req, res) => {
+//   const { deleteMember } = require("../../models/serverMembers");
+//   let response = {};
+//   if (req.user && req.body.server_id) {
+//     const leave = await deleteMember({
+//       user_id: req.user.id,
+//       server_id: req.body.server_id,
+//     });
+//     if (leave) {
+//       response.status = "Success";
+//       response.result = `Successfully Left Server ${req.body.server_id}`;
+//     } else {
+//       (response.status = "Error!"),
+//         (response.error = "Unable to leave server...");
+//     }
+//   }
+//   res.send(response);
+// });
 
 //get list of invites for a specific server, right now only owner can request
 router.get("/invites", auth({ user: true }), async (req, res) => {

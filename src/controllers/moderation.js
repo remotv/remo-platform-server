@@ -96,13 +96,16 @@ const doKickMember = async (moderate) => {
 
   //const update = await updateMemberStatus(badUser);
   badUser = await leaveServer(badUser);
+  if (badUser.error) {
+    moderate.message = handleError(moderate.message, badUser.error);
+  }
   if (badUser) {
     moderate.badUser = badUser;
     moderate.message.message = `User ${name} has been kicked from this server. `;
     return moderate;
   }
   moderate.message = handleError(
-    moderate.message.message,
+    moderate.message,
     "Unable to remove user from server, double check you have the right user."
   );
   return moderate;
