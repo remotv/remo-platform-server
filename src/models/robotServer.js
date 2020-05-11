@@ -68,7 +68,7 @@ module.exports.createRobotServer = async (server, user) => {
   const defaultChannel = await createRobotChannel({
     name: defaultChannelName,
     server_id: buildServer.server_id,
-    user_id: user.id,
+    user: user,
   });
 
   buildServer.settings.default_channel = defaultChannel.id;
