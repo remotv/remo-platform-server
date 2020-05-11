@@ -14,7 +14,7 @@ router.post("/key", auth({ user: true, required: true }), async (req, res) => {
     createRobotAuth,
   } = require("../../controllers/robotChannels/robotChannelAuth");
   try {
-    let response = await createRobotAuth(req.body.robot_id);
+    let response = await createRobotAuth(req.body.robot_id, req.user);
     if (!response.error) return res.status(201).send(response);
     else return res.status(400).send(response);
   } catch (err) {

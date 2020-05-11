@@ -1,11 +1,14 @@
-module.exports.createRobotAuth = async (robot_id) => {
+module.exports.createRobotAuth = async (robot_id, user) => {
   const { log } = require("./");
   const { createRobotToken } = require("../auth");
   const { getRobotChannelById } = require("../../models/robotChannels");
+  const { authMemberRole } = require("../roles");
   try {
     if (!robot_id) return { error: "robot_channel.id required." };
     log(`Getting key for robot_channel: ${robot_id}`);
     const getRobot = await getRobotChannelById(robot_id);
+    const auth = await authMemberRole(user, getRobot.server_id);
+    if (!auth) return { error: "Invalid authorization" };
     const key = await createRobotToken(getRobot);
     return { key: key };
   } catch (err) {
