@@ -1,4 +1,3 @@
-const jwt = require("jsonwebtoken");
 const db = require("../services/db");
 const {
   makeId,
@@ -6,8 +5,6 @@ const {
   checkHash,
   createTimeStamp,
 } = require("../modules/utilities");
-const config = require("../config");
-const tempSecret = config.secret;
 const { logger, jsonError } = require("../modules/logging");
 
 const log = (message) => {
@@ -548,7 +545,7 @@ module.exports.updateEmail = async ({ email, id }) => {
 };
 
 module.exports.updateSettings = async (user) => {
-  const query = `UPDATE users SET settings = $1 WHERE id = $2 RETURNING *`;
+  const query = `UPDATE users SET settings = $1 WHERE id = $2 RETURNING users.settings`;
   try {
     const result = await db.query(query, [user.settings, user.id]);
     if (result.rows[0]) return result.rows;
