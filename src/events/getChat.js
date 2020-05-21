@@ -2,6 +2,8 @@ const { SEND_CHAT } = require("./definitions");
 // const { getChat } = require("../models/chatRoom");
 const { loadChat } = require("../controllers/chat");
 
+//Not needed for robots
+//Frontend needs it, but that can be changed to rest call
 module.exports = async (ws, chatId) => {
   // console.log("GET CHAT Chat Id: ", chatId);
   ws.emitEvent(SEND_CHAT, await loadChat(chatId));

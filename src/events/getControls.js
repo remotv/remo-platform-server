@@ -8,6 +8,7 @@ const log = (message) => {
   });
 };
 
+//Not used by robot, can be moved to REST
 module.exports = async (ws, channel) => {
   logger({
     level: "debug",

@@ -8,7 +8,7 @@ module.exports = async (tokenData) => {
     if (tokenData && !tokenData.id)
       throw Error(`Token { id } required, ${tokenData}`);
 
-    //get user w/ token data:
+    //get user associated with token data:
     const user = await getUserInfoFromId(tokenData.id);
     if (!user) throw Error(`Unable to get user data from token: ${tokenData}`);
     if (user && user.id && user.id !== tokenData.id)
