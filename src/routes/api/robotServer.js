@@ -305,4 +305,14 @@ router.post(
   }
 );
 
+const { upload } = require("../../modules/s3");
+router.post(
+  "/upload",
+  auth({ user: true, required: true }),
+  upload.single("server-img"),
+  async (req, res) => {
+    res.status(200).send("Successfully uploaded files!");
+  }
+);
+
 module.exports = router;
