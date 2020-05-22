@@ -52,6 +52,11 @@ const defaults = {
     idleTimeoutMillis: 30000,
   },
 
+  //S3 Bucket:
+  s3Url: "https://sfo2.digitaloceanspaces.com",
+  s3Public: "7DLOWTBAYFZMTV3ZMSHL",
+  s3Private: "",
+
   //BadWords
   globalBadWordsList: {
     normal_bad_words: {
