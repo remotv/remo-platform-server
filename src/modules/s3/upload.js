@@ -7,6 +7,7 @@ module.exports = multer({
   storage: multerS3({
     s3: s3,
     bucket: "remo-image-store",
+    acl: "public-read",
     metadata: require("./metaData"),
     key: require("./key"),
   }),

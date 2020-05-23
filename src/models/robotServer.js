@@ -189,7 +189,7 @@ module.exports.getRobotServers = async () => {
 
 module.exports.getRobotServersWithOwner = async () => {
   const db = require("../services/db");
-  const query = `SELECT robot_servers.server_id, robot_servers.server_name, robot_servers.owner_id, robot_servers.created, robot_servers.status, robot_servers.settings, users.username FROM robot_servers, users WHERE robot_servers.owner_id = users.id`;
+  const query = `SELECT robot_servers.server_id, robot_servers.server_name, robot_servers.owner_id, robot_servers.created, robot_servers.status, robot_servers.settings, robot_servers.image_id, users.username FROM robot_servers, users WHERE robot_servers.owner_id = users.id`;
   try {
     const result = await db.query(query);
     if (result.rows) return result.rows;
