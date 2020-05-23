@@ -1,8 +1,6 @@
 // The function should call `cb` with a boolean to indicate if the file should be accepted
 module.exports = async (req, file, cb) => {
   try {
-    console.log("FILE FILTER: ", { file });
-
     // To accept the file pass `true`, like so:
     if (file) cb(null, true);
     else cb(null, false);

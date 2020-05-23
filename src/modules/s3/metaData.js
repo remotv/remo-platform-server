@@ -2,10 +2,16 @@
 module.exports = (req, file, cb) => {
   try {
     console.log("File: ", file);
+    let data = {
+      fieldName: file.fieldName,
+      user_id: req.user.id,
+      username: req.user.username,
+    };
+
+    if (req.params.server_id) data.server_id = req.params.server_id;
+
     cb(null, {
-      fieldName: file.fieldname,
-      user_id: req.user ? req.user.id : "no-id-test-value",
-      server_id: req.server_id ? req.server_id : "no-id-test-value",
+      data,
     });
   } catch (err) {
     console.log(err);
