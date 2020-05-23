@@ -306,9 +306,11 @@ router.post(
 );
 
 const { upload } = require("../../modules/s3");
+const requireOwner = require("../middleware/requireOwner");
 router.post(
-  "/upload",
+  "/:id/upload",
   auth({ user: true, required: true }),
+  requireOwner,
   upload.single("server-img"),
   async (req, res) => {
     res.status(200).send("Successfully uploaded files!");
