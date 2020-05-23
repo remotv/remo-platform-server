@@ -3,7 +3,7 @@ const { getRobotServer } = require("../models/robotServer");
 //default member role check is for owner
 
 module.exports.authMemberRole = async (user, server, role) => {
-  console.log("INPUT FROM AUTH MEMBER: ", user, server, role);
+  // console.log("INPUT FROM AUTH MEMBER: ", user, server, role);
   //TODO:
   //If the incoming props only contain IDs, pull info from the DB
   //otherwise assume that incoming props as objects already contain info from the server

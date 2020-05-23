@@ -352,6 +352,19 @@ module.exports.updateRobotServerStatus = async (server_id, status) => {
   }
 };
 
+module.exports.updateServerImage = async ({ image_id, server_id }) => {
+  const db = require("../services/db");
+  const query = `UPDATE robot_servers SET image_id = $1 WHERE server_id = $2`;
+  try {
+    const result = await db.query(query, [image_id, server_id]);
+    if (result.rowCount > 0) return true;
+    else return false;
+  } catch (err) {
+    console.log(err);
+  }
+  return null;
+};
+
 module.exports.updateRobotServerSettings = async (server_id, settings) => {
   const db = require("../services/db");
   // console.log("Updating Robot Server Status: ", server_id, settings);
