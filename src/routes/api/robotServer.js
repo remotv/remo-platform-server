@@ -311,7 +311,7 @@ router.post(
   "/:id/upload",
   auth({ user: true, required: true }),
   requireOwner,
-  upload.single("server-img"),
+  upload.single("server_img"),
   async (req, res) => {
     res.status(200).send("Successfully uploaded files!");
   }
