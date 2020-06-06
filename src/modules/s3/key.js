@@ -10,6 +10,7 @@ module.exports = async (req, file, cb) => {
       id: imageId,
       user_id: req.user.id,
       approved: null,
+      ref: req.server.server_id, //reference to server
     });
 
     //update server image reference

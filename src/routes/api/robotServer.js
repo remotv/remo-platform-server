@@ -313,7 +313,11 @@ router.post(
   requireOwner,
   upload.single("server_img"),
   async (req, res) => {
-    res.status(200).send("Successfully uploaded files!");
+    res
+      .status(200)
+      .send(
+        "Upload Successful! Your image has beeen submitted for approval by the moderation team. It will appear once it's been approved."
+      );
   }
 );
 
