@@ -1,5 +1,5 @@
 const run = async () => {
-  const db = require("../../services/db");
+  const db = require("../../../services/db");
   const updateColumn = `
       ALTER TABLE users 
       DROP COLUMN session,
