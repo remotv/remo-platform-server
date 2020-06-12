@@ -18,6 +18,7 @@ module.exports = async (req, file, cb) => {
     wss.emitInternalEvent("INTERNAL_REQUEST_IMG_APPROVAL", {
       user: req.user,
       image: req.image,
+      path: `https://remo-image-store.sfo2.digitaloceanspaces.com/user/${req.image.id}`,
     });
 
     //consider allowing trusted users to bypass this mod check
