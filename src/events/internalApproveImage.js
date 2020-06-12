@@ -17,7 +17,7 @@ module.exports = async (ws, data) => {
     }
   } catch (err) {
     console.log(err);
-    result.push(err);
+    result.push({ error: err });
   }
   wss.emitInternalEvent("INTERNAL_APPROVE_IMG_RESULT", result);
 };
