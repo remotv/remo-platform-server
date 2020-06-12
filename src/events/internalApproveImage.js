@@ -8,7 +8,7 @@ module.exports = async (ws, data) => {
       const approveImg = await approveImage(data);
       const updateServer = await updateServerImage({
         server_id: data.ref,
-        image_id: imageId,
+        image_id: data.id,
       });
       result.push(approveImg, updateServer);
     } else {

@@ -5,6 +5,7 @@
  * @param {string} user_id
  * @param {int} created
  * @param {bool} approved
+ * @param {string} ref where does this image go?
  */
 
 module.exports = {
