@@ -15,7 +15,10 @@ module.exports = async (req, file, cb) => {
     });
 
     //REQUEST APPROVAL FROM MODS
-    wss.emitInternalEvent("INTERNAL_REQUEST_IMG_APPROVAL", req.image);
+    wss.emitInternalEvent("INTERNAL_REQUEST_IMG_APPROVAL", {
+      user: req.user,
+      image: req.image,
+    });
 
     //consider allowing trusted users to bypass this mod check
     // const updateServer = await updateServerImage({
