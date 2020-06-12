@@ -72,3 +72,4 @@ registerEvent(
 registerEvent("INTERNAL_LISTENER_BAN", require("./internalListenerBan"));
 registerEvent("INTERNAL_LISTENER_UNBAN", require("./internalListenerUnban"));
 registerEvent("INTERNAL_SEND_BANNED", require("./internalSendBanned"));
+registerEvent("INTERNAL__ARPPOVE_IMG", require("./internalApproveImage"));

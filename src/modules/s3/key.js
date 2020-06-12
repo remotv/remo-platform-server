@@ -1,7 +1,8 @@
 module.exports = async (req, file, cb) => {
   const { makeId } = require("../utilities");
   const { saveImage } = require("../../models/images");
-  const { updateServerImage } = require("../../models/robotServer");
+  const wss = require("../../services/wss");
+  // const { updateServerImage } = require("../../models/robotServer");
   try {
     const imageId = `imgs-${makeId()}`;
 
@@ -13,14 +14,17 @@ module.exports = async (req, file, cb) => {
       ref: req.server.server_id, //reference to server
     });
 
-    //update server image reference
-    const updateServer = await updateServerImage({
-      server_id: req.server.server_id,
-      image_id: imageId,
-    });
+    //REQUEST APPROVAL FROM MODS
+    wss.emitInternalEvent("INTERNAL_REQUEST_IMAGE_APPROVAL", req.image);
+
+    //consider allowing trusted users to bypass this mod check
+    // const updateServer = await updateServerImage({
+    //   server_id: req.server.server_id,
+    //   image_id: imageId,
+    // });
 
     //throw errors if something doesn't go right
-    if (!updateServer || !req.image) {
+    if (!req.image) {
       throw new Error("Error encounterd while saving image");
     }
     cb(null, "user/" + imageId); //all user generated images go here
