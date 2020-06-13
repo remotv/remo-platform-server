@@ -14,4 +14,5 @@ module.exports = {
   deleteImage: require("./deleteImage"),
   log: require("./log"),
   getAllImages: require("./getAllImages"),
+  getImageById: require("./getImageById"),
 };

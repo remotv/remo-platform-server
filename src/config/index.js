@@ -18,6 +18,7 @@ const defaults = {
   urlPrefix: "https://remo.tv/",
   supportEmail: "jill@remo.tv",
   reRouteOutboundEmail: "",
+  autoApproveServerImages: false, //set true for local environment
 
   //INTERVALS:
   heartBeat: 10000,

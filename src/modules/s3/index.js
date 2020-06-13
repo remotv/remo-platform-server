@@ -3,4 +3,5 @@ module.exports = {
   bucketList: require("./bucketList"),
   fileFilter: require("./fileFilter"),
   metaData: require("./metaData"),
+  deleteImage: require("./deleteImage"),
 };

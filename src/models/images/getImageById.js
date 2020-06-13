@@ -1,9 +1,9 @@
 module.exports = async ({ id }) => {
   const db = require("../../services/db");
-  const query = `DELETE FROM images WHERE id =$1`;
+  const query = `SELECT * FROM images WHERE id = $1`;
   try {
     const result = await db.query(query, [id]);
-    if (result.rowCount > 0) return true;
+    if (result.rows[0]) return result.rows[0];
   } catch (err) {
     console.log(err);
   }
