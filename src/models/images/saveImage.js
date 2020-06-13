@@ -1,10 +1,10 @@
-module.exports = async ({ id, user_id, approved }) => {
+module.exports = async ({ id, user_id, approved, ref }) => {
   const db = require("../../services/db");
   const { log } = require("./");
-  const query = `INSERT INTO images ( id, user_id, approved ) VALUES ( $1, $2, $3 ) RETURNING *`;
+  const query = `INSERT INTO images ( id, user_id, approved, ref ) VALUES ( $1, $2, $3, $4 ) RETURNING *`;
   try {
     log(`Saving new image! ${id}`);
-    const result = await db.query(query, [id, user_id, approved]);
+    const result = await db.query(query, [id, user_id, approved, ref]);
     if (result.rows[0]) return result.rows[0];
   } catch (err) {
     console.log(err);
