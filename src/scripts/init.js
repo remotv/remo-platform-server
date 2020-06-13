@@ -9,7 +9,7 @@ module.exports = () => {
     initButtonTimerCleanup,
   } = require("../controllers/controls/buttonTimers");
 
-  const { imageCleanup } = require("../controllers/imageManager");
+  const { imageCleanup } = require("../controllers/images");
 
   //setup anything that requires globalScope:
   setGlobals();

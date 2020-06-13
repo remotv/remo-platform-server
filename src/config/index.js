@@ -29,6 +29,7 @@ const defaults = {
   emailNotificationInterval: 3600 * 1000 * 8, //8 Hours
   controlStateUpdateInterval: 200, //This is no longer purely for cleanup,
   serverChatMessageRatelimit: 900, // 1 second with some slack
+  imageCleanupInterval: 1000 * 60 * 60 * 24, //cleanup images once a day
 
   //PATREON STUFF
   patreonClientID:

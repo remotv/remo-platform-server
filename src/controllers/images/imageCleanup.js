@@ -1,15 +1,17 @@
-module.exports = async () => {
+const { imageCLeanupInterval } = require("../../config");
+module.exports = async () => {};
+
+const handleCleanup = async () => {
   const { getAllImages, getImageById } = require("../../models/images");
-  const { imageDeleter } = require("./");
+  const { imageDeleter } = require(".");
   try {
     let imagesToDelete = [];
     const getImages = await getAllImages();
-    console.log("IMAGES LENGTH: ", getImages.length);
+    console.log("IMAGE CLEANUP, checking images: ", getImages.length);
     getImages.forEach((image) => {
       if (!image.ref || image.approved === false) imagesToDelete.push(image);
     });
     console.log("IMAGES TO DELETE: ", imagesToDelete.length);
-    console.log("DELETE FIRST IMAGE TEST: ", imagesToDelete[0]);
 
     //test
   } catch (err) {

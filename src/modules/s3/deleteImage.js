@@ -10,8 +10,10 @@ module.exports = ({ id }) => {
         Key: `user/${id}`,
       },
       (err, data) => {
-        if (err) return err;
-        else return true;
+        if (err) {
+          console.log("delete image error! ", err);
+          return null;
+        } else return true;
       }
     );
   } catch (err) {
