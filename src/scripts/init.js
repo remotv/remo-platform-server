@@ -9,6 +9,8 @@ module.exports = () => {
     initButtonTimerCleanup,
   } = require("../controllers/controls/buttonTimers");
 
+  const { cleanupImages } = require("../controllers/imageManager");
+
   //setup anything that requires globalScope:
   setGlobals();
 
@@ -16,6 +18,7 @@ module.exports = () => {
   robotStatus();
   syncPatreonData();
   initButtonTimerCleanup();
+  // cleanupImages();
 
   //Initalize Active Servers:
   //This is used for storing active users on a server

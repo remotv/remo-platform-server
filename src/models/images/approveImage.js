@@ -7,5 +7,5 @@ module.exports = async ({ id, approved }) => {
   } catch (err) {
     console.log(err);
   }
-  return { error: "Could not update controls at this time" };
+  return null;
 };

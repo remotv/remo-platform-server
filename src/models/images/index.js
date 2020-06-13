@@ -13,4 +13,5 @@ module.exports = {
   approveImage: require("./approveImage"),
   deleteImage: require("./deleteImage"),
   log: require("./log"),
+  getAllImages: require("./getAllImages"),
 };
