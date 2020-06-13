@@ -3,15 +3,17 @@ module.exports = async (ws, data) => {
   const { approveImage } = require("../models/images");
   const wss = require("../services/wss");
   let result = [];
-
   try {
     if (ws.internalListener) {
       const approveImg = await approveImage(data);
-      const updateServer = await updateServerImage({
-        server_id: data.ref,
-        image_id: data.id,
-      });
-      result.push(approveImg, updateServer);
+      if (data.approved) {
+        const updateServer = await updateServerImage({
+          server_id: data.ref,
+          image_id: data.id,
+        });
+        result.push(updateServer);
+      }
+      result.push(approveImg);
       wss.emitInternalEvent("INTERNAL_APPROVE_IMG_RESULT", result);
     }
   } catch (err) {
