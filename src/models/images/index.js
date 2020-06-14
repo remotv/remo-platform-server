@@ -15,4 +15,5 @@ module.exports = {
   log: require("./log"),
   getAllImages: require("./getAllImages"),
   getImageById: require("./getImageById"),
+  updateImageRef: require("./updateImageRef"),
 };

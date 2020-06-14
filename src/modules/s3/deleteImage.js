@@ -1,10 +1,10 @@
 // const multer = require("multer");
 // const multerS3 = require("multer-s3");
 const s3 = require("../../services/s3");
-module.exports = ({ id }) => {
+module.exports = async ({ id }) => {
   try {
     console.log("DELETE IMAGE: ", id);
-    s3.deleteObject(
+    await s3.deleteObject(
       {
         Bucket: "remo-image-store",
         Key: `user/${id}`,
@@ -18,5 +18,6 @@ module.exports = ({ id }) => {
     );
   } catch (err) {
     console.log("S3 DELETE ERROR: ", err);
+    return null;
   }
 };

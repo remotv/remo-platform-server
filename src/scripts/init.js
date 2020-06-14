@@ -18,7 +18,7 @@ module.exports = () => {
   robotStatus();
   syncPatreonData();
   initButtonTimerCleanup();
-  imageCleanup();
+  // imageCleanup();
 
   //Initalize Active Servers:
   //This is used for storing active users on a server
