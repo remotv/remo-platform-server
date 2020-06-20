@@ -58,6 +58,7 @@ const defaults = {
   s3Url: "https://sfo2.digitaloceanspaces.com",
   s3Public: "7DLOWTBAYFZMTV3ZMSHL",
   s3Private: "",
+  s3Bucket: "remo-image-store",
 
   //BadWords
   globalBadWordsList: {
