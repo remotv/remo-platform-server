@@ -4,4 +4,5 @@ module.exports = {
   fileFilter: require("./fileFilter"),
   metaData: require("./metaData"),
   deleteImage: require("./deleteImage"),
+  deleteImages: require("./deleteImages"),
 };
