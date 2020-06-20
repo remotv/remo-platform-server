@@ -18,18 +18,20 @@ const handleCleanup = async () => {
       if (!image.ref || image.approved === false) imagesToDelete.push(image);
     });
     console.log("IMAGES TO DELETE: ", imagesToDelete.length);
-    //remove images from bucket:
-    deleteImages(imagesToDelete);
-    //remove database refs
-    imagesToDelete.forEach(image => {
+
+    const removeFromBucket = await deleteImages(imagesToDelete);
+    console.log("REMOVE FROM S3 RESULT: ", removeFromBucket)
+
+    imagesToDelete.forEach((image) => {
       const remove = await deleteImage(image);
-      console.log(remove);
-    })
-    //test
+      console.log("REMOVING IMAGE: ", image.id, remove);
+    });
   } catch (err) {
     console.log(err);
   }
   return null;
 };
+
+handleCleanup();
 
 module.exports = handleCleanup;
