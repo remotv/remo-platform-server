@@ -17,7 +17,7 @@ module.exports = async (image, server) => {
       server.image_id !== image.id
     ) {
       //remove ref for old image, this will essencially mark it for deletion
-      const removeRef = await updateImageRef({
+      await updateImageRef({
         id: server.image_id,
         ref: null,
       });

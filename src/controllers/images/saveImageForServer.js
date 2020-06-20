@@ -1,4 +1,4 @@
-module.exports = async (user, server) => {
+module.exports = async (user, server, file) => {
   const { makeId } = require("../../modules/utilities");
   const { saveImage } = require("../../models/images");
   const { approveImage } = require("./");
@@ -24,6 +24,7 @@ module.exports = async (user, server) => {
         user: user,
         image: img,
         path: `https://remo-image-store.sfo2.digitaloceanspaces.com/user/${img.id}`,
+        type: file.mimetype || null,
       });
     }
 
