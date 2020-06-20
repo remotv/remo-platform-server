@@ -20,9 +20,9 @@ const handleCleanup = async () => {
     console.log("IMAGES TO DELETE: ", imagesToDelete.length);
 
     const removeFromBucket = await deleteImages(imagesToDelete);
-    console.log("REMOVE FROM S3 RESULT: ", removeFromBucket)
+    console.log("REMOVE FROM S3 RESULT: ", removeFromBucket);
 
-    imagesToDelete.forEach((image) => {
+    imagesToDelete.forEach(async (image) => {
       const remove = await deleteImage(image);
       console.log("REMOVING IMAGE: ", image.id, remove);
     });
