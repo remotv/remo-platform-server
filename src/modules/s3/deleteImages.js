@@ -6,6 +6,10 @@ module.exports = async (images) => {
   try {
     if (!Array.isArray(images)) images = [images];
     images.forEach((image) => {
+      if (!image.id) {
+        console.log("err, no image id", image);
+        return;
+      }
       deleteImages.push({
         Bucket: s3Bucket,
         Key: `user/${image.id}`,
