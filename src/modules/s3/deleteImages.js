@@ -11,18 +11,28 @@ module.exports = async (images) => {
         return;
       }
       deleteImages.push({
-        Bucket: s3Bucket,
+        //   Bucket: s3Bucket,
         Key: `user/${image.id}`,
       });
+      console.log("DELETE IMAGE: ", image.id);
     });
 
-    console.log("DELETE IMAGE: ", id);
-    s3.deleteObjects(deleteImages, (err, data) => {
-      if (err) {
-        console.log("delete image error! ", err);
-        return null;
-      } else return true;
-    });
+    if (deleteImages.length > 0) {
+      s3.deleteObjects(
+        {
+          Bucket: s3Bucket,
+          Delete: {
+            Objects: deleteImages,
+          },
+        },
+        (err, data) => {
+          if (err) {
+            console.log("delete image error! ", err);
+            return null;
+          } else return true;
+        }
+      );
+    } else console.log("NO IMAGES TO DELETE!");
   } catch (err) {
     console.log("S3 DELETE ERROR: ", err);
     return null;

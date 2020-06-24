@@ -64,7 +64,7 @@ registerEvent("GET_CONTROLS", require("./getControls"));
 registerEvent("GET_LOCAL_STATUS", require("./getLocalStatus"));
 registerEvent("GET_SERVER_STATUS", require("./getServerStatus"));
 
-//Interal
+//Internal
 registerEvent(
   "INTERNAL_LISTENER_AUTHENTICATE",
   require("./internalListenerAuth")
