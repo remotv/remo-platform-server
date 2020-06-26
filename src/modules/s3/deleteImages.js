@@ -11,7 +11,6 @@ module.exports = async (images) => {
         return;
       }
       deleteImages.push({
-        //   Bucket: s3Bucket,
         Key: `user/${image.id}`,
       });
       console.log("DELETE IMAGE: ", image.id);

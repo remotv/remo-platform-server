@@ -7,8 +7,11 @@ module.exports = async (user, server, file) => {
 
   try {
     const imageId = `imgs-${makeId()}`;
+    let type = "";
+    if (file.mimetype === "image/jpeg") type = "jpg";
+    else if (file.mimetype === "image/png") type = "png";
     const img = await saveImage({
-      id: imageId,
+      id: `${imageId}.${type}`,
       user_id: user.id,
       approved: null,
       ref: server.server_id, //reference to server
@@ -24,7 +27,6 @@ module.exports = async (user, server, file) => {
         user: user,
         image: img,
         path: `https://remo-image-store.sfo2.digitaloceanspaces.com/user/${img.id}`,
-        type: file.mimetype || null,
       });
     }
 

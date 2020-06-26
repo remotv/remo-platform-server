@@ -32,6 +32,6 @@ const handleCleanup = async () => {
   return null;
 };
 
-handleCleanup();
+// handleCleanup();
 
 module.exports = handleCleanup;
