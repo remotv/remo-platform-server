@@ -9,7 +9,7 @@ module.exports = async (image, server) => {
     if (!server) throw new Error("Unable to find referenced server");
     if (image.approved === false) {
       await approveImage(image);
-      return { status: "Image successfully not approved." };
+      return { status: "Approval denied for image.", id: image.id };
     }
     if (
       image.approved === true &&
