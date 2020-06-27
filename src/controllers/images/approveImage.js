@@ -30,11 +30,11 @@ module.exports = async (image, server) => {
       });
       const approve = await approveImage(image);
       if (updateServer && approve)
-        return { status: "Image successfully approved" };
+        return { status: "Image successfully approved", id: image.id };
     }
   } catch (err) {
-    console.log("ERROR APPROVING IMAGE: ", err);
+    console.log("ERROR APPROVING IMAGE: ", err.message);
     return { error: "Error approving image...", details: err };
   }
-  return { error: "Error approving image..." };
+  // return { error: "Error approving image..." };
 };
