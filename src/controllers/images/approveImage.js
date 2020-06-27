@@ -11,11 +11,7 @@ module.exports = async (image, server) => {
       await approveImage(image);
       return { status: "Approval denied for image.", id: image.id };
     }
-    if (
-      image.approved === true &&
-      server.image_id &&
-      server.image_id !== image.id
-    ) {
+    if (image.approved === true && server.image_id !== image.id) {
       //remove ref for old image, this will essencially mark it for deletion
       await updateImageRef({
         id: server.image_id,
