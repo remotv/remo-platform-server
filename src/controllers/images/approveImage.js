@@ -34,6 +34,7 @@ module.exports = async (image, server) => {
     }
   } catch (err) {
     console.log("ERROR APPROVING IMAGE: ", err);
+    return { error: "Error approving image...", details: err };
   }
   return { error: "Error approving image..." };
 };
