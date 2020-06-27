@@ -31,6 +31,13 @@ module.exports = async (image, server) => {
       const approve = await approveImage(image);
       if (updateServer && approve)
         return { status: "Image successfully approved", id: image.id };
+    } else {
+      return {
+        status:
+          "Image status not updated, it is likely you are approving an image that has already been approved.",
+        image: image,
+        server: server,
+      };
     }
   } catch (err) {
     console.log("ERROR APPROVING IMAGE: ", err);
