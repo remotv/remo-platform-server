@@ -16,7 +16,7 @@ module.exports = async (tokenData) => {
 
     //handle invalid sessions, send logout event to expired user / session
     if (user.session_id && !tokenData.session_id) {
-      rejectAuthForUser(user);
+      //rejectAuthForUser(user); uneeded? ws will disconnect if no user is returned from authData disconnecting all clients of x user will just cause issues
       throw Error(`Invalid session data for user, ${user.username}`);
     }
 
