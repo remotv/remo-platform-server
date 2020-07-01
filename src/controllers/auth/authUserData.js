@@ -26,6 +26,7 @@ module.exports = async (tokenData) => {
       user.session_id !== tokenData.session_id
     ) {
       //logout invalid sessions
+      console.log(`Rejecting auth for user: ${user.username}\nCurrent Session: ${user.session_id}\nProvided Session: ${tokenData.session_id}`)
       rejectAuthForUser(user, tokenData.session_id);
       throw Error(`Session is expired for user, ${user.username}`);
     }
