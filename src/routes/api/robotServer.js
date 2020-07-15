@@ -13,7 +13,15 @@ const { jsonError, logger } = require("../../modules/logging");
 //LIST ACTIVE SERVERS
 router.get("/list", async (req, res) => {
   const { getPublicServers } = require("../../controllers/robotServer");
+  const { maxServersPerPage } = require("../../config")
+  const { splitToChunks } = require("../../modules/utilities")
   let display = await getPublicServers();
+  if ((typeof req.query.page !== 'undefined') /*if the page param is included in the query*/ && (!isNaN(+req.query.page)) /*check if it is a number*/ && (Number.isInteger(+req.query.page)) /*check if it is whole (page 2.4 isn't possible)*/) { 
+    let pageNum = +req.query.page;
+    display = splitToChunks(display, maxServersPerPage)[pageNum-1]
+  } else {
+    //allow for some time before depreciation of not using page param
+  }
   res.send(display);
 });
 

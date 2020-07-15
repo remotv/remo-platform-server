@@ -37,6 +37,16 @@ module.exports.createTimeStamp = () => {
   return Date.now();
 };
 
+module.exports.splitToChunks = (arr, chunkSize, acc = []) => (
+  arr.length > chunkSize ?
+      this.splitToChunks(
+          arr.slice(chunkSize),
+          chunkSize,
+          [...acc, arr.slice(0, chunkSize)]
+      ) :
+      [...acc, arr]
+);
+
 module.exports.createTimer = (interval, callback, object) => {
   // console.log("DING");
   const timer = new setInterval(() => {

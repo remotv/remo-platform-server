@@ -14,6 +14,7 @@ const defaults = {
   sendGrid: "",
   sendMail: "",
   enableEmailAlerts: true,
+  maxServersPerPage: 50,
 
   urlPrefix: "https://remo.tv/",
   supportEmail: "jill@remo.tv",
