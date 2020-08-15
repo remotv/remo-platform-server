@@ -15,7 +15,11 @@ module.exports = async (ws, data) => {
       });
     }
   } catch (err) {
-    console.log(err);
+    console.log(
+      "events/internal/robotServer/deleteServer.js ",
+      "THERE WAS A PROBLEM DELETING A SERVER ",
+      err
+    );
   }
   //deleteServer
 };
