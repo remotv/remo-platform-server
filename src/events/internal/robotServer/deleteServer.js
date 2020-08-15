@@ -6,9 +6,12 @@ module.exports = async (ws, data) => {
     console.log("MODERATION - Deleting Robot Server: ", server_id);
     if (ws.internalListener) {
       const remove = await deleteRobotServer(server_id);
+      let result = "";
+      if (remove) result = "Success!";
+      else result = "Error, server may not have been deleted";
       wss.emitInternalEvent("DELETE_ROBOT_SERVER", {
         server_id: server_id,
-        result: remove,
+        result: result,
       });
     }
   } catch (err) {
