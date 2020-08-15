@@ -7,7 +7,9 @@ module.exports = async (channel_id, user) => {
   const { getButtonStatus } = require("./getStatus");
   const { authMemberRole } = require("../../controllers/roles");
 
-  log(`Get Controls from ID: ${channel_id}, ${user.username}`);
+  if (!user) log(`Get controls for Null User`);
+  else log(`Get Controls from ID: ${channel_id}, ${user.username}`);
+
   const channel = await getRobotChannelById(channel_id);
   const controls = await getControlsFromId(channel.controls_id);
 
@@ -22,6 +24,9 @@ module.exports = async (channel_id, user) => {
       if (user && button.access) {
         const auth = await authMemberRole(user, getServer, button.access);
         if (auth) return button;
+      } else if (!user) {
+        button.disabled = true;
+        return button;
       } else return button;
     };
 

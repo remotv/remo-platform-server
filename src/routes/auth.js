@@ -33,11 +33,12 @@ const auth = (options) => {
       }
       next();
     } catch (e) {
-      logger({
-        level: "debug",
-        source: "routes/auth.js",
-        message: e.message,
-      });
+      // console.log(e);
+      // logger({
+      //   level: "debug",
+      //   source: "routes/auth.js",
+      //   message: "no auth",
+      // });
       res.status(401).json({ error: "Invalid token data." });
     }
   };
