@@ -78,6 +78,8 @@ module.exports = async (buttons, channel_id, controls_id) => {
             errorData = newButton.hot_key;
             return errorData;
           }
+          if (newButton.hot_key.toLowerCase() === "spacebar")
+            newButton.hot_key = " ";
         }
 
         if (!foundError && (button.cooldown || button.cooldown === 0)) {
