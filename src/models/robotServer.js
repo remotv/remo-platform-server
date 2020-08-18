@@ -25,6 +25,7 @@ const robotServerPt = {
 
 //Used to generate / create a new robot server
 module.exports.createRobotServer = async (server, user) => {
+  const { publishNewServer } = require("../events/internal/robotServer");
   // console.log("About to build server: ", server, user);
   const { server_name } = server;
 
@@ -97,6 +98,7 @@ module.exports.createRobotServer = async (server, user) => {
     join: makeInvite.id,
   });
 
+  publishNewServer(buildServer, user);
   return buildServer;
 };
 

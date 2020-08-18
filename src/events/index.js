@@ -73,3 +73,7 @@ registerEvent("INTERNAL_LISTENER_BAN", require("./internalListenerBan"));
 registerEvent("INTERNAL_LISTENER_UNBAN", require("./internalListenerUnban"));
 registerEvent("INTERNAL_SEND_BANNED", require("./internalSendBanned"));
 registerEvent("INTERNAL_APPROVE_IMG", require("./internalApproveImage"));
+registerEvent(
+  "DELETE_ROBOT_SERVER",
+  require("./internal/robotServer/deleteServer")
+);
