@@ -26,7 +26,8 @@ module.exports = async (channel_id, user) => {
         if (auth) return button;
       } else if (!user) {
         button.disabled = true;
-        return button;
+        //only send buttons without access requirements for non-users
+        if (!button.access) return button;
       } else return button;
     };
 
