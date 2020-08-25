@@ -20,8 +20,6 @@ module.exports.joinServer = async (member) => {
   const { getRobotServer } = require("../models/robotServer");
   const { newFollower } = require("./notifications");
 
-  // console.log("Joining Server");
-
   if (member.status && member.status.member)
     return { status: "Error!", error: "this user is already a member" };
 
