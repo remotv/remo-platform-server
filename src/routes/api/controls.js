@@ -67,23 +67,19 @@ router.post("/button-input", async (req, res) => {
 });
 
 //Get channel's buttons based on user
-router.post(
-  "/get-controls",
-  auth({ user: true, required: true }),
-  async (req, res) => {
-    if (req.body.channel_id) {
-      const { getButtonInputForUser } = require("../../controllers/controls");
-      const sendButtons = await getButtonInputForUser(
-        req.user,
-        req.body.channel_id
-      );
-      if (sendButtons) {
-        res.send(sendButtons);
-        return;
-      }
+router.post("/get-controls", auth({ user: true }), async (req, res) => {
+  if (req.body.channel_id) {
+    const { getButtonInputForUser } = require("../../controllers/controls");
+    const sendButtons = await getButtonInputForUser(
+      req.user,
+      req.body.channel_id
+    );
+    if (sendButtons) {
+      res.send(sendButtons);
+      return;
     }
-    res.send(jsonError("Unable to get buttons for user!"));
   }
-);
+  res.send(jsonError("Unable to get buttons for user!"));
+});
 
 module.exports = router;
