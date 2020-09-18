@@ -30,12 +30,16 @@ router.get("/members", async (req, res) => {
   res.send(response);
 });
 
-router.post("/get-members", auth({ user: true }), async (req, res) => {
-  const { getMembers } = require("../../controllers/members");
-  if (!req.body.server_id) return res.send(jsonError("Invalid Server ID"));
-  const members = await getMembers(req.body.server_id);
-  return res.send(members);
-});
+router.post(
+  "/get-members",
+  auth({ user: true, required: true }),
+  async (req, res) => {
+    const { getMembers } = require("../../controllers/members");
+    if (!req.body.server_id) return res.send(jsonError("Invalid Server ID"));
+    const members = await getMembers(req.body.server_id);
+    return res.send(members);
+  }
+);
 
 router.post("/get-member", auth({ user: true }), async (req, res) => {
   const { getMember } = require("../../controllers/members");
