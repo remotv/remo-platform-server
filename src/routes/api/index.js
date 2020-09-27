@@ -14,6 +14,7 @@ router.use("/user", require("./user"));
 router.use("/chat", require("./chat"));
 router.use("/moderation", require("./moderation"));
 router.use("/integrations", require("./integrations"));
+router.use("/av", require("./av"));
 
 //test API
 router.get("/", (req, res) => {

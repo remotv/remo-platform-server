@@ -15,6 +15,11 @@ const defaults = {
   sendMail: "",
   enableEmailAlerts: true,
 
+  //AV
+  legacyAVServerExternal: "wss://remo.tv", //mpeg1 external watching websocket 
+  legacyAVServerInternal: "remo.tv:1567", //mpeg internal api for fetching streams
+  AVServer: undefined, //h264 server (internal and exteneral mixed)
+
   urlPrefix: "https://remo.tv/",
   supportEmail: "jill@remo.tv",
   reRouteOutboundEmail: "",
