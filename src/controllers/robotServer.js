@@ -70,20 +70,20 @@ module.exports.getServerByName = async (name, user) => {
   let getServer = await getRobotServerFromName(name);
 
   if (!getServer) return err("This server doesn't exist");
-  if (user) membership = await getMember({
+  if (user && user.id) membership = await getMember({
     user_id: user.id,
     server_id: getServer.server_id,
   });
-  getServer.membership = membership || null;
-  // console.log("////////GET SERVER CHECK: ", getServer, user);
-  if (getServer.settings.private === true) return checkMembership(getServer);
-  // if (getServer.settings.unlist && !user)
+  getServer.membership = membership;
+  if (getServer.settings.private === true) {
+    if (!user) return err("Account required for access.")
+    return checkMembership(getServer);
+  }
   return getServer;
 };
 
 const checkMembership = async (server) => {
   const { status } = server.membership;
-  // console.log(check);
   if (status.member === true) {
     return server;
   }
