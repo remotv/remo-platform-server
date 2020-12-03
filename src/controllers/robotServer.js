@@ -66,16 +66,18 @@ module.exports.getPublicServers = async () => {
 module.exports.getServerByName = async (name, user) => {
   const { getRobotServerFromName } = require("../models/robotServer");
   const { getMember } = require("../models/serverMembers");
+  let membership = null;
   let getServer = await getRobotServerFromName(name);
 
   if (!getServer) return err("This server doesn't exist");
-  const membership = await getMember({
+  if (user) membership = await getMember({
     user_id: user.id,
     server_id: getServer.server_id,
   });
   getServer.membership = membership || null;
-  // console.log("GET SERVER CHECK: ", getServer);
+  // console.log("////////GET SERVER CHECK: ", getServer, user);
   if (getServer.settings.private === true) return checkMembership(getServer);
+  // if (getServer.settings.unlist && !user)
   return getServer;
 };
 
