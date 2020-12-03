@@ -39,6 +39,7 @@ const defaults = {
   creatorRefreshToken: "",
   campaignId: "3356897",
   patreonSyncInterval: 30000,
+  patreonRefreshTokenInterval: 1000 * 60 * 60 * 24 * 7, //once a week
 
   //Internal Routes:
   sendAlert: `${routePrefix}send-alert`,
