@@ -1,5 +1,5 @@
 const run = async () => {
-  const db = require("../../services/db");
+  const db = require("../../../services/db");
   const update = `
   CREATE TABLE public.images (
    id character varying NOT NULL PRIMARY KEY,
