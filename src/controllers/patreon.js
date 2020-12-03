@@ -105,7 +105,7 @@ module.exports.getPatreonData = async () => {
       await Promise.all(promises);
     }
   } catch (err) {
-    console.log(err);
+    console.log("Get Patreon Data Error: ", err);
   }
   return null;
 };
@@ -130,8 +130,18 @@ module.exports.savePledgeData = async (pledge) => {
   return null;
 };
 
+module.exports.updateRefreshToken = async () => {
+  const { updatePatreonToken } = require("../modules/patreon");
+  try{
+    const tokenData = await updatePatreonToken();
+    console.log("Token Data: ", tokenData)
+
+  }catch(err){
+    console.log("Refresh Patreon Token Error: ", err)
+  }
+}
+
 module.exports.syncPatreonData = async () => {
-  // console.log("Pledge Data Sync");
   await this.getPatreonData();
   checkInterval();
 };

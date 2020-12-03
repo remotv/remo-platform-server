@@ -88,3 +88,30 @@ module.exports.getPledgeData = async () => {
       return jsonError(err.response.statusText);
     });
 };
+
+
+module.exports.updatePatreonToken = async () => {
+  const { patreonClientID, patreonClientSecret, creatorRefreshToken, creatorAccessToken } = require("../config");
+  const get = `https://www.patreon.com/api/oauth2/token?grant_type=refresh_token&refresh_token=${creatorRefreshToken}&client_id=${patreonClientID}&client_secret=${patreonClientSecret}`;
+
+  return await axios.post(get, {}, {}).then( res => {
+    /* Return Data Example: 
+        Token Data:  { access_token: 'newAccessTokenData',
+        expires_in: 2678400,
+        token_type: 'Bearer',
+        scope: 'my-campaign pledges-to-me users',
+        refresh_token: 'newRefreshTokenData',
+        version: '0.0.1' }
+*/
+
+//Create Internal DB, Create listing for access token & refresh token
+//Update Refresh Token based on timestamp in DB
+
+    return res.data;
+  }).catch(err => {
+    console.log(err)
+    console.log("REFRESH TOKEN ERROR: ", err.response.status,
+    err.response.statusText);
+    return jsonError(err.response.statusText);
+  });
+}
