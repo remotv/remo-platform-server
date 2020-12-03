@@ -198,7 +198,7 @@ router.post("/settings/update", auth({ user: true }), async (req, res) => {
  */
 router.post(
   "/get-server",
-  auth({ user: true, robot: true, required: true }),
+  auth({ user: true, robot: true }), //auth isn't required for viewing content only
   async (req, res) => {
     const { getServerByName } = require("../../controllers/robotServer");
     try {
