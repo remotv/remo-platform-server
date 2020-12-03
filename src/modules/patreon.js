@@ -103,11 +103,6 @@ module.exports.updatePatreonToken = async () => {
         refresh_token: 'newRefreshTokenData',
         version: '0.0.1' }
 */
-
-//Create Internal DB, Create listing for access token & refresh token
-//Update Refresh Token based on timestamp in DB
-//if the data in the DB is blank, update it with the latest config settings
-
     return res.data;
   }).catch(err => {
     console.log(err)

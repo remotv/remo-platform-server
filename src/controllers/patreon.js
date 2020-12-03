@@ -130,12 +130,17 @@ module.exports.savePledgeData = async (pledge) => {
   return null;
 };
 
+//Create Internal DB, Create listing for access token & refresh token
+//Update Refresh Token based on timestamp in DB
+//if the data in the DB is blank, update it with the latest config settings
 module.exports.updateRefreshToken = async () => {
   const { updatePatreonToken } = require("../modules/patreon");
   try{
     const tokenData = await updatePatreonToken();
-    console.log("Token Data: ", tokenData)
-
+    if (tokenData && tokenData.access_token ) {
+      const { access_token, refresh_token } = tokenData;
+      console.log("new access_token: ", access_token, "new refresh_token: ", refresh_token)
+    }
   }catch(err){
     console.log("Refresh Patreon Token Error: ", err)
   }
