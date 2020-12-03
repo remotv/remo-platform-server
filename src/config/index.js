@@ -1,4 +1,14 @@
-const overrides = require("./overrides");
+/**
+ * CONFIG README: 
+ * This file contains defaults for various values used by this application
+ * Some values are left blank because they contain sensitive information
+ * 
+ * overrides.js should be untracked by git, and export a javascript object w/ key value pairs
+ * Any key value pairs written in overrides will overwrite the ones here if using the same key 
+ * Use overrides to store secret keys and other sensitive information you don't want committed to a public repo
+ */
+
+const overrides = require("./overrides"); 
 
 const routePrefix =
   overrides.routePrefix || `http://localhost:3231/internal/api/`;
@@ -31,12 +41,16 @@ const defaults = {
   serverChatMessageRatelimit: 900, // 1 second with some slack
   imageCleanupInterval: 1000 * 60 * 60 * 24, //cleanup images once a day
 
-  //PATREON STUFF
+  /**
+   * PATREON STUFF:
+   * Values for creatorAccessToken and creatorRefreshToken will be intilized from here, but will be managed in the DB after that. 
+   * Clearing the data in the DB will trigger a new update from the config file */
+  
   patreonClientID:
     "qzqYm-sCfZsMr-Va7LoFGRsNPBPO_bNb_TpLbxCOLSRVod_4t7sI2ezCVu3VMQ7o",
   patreonClientSecret: "",
-  creatorAccessToken: "",
-  creatorRefreshToken: "",
+  creatorAccessToken: "", //used to init patreon_access_token in DB / internal_store
+  creatorRefreshToken: "", //used to init patreon_refresh_token in DB / internal_store
   campaignId: "3356897",
   patreonSyncInterval: 30000,
   patreonRefreshTokenInterval: 1000 * 60 * 60 * 24 * 7, //once a week
