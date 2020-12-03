@@ -9,13 +9,16 @@ const {
 const { logger } = require("../modules/logging");
 const auth = (options) => {
   return async (req, res, next) => {
+    let tokenData = null;
     try {
       if (req.headers.authorization) {
         const bearer = req.headers["authorization"].split(" ");
-        const token = bearer[1];
-        // console.log("TOKEN CHECK: ", token, "\n");
-        const tokenData = await extractToken(token);
-        // console.log("EXTRACT TOKEN DATA: ", tokenData);
+        let token = bearer[1];
+
+        //don't attempt to decode a token unless there is one
+        if (token && token !== "null") tokenData = await extractToken(token);
+
+        //only proceed with valid token data
         if (tokenData && tokenData.id) {
           let type = tokenData.id.substring(0, 4);
           if (type === "user" && options.user) {
@@ -28,12 +31,12 @@ const auth = (options) => {
         }
       }
 
+      
       if (options.required && !req.user && !req.robot && !req.internal) {
         return res.json({ error: "Invalid Authorization" });
       }
       next();
     } catch (e) {
-      // console.log(e);
       // logger({
       //   level: "debug",
       //   source: "routes/auth.js",
