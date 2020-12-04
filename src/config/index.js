@@ -53,6 +53,7 @@ const defaults = {
   creatorRefreshToken: "", //used to init patreon_refresh_token in DB / internal_store
   campaignId: "3356897",
   patreonSyncInterval: 30000,
+  autoPatreonTokenRefresh: false, //Automatically refresh Patreon Client Access Token ( best to disable for local development )
   patreonRefreshTokenInterval: 1000 * 60 * 60 * 24 * 7, //once a week
 
   //Internal Routes:

@@ -135,11 +135,14 @@ module.exports.savePledgeData = async (pledge) => {
 //if the data in the DB is blank, update it with the latest config settings
 module.exports.updateRefreshToken = async () => {
   const { updatePatreonToken } = require("../modules/patreon");
+  const { autoPatreonTokenRefresh } = require("../config");
   try{
-    const tokenData = await updatePatreonToken();
-    if (tokenData && tokenData.access_token ) {
-      const { access_token, refresh_token } = tokenData;
-      console.log("new access_token: ", access_token, "new refresh_token: ", refresh_token)
+    if (autoPatreonTokenRefresh) {
+      const tokenData = await updatePatreonToken();
+      if (tokenData && tokenData.access_token ) {
+        const { access_token, refresh_token } = tokenData;
+        console.log("new access_token: ", access_token, "new refresh_token: ", refresh_token)
+      }
     }
   }catch(err){
     console.log("Refresh Patreon Token Error: ", err)
