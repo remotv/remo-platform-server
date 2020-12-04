@@ -1,10 +1,10 @@
 const run = async () => {
-   const db = require("../../../services/db");
+   const db = require("../../services/db");
    const update = `
    CREATE TABLE public.internal_store (
-    patreon_client_id character varying NOT NULL PRIMARY KEY,
-    patreon_refresh_token character varying,
-    patreon_data_last_updated timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    ref character varying NOT NULL PRIMARY KEY,
+    data jsonb,
+    updated timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL
    );`;
    try {
      console.log("Updating Table...");
