@@ -1,4 +1,5 @@
 module.exports = {
    saveEntry: require("./saveEntry"),
-   updateEntryByRef: require("./updateEntryByRef")
+   updateEntryByRef: require("./updateEntryByRef"),
+   getEntryByRef: require("./getEntryByRef")
 }

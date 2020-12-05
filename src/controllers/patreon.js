@@ -159,3 +159,4 @@ const checkInterval = async () => {
   setTimeout(this.syncPatreonData, patreonSyncInterval);
   return;
 };
+
