@@ -110,9 +110,8 @@ module.exports.getPatreonData = async () => {
   return null;
 };
 
-/**
- * Save Pledge Data: Check if Patron has a linked account, save data accordingly
- */
+
+//Save Pledge Data: Check if Patron has a linked account, save data accordingly
 module.exports.savePledgeData = async (pledge) => {
   const { checkPatreonId, updatePatronRewards } = require("../models/patreon");
   //TODO: Currently does not handle multiple rewards. Not sure if that is a thing.
@@ -130,9 +129,7 @@ module.exports.savePledgeData = async (pledge) => {
   return null;
 };
 
-//Create Internal DB, Create listing for access token & refresh token
-//Update Refresh Token based on timestamp in DB
-//if the data in the DB is blank, update it with the latest config settings
+//updated Patreon access and refresh tokens before they expire
 module.exports.updateRefreshToken = async () => {
   const { updatePatreonToken } = require("../modules/patreon");
   const { autoPatreonTokenRefresh } = require("../config");
@@ -147,9 +144,14 @@ module.exports.updateRefreshToken = async () => {
   }catch(err){
     console.log("Refresh Patreon Token Error: ", err)
   }
+  return null;
 }
 
+
+
+
 module.exports.syncPatreonData = async () => {
+  //await this.updateRefreshToken();
   await this.getPatreonData();
   checkInterval();
 };

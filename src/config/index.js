@@ -44,7 +44,8 @@ const defaults = {
   /**
    * PATREON STUFF:
    * Values for creatorAccessToken and creatorRefreshToken will be intilized from here, but will be managed in the DB after that. 
-   * Clearing the data in the DB will trigger a new update from the config file */
+   * Scripts for initializing and updating the values from the config to the db can be found ...
+   * in src/scripts/patreon */
   
   patreonClientID:
     "qzqYm-sCfZsMr-Va7LoFGRsNPBPO_bNb_TpLbxCOLSRVod_4t7sI2ezCVu3VMQ7o",
