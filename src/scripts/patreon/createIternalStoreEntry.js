@@ -1,3 +1,6 @@
+//Run this script once to add patreon data to the internal store. 
+//If there is already data for Patreon, then use the update script instead of this one.
+
 run = async () => {
    const { getEntryByRef, saveEntry } = require("../../models/internalStore");
    const { creatorAccessToken, creatorRefreshToken } = require("../../config");

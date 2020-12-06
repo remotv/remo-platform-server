@@ -45,7 +45,8 @@ const defaults = {
    * PATREON STUFF:
    * Values for creatorAccessToken and creatorRefreshToken will be intilized from here, but will be managed in the DB after that. 
    * Scripts for initializing and updating the values from the config to the db can be found ...
-   * in src/scripts/patreon */
+   * in src/scripts/patreon 
+   * The init script needs to be run at least once ( with correct config settings ) before Patreon integration will work */
   
   patreonClientID:
     "qzqYm-sCfZsMr-Va7LoFGRsNPBPO_bNb_TpLbxCOLSRVod_4t7sI2ezCVu3VMQ7o",
