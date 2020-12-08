@@ -80,8 +80,10 @@ module.exports.removePatreon = async (user_id) => {
  */
 module.exports.getPatreonData = async () => {
   const { getPledgeData } = require("../modules/patreon");
+  const { getEntryByRef } = require("../models/internalStore")
   try {
-    const getData = await getPledgeData();
+    const { data } = await getEntryByRef('patreon');
+    const getData = await getPledgeData( data || null );
     if (getData && getData.data && getData.included) {
       const { data, included } = getData;
       // console.log("pledges: ", data.length, "included: ", included.length);
@@ -130,15 +132,26 @@ module.exports.savePledgeData = async (pledge) => {
 };
 
 //updated Patreon access and refresh tokens before they expire
+let doUpdate = false;
 module.exports.updateRefreshToken = async () => {
   const { updatePatreonToken } = require("../modules/patreon");
-  const { autoPatreonTokenRefresh } = require("../config");
+  const { autoPatreonTokenRefresh, patreonRefreshTokenInterval } = require("../config");
+  const { updateEntryByRef, getEntryByRef } = require("../models/internalStore")
   try{
-    if (autoPatreonTokenRefresh) {
-      const tokenData = await updatePatreonToken();
-      if (tokenData && tokenData.access_token ) {
-        const { access_token, refresh_token } = tokenData;
-        console.log("new access_token: ", access_token, "new refresh_token: ", refresh_token)
+    if (autoPatreonTokenRefresh && !doUpdate) {
+
+      doUpdate = true; //Placeholder 
+
+      const { data, updated } = await getEntryByRef('patreon');
+      if ( data ) {
+        const newTokenData = await updatePatreonToken(data);
+        console.log("New Patreon Token Data Recieved: ", newTokenData );
+        const updateData = { 
+          ref: "patreon", 
+          data: newTokenData };
+        console.log("Saving New Patreon Data...");
+        const save = await updateEntryByRef(updateData);
+        console.log("Saved Patreon Data Complete: ", save);
       }
     }
   }catch(err){
@@ -151,7 +164,7 @@ module.exports.updateRefreshToken = async () => {
 
 
 module.exports.syncPatreonData = async () => {
-  //await this.updateRefreshToken();
+  await this.updateRefreshToken();
   await this.getPatreonData();
   checkInterval();
 };

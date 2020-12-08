@@ -55,26 +55,26 @@ module.exports.getInfoFromAccessToken = async token => {
   }
 };
 
+//deprecated
 module.exports.getRemoPledgeData = async () => {
-  const { creatorAccessToken, campaignId } = require("../config");
-  const client = patreon.patreon(creatorAccessToken);
-
-  //stahp spamming my console!
-  const result = await client(
-    `/campaigns/${campaignId}/pledges?page%5Bcount%5D=10000`
-  );
-  //TODO: May need a totally different method than using Patreon Module.
-  const { store } = result;
-  const pledges = store.findAll("pledge");
-  return pledges;
+  // const { creatorAccessToken, campaignId } = require("../config");
+  // const client = patreon.patreon(creatorAccessToken);
+  // //stahp spamming my console!
+  // const result = await client(
+  //   `/campaigns/${campaignId}/pledges?page%5Bcount%5D=10000`
+  // );
+  // //TODO: May need a totally different method than using Patreon Module.
+  // const { store } = result;
+  // const pledges = store.findAll("pledge");
+  // return pledges;
 };
 
-module.exports.getPledgeData = async () => {
+module.exports.getPledgeData = async ({ access_token }) => {
   const { campaignId, creatorAccessToken } = require("../config");
   const get = `https://www.patreon.com/api/oauth2/api/campaigns/${campaignId}/pledges?page%5Bcount%5D=10000`;
   return await axios
     .get(get, {
-      headers: { authorization: `Bearer ${creatorAccessToken}` }
+      headers: { authorization: `Bearer ${ access_token || creatorAccessToken }` }
     })
     .then(res => {
       return res.data;
@@ -90,10 +90,9 @@ module.exports.getPledgeData = async () => {
 };
 
 
-module.exports.updatePatreonToken = async () => {
-  const { patreonClientID, patreonClientSecret, creatorRefreshToken, creatorAccessToken } = require("../config");
-  const get = `https://www.patreon.com/api/oauth2/token?grant_type=refresh_token&refresh_token=${creatorRefreshToken}&client_id=${patreonClientID}&client_secret=${patreonClientSecret}`;
-
+module.exports.updatePatreonToken = async ({ refresh_token }) => {
+  const { patreonClientID, patreonClientSecret, creatorRefreshToken } = require("../config");
+  const get = `https://www.patreon.com/api/oauth2/token?grant_type=refresh_token&refresh_token=${ refresh_token || creatorRefreshToken }&client_id=${patreonClientID}&client_secret=${patreonClientSecret}`;
   return await axios.post(get, {}, {}).then( res => {
     /* Return Data Example: 
         Token Data:  { access_token: 'newAccessTokenData',
