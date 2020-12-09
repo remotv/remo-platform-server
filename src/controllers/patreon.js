@@ -83,7 +83,7 @@ module.exports.getPatreonData = async () => {
   const { getEntryByRef } = require("../models/internalStore")
   try {
     const { data } = await getEntryByRef('patreon');
-    const getData = await getPledgeData( data || null );
+    const getData = await getPledgeData( data || null ); //no data will pull token info from config instead of database
     if (getData && getData.data && getData.included) {
       const { data, included } = getData;
       // console.log("pledges: ", data.length, "included: ", included.length);
