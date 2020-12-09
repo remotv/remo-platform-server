@@ -131,28 +131,30 @@ module.exports.savePledgeData = async (pledge) => {
   return null;
 };
 
+const checkToUpdate = (updated) => {
+  const { patreonRefreshTokenInterval } = require("../config");
+  const compareDate = new Date();
+  if (updated <= compareDate - patreonRefreshTokenInterval ) return true;
+  else return false;
+}
+
 //updated Patreon access and refresh tokens before they expire
-let doUpdate = false;
 module.exports.updateRefreshToken = async () => {
   const { updatePatreonToken } = require("../modules/patreon");
-  const { autoPatreonTokenRefresh, patreonRefreshTokenInterval } = require("../config");
+  const { autoPatreonTokenRefresh } = require("../config");
   const { updateEntryByRef, getEntryByRef } = require("../models/internalStore")
   try{
-    if (autoPatreonTokenRefresh && !doUpdate) {
+    const { data, updated } = await getEntryByRef('patreon');
+    const doUpdate = checkToUpdate(updated);
 
-      doUpdate = true; //Placeholder 
-
-      const { data, updated } = await getEntryByRef('patreon');
-      if ( data ) {
+    if (autoPatreonTokenRefresh && doUpdate && data ) {
+        console.log("Updating Patreon Token Data...")
         const newTokenData = await updatePatreonToken(data);
         console.log("New Patreon Token Data Recieved: ", newTokenData );
         const updateData = { 
           ref: "patreon", 
           data: newTokenData };
-        console.log("Saving New Patreon Data...");
-        const save = await updateEntryByRef(updateData);
-        console.log("Saved Patreon Data Complete: ", save);
-      }
+        await updateEntryByRef(updateData);
     }
   }catch(err){
     console.log("Refresh Patreon Token Error: ", err)
