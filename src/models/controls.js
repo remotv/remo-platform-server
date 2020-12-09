@@ -5,7 +5,7 @@ Multiple channels on a robot_server can load the same control set & feed it to d
 Right now this only covers buttons, will will eventually include other types of input
 */
 const { makeId, createTimeStamp } = require("../modules/utilities");
-const { exampleControls } = require("../controllers/controls");
+
 const { logger } = require("../modules/logging");
 const log = (message) => {
   logger({
@@ -14,14 +14,13 @@ const log = (message) => {
     source: "models/controls.js",
   });
 };
-//TEMPORARY VALUES JUST TO ENSURE VALIDATION:
-testControls = exampleControls();
 
 const defaultStatus = () => {
   return {
     placeholder: "test",
   };
 };
+
 const defaultSettings = () => {
   return {
     enabled: true,
@@ -29,11 +28,13 @@ const defaultSettings = () => {
 };
 
 module.exports.createControls = async (controls) => {
+  const { exampleControls } = require("../controllers/controls");
   let makeInterface = {};
+  
   makeInterface.id = controls.id || `cont-${makeId()}`;
   makeInterface.created = createTimeStamp();
   makeInterface.channel_id = controls.channel_id || "dev";
-  makeInterface.buttons = controls.buttons || testControls;
+  makeInterface.buttons = controls.buttons || exampleControls();
   makeInterface.settings = controls.settings || defaultSettings();
   makeInterface.status = controls.status || defaultStatus();
   // makeInterface.button_input = controls
