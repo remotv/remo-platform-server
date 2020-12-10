@@ -10,11 +10,10 @@ const typeDefault = "string";
 
 //VALIDATOR Interfaces
 module.exports.validateButtonsJSON = (input) => {
-  const limit = 64; //# of buttons
-  // console.log("JSON ENTRIES: ", input.length);
-  if (input.length > limit)
+  const { maxButtons } = require("../config");
+  if (input.length > maxButtons)
     return jsonError(
-      `Max entries exceeded, no more than ${limit} buttons are allowed`
+      `Max entries exceeded, no more than ${maxButtons} buttons are allowed`
     );
   return input;
 };
