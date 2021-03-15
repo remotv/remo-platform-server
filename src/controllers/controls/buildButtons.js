@@ -44,7 +44,7 @@ module.exports = async (buttons, channel_id, controls_id) => {
           //Dont publish invalid button
           return;
         }
-
+        
         if (button.break) {
           newButton.break = button.break;
           newButtons.push(newButton);
@@ -114,6 +114,10 @@ module.exports = async (buttons, channel_id, controls_id) => {
 
         if (!foundError && button.disabled) {
           newButton.disabled = true;
+        }
+
+        if (button.joystick) {
+          newButton.joystick = button.joystick;
         }
 
         newButtons.push(newButton);
