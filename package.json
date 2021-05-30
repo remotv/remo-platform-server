@@ -23,7 +23,7 @@
     "query-string": "^6.9.0",
     "url": "^0.11.0",
     "winston": "^3.2.1",
-    "ws": "^7.0.1"
+    "ws": "^7.4.6"
   },
   "scripts": {
     "start": "concurrently 'npm run server'",
